@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des produits</title>
+    <link rel="stylesheet" href="../css/produits.css">
+</head>
+<body>
+
+    <main class="container">
+
+        <h1>Gestion des produits</h1>
+
+        <section class="form-section">
+            <h2>Produit</h2>
+
+            <form id="produit-form">
+                <input type="hidden" id="produit-id">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="code-barre">Code-barres</label>
+                        <input type="text" id="code-barre" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" required>
+                    </div>
+
+                    <div class="form-group prix-group">
+                        <label for="prix">Prix</label>
+                        <input type="number" id="prix" min="0" step="1" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" id="btn-annuler" class="btn btn-secondary">Nettoyer</button>
+                </div>
+                <div id="message-succes" class="message-succes">
+                    ✓ Produit enregistré
+                </div>
+            </form>
+        </section>
+
+        <section class="liste-section">
+            <h2>Produits</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code-barres</th>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="produits-body">
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script src="../js/produits.js"></script>
+</body>
+</html>

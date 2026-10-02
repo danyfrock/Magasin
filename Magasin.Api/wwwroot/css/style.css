@@ -1,0 +1,305 @@
+/* =========================================================
+   VARIABLES (facile à personnaliser plus tard)
+   ========================================================= */
+:root {
+    --bg: #f0f2f5;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* =========================================================
+   RESET + BASE
+   ========================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+.app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+}
+
+.card h2 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* =========================================================
+   SCAN
+   ========================================================= */
+.card-scan input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card-scan input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================================================
+   TABLE PANIER
+   ========================================================= */
+.table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+td {
+    font-size: 0.95rem;
+}
+
+/* Boutons + / - / Supprimer dans le panier */
+td button {
+    margin-left: 4px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #f9fafb;
+    cursor: pointer;
+}
+
+td button:hover {
+    background: #f3f4f6;
+}
+
+/* Total */
+.total-bar {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: right;
+    padding-top: 8px;
+    border-top: 2px solid var(--border);
+}
+
+/* =========================================================
+   PAIEMENT
+   ========================================================= */
+.paiements-liste {
+    min-height: 28px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.paiements-liste div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.paiements-liste button {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 4px;
+}
+
+.resume-paiement {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.resume-ligne {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.resume-ligne:last-child {
+    margin-bottom: 0;
+}
+
+.montant-group {
+    margin-bottom: 16px;
+}
+
+.montant-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+}
+
+.montant-group input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+}
+
+.montant-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Boutons modes de paiement */
+.boutons-modes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.btn {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-mode {
+    background: #eff6ff;
+    color: var(--primary);
+}
+
+.btn-mode:hover {
+    background: #dbeafe;
+}
+
+.btn-valider {
+    background: var(--success);
+    color: white;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.btn-valider:hover:not(:disabled) {
+    background: #15803d;
+}
+
+.btn-valider:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.btn-annuler {
+    background: #fef2f2;
+    color: var(--danger);
+    width: 100%;
+}
+
+.btn-annuler:hover {
+    background: #fee2e2;
+}
+
+/* À rendre */
+.a-rendre {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--success);
+    margin: 12px 0;
+}
+
+/* Actions finales */
+.actions-vente {
+    margin-top: 8px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 520px) {
+    .boutons-modes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .app {
+        padding: 16px 12px 32px;
+    }
+}

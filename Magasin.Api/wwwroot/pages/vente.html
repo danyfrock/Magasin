@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caisse - Magasin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <h1>Caisse du magasin</h1>
+        </header>
+
+        <main class="main">
+
+            <!-- ===== SCAN ===== -->
+            <section class="card card-scan">
+                <h2>Recherche produit</h2>
+                <input type="text" id="scan" placeholder="Scanne ou tape le code-barres" autofocus>
+            </section>
+
+            <!-- ===== PANIER ===== -->
+            <section class="card card-panier">
+                <h2>Panier</h2>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                            </tr>
+                        </thead>
+                        <tbody id="panier"></tbody>
+                    </table>
+                </div>
+
+                <div class="total-bar">
+                    Total : <span id="total">0 F</span>
+                </div>
+            </section>
+
+            <!-- ===== PAIEMENT ===== -->
+            <section class="card card-paiement">
+                <h2>Paiement</h2>
+
+                <div id="paiements-effectues" class="paiements-liste"></div>
+
+                <div class="resume-paiement">
+                    <div class="resume-ligne">
+                        <span>Déjà payé</span>
+                        <strong id="dejaPaye">0 F</strong>
+                    </div>
+                    <div class="resume-ligne">
+                        <span>Reste à payer</span>
+                        <strong id="resteAPayer">0 F</strong>
+                    </div>
+                </div>
+
+                <div class="montant-group">
+                    <label for="montantPaye">Montant de ce paiement</label>
+                    <input type="number" id="montantPaye" min="0" step="1" placeholder="0">
+                </div>
+
+                <div class="boutons-modes">
+                    <button id="payerEspeces" type="button" class="btn btn-mode">ESPÈCES</button>
+                    <button id="payerCarte" type="button" class="btn btn-mode">CARTE</button>
+                    <button id="payerAirtel" type="button" class="btn btn-mode">AIRTEL</button>
+                    <button id="payerMoov" type="button" class="btn btn-mode">MOOV</button>
+                </div>
+
+                <p id="ligneARendre" class="a-rendre" style="display:none;">
+                    À rendre : <span id="aRendre">0 F</span>
+                </p>
+
+                <div class="actions-vente">
+                    <button id="validerVente" type="button" class="btn btn-valider" disabled>
+                        VALIDER LA VENTE
+                    </button>
+                    <button id="annulerVente" type="button" class="btn btn-annuler">
+                        ANNULER
+                    </button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+@Magasin.Api_HostAddress = http://localhost:5143
+
+GET {{Magasin.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
