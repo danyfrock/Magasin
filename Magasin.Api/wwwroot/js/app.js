@@ -108,6 +108,7 @@ let paiements = [];
 const montantPayeInput = document.getElementById("montantPaye");
 const listePaiements   = document.getElementById("paiements-effectues");
 const btnValider       = document.getElementById("validerVente");
+const montantRenduInput = document.getElementById("montantRendu");
 
 // ============================================================
 // CALCULS SIMPLES
@@ -125,6 +126,7 @@ function mettreAJourAffichagePaiement() {
     const paye  = totalPaye();
     const reste = Math.max(0, total - paye);
     const aRendre = Math.max(0, paye - total);
+    const rendu = Number(montantRenduInput.value) || 0;
 
     // Affichages
     document.getElementById("total").textContent = total + " F";
@@ -182,7 +184,7 @@ function ajouterPaiement(mode) {
 // ============================================================
 // VALIDER / ANNULER
 // ============================================================
-function validerVente() {
+async  function validerVente() {
     const total = calculerTotalNumerique();
     const paye  = totalPaye();
 
@@ -204,7 +206,23 @@ function validerVente() {
         }))
     };
 
-    console.log("Vente :", vente);
+    const response = await fetch("/api/ventes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            lignes: panier.map(p => ({
+                produitId: p.id,
+                quantite: p.quantite
+            })),
+            paiements: paiements.map(p => ({
+                moyenPaiement: p.mode,
+                montant: p.montant
+            })),
+            rendu: Number(montantRenduInput.value) || 0
+        })
+    });
 
     let msg = `Vente validée\nTotal : ${total} F\n`;
     paiements.forEach(p => msg += `• ${p.mode.toUpperCase()} : ${p.montant} F\n`);
@@ -225,6 +243,7 @@ function reinitialiserCaisse() {
     afficherPanier();
     calculerTotal();
     montantPayeInput.value = "";
+    montantRenduInput.value = "";
     mettreAJourAffichagePaiement();
     document.getElementById("scan").focus();
 }

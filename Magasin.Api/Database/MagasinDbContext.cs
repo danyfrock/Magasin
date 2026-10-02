@@ -11,6 +11,11 @@ public class MagasinDbContext : DbContext
     }
 
     public DbSet<Produit> Produits { get; set; }
+    public DbSet<Vente> Ventes { get; set; }
+
+    public DbSet<LigneVente> LignesVente { get; set; }
+
+    public DbSet<LignePaiement> LignesPaiement { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

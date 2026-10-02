@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Magasin.Api.Dtos
 {
-    public interface IHasCodeBarre
-    {
-        string CodeBarre { get; }
-    }
+    public record LigneVenteDto(
+        int ProduitId,
+        int Quantite
+    );
 }
