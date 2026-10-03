@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique des ventes - Magasin</title>
+
+    <link rel="stylesheet" href="/lib/tabulator/tabulator.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grille.css">
     <link rel="stylesheet" href="../css/historique.css">
+
+    <title>Historique des ventes - Magasin</title>
 </head>
 <body>
 
@@ -17,29 +21,65 @@
         <h1>Historique des ventes</h1>
     </header>
 
+    <section class="card filtres-ventes">
+        <h2>Filtrer les ventes</h2>
+
+        <div class="filtres-ligne">
+
+            <div class="filtre-groupe">
+                <label for="type-periode">Période</label>
+
+                <select id="type-periode">
+                    <option value="">Toutes les dates</option>
+                    <option value="jour">Jour</option>
+                    <option value="mois">Mois</option>
+                    <option value="annee">Année</option>
+                </select>
+            </div>
+
+            <div class="filtre-groupe filtre-periode-valeur">
+                <label for="valeur-periode">Date</label>
+
+                <input
+                    type="date"
+                    id="valeur-periode">
+            </div>
+
+            <div class="filtre-groupe filtre-produit">
+                <label for="produit">Produit</label>
+
+                <input
+                    type="text"
+                    id="produit"
+                    placeholder="Nom du produit">
+            </div>
+
+            <div class="filtre-actions">
+                <button
+                    type="button"
+                    id="btn-imprimer"
+                    class="btn-filtre-reset">
+                    Imprimer
+                </button>
+            
+                <button
+                    type="button"
+                    id="btn-reinitialiser"
+                    class="btn-filtre-reset">
+                    Réinitialiser
+                </button>
+            </div>
+
+        </div>
+    </section>
+
     <div class="layout">
 
-        <!-- ===== LISTE DES VENTES ===== -->
         <section class="card">
             <h2>Ventes</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Total</th>
-                            <th>Articles</th>
-                            <th>Paiements</th>
-                        </tr>
-                    </thead>
-                    <tbody id="liste-ventes">
-                        <tr><td colspan="4" class="empty">Chargement...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div id="liste-ventes" class="grille"></div>
         </section>
 
-        <!-- ===== DÉTAIL ===== -->
         <section class="card">
             <h2>Détail de la vente</h2>
 
@@ -47,46 +87,34 @@
                 Cliquez sur une vente pour voir le détail
             </div>
 
-            <div id="detail-contenu" style="display:none;">
-                <p>
-                    <strong>Date :</strong> <span id="detail-date"></span><br>
-                    <strong>Total :</strong> <span id="detail-total"></span>
-                </p>
+            <div id="detail-contenu" class="detail-contenu">
 
-                <h3 style="margin:16px 0 8px; font-size:1rem;">Articles</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Produit</th>
-                                <th>Qté</th>
-                                <th>Prix unit.</th>
-                                <th>Sous-total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detail-lignes"></tbody>
-                    </table>
+                <div class="detail-informations">
+                    <p>
+                        <strong>Date :</strong>
+                        <span id="detail-date"></span>
+                    </p>
+
+                    <p>
+                        <strong>Total :</strong>
+                        <span id="detail-total"></span>
+                    </p>
                 </div>
 
-                <h3 style="margin:16px 0 8px; font-size:1rem;">Paiements</h3>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Moyen</th>
-                                <th>Montant</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detail-paiements"></tbody>
-                    </table>
-                </div>
+                <h3>Articles</h3>
+                <div id="detail-lignes" class="grille"></div>
+
+                <h3>Paiements</h3>
+                <div id="detail-paiements" class="grille"></div>
+
             </div>
         </section>
 
     </div>
 </div>
 
+<script src="/lib/tabulator/tabulator.min.js"></script>
 <script src="../js/historique.js"></script>
+
 </body>
 </html>

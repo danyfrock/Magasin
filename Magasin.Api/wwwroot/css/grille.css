@@ -1,0 +1,129 @@
+```css
+/* =========================================================
+   GRILLES TABULATOR
+   ========================================================= */
+
+.grille {
+    width: 100%;
+}
+
+/* Conteneur principal */
+.tabulator {
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.06);
+    font-size: 0.9rem;
+}
+
+/* En-tête */
+.tabulator .tabulator-header {
+    background: #f1f6fc;
+    border-bottom: 1px solid #dbe4f0;
+    color: #334155;
+    font-weight: 600;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    background: transparent;
+    border-right: 1px solid #e2e8f0;
+    padding: 4px 0;
+}
+
+.tabulator .tabulator-header .tabulator-col:last-child {
+    border-right: none;
+}
+
+.tabulator .tabulator-col-title {
+    padding: 8px 12px;
+}
+
+/* Lignes */
+.tabulator .tabulator-row {
+    background: #ffffff;
+    border-bottom: 1px solid #eef2f7;
+    min-height: 42px;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+
+.tabulator .tabulator-row:last-child {
+    border-bottom: none;
+}
+
+.tabulator .tabulator-row:hover {
+    background-color: #f5f9ff;
+}
+
+/* Cellules */
+.tabulator .tabulator-cell {
+    padding: 10px 12px;
+    border-right: none;
+    color: #334155;
+}
+
+/* Ligne sélectionnée */
+.tabulator .tabulator-row.tabulator-selected {
+    background-color: #e3efff !important;
+    color: #1e40af;
+}
+
+.tabulator .tabulator-row.tabulator-selected .tabulator-cell {
+    color: #1e40af;
+}
+
+/* Tri */
+.tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
+    background-color: #e7f0fb;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-arrow {
+    border-bottom-color: #64748b;
+}
+
+/* Filtres */
+.tabulator .tabulator-header-filter input,
+.tabulator .tabulator-header-filter select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #334155;
+    outline: none;
+}
+
+.tabulator .tabulator-header-filter input:focus,
+.tabulator .tabulator-header-filter select:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* Bas de grille */
+.tabulator .tabulator-footer {
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+/* Pagination */
+.tabulator .tabulator-footer .tabulator-page {
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #475569;
+    padding: 5px 9px;
+}
+
+.tabulator .tabulator-footer .tabulator-page:hover {
+    background: #e7f0fb;
+    color: #1d4ed8;
+}
+
+.tabulator .tabulator-footer .tabulator-page.active {
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+```
