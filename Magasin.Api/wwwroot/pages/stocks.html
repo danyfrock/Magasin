@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du stock</title>
+    <link rel="stylesheet" href="../lib/tabulator/tabulator.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grille.css">
+    <link rel="stylesheet" href="../css/stocks.css">
+</head>
+<body>
+
+    <div class="app">
+
+        <a href="../index.html" class="back-link">← Retour au menu</a>
+        <br>
+        <h1>Gestion du stock</h1>
+
+        <section class="form-section">
+            <h2>Mise à jour du stock</h2>
+
+            <form id="stock-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="code-barre">Code-barres</label>
+                        <input type="text" id="code-barre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantite">Quantité</label>
+                        <input type="number" id="quantite" step="1" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="btn-valider" class="btn btn-primary" disabled>
+                        Valider
+                    </button>
+
+                    <button type="button" id="btn-annuler" class="btn btn-secondary">
+                        Nettoyer
+                    </button>
+                </div>
+
+                <div id="message-succes" class="message-succes">
+                    ✓ Stock mis à jour
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="liste-header">
+                <h2>Stock</h2>
+
+                <button type="button" id="btn-imprimer" class="btn btn-secondary">
+                    Imprimer
+                </button>
+            </div>
+
+            <div id="stock-table" class="grille"></div>
+        </section>
+
+    </div>
+
+    <script src="../lib/tabulator/tabulator.min.js"></script>
+    <script src="../js/stocks.js"></script>
+</body>
+</html>

@@ -13,6 +13,6 @@ namespace Magasin.Api.Database.Entities
 
         public int Quantite { get; set; }
 
-        public Produit Produit { get; set; }
+        public required Produit Produit { get; set; }
     }
 }

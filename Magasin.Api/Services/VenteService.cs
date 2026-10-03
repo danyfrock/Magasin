@@ -46,6 +46,9 @@ public class VenteService
             return null;
         }
 
+        // Décrémente les stocks
+        await AjusterStocks(vente.Lignes, -1);
+
         dbContext.Ventes.Add(vente);
         await dbContext.SaveChangesAsync();
 
@@ -71,6 +74,13 @@ public class VenteService
             return null;
         }
 
+        // 1. On remet les quantités de l'ancienne vente
+        await AjusterStocks(vente.Lignes, +1);
+
+        // 2. On applique les quantités de la nouvelle vente
+        await AjusterStocks(nouvelleVente.Lignes, -1);
+
+        // Mise à jour de la vente
         vente.Date = nouvelleVente.Date;
         vente.Total = nouvelleVente.Total;
 
@@ -95,12 +105,16 @@ public class VenteService
     public async Task<bool> Delete(int id)
     {
         Vente? vente = await dbContext.Ventes
-            .FindAsync(id);
+            .Include(v => v.Lignes)
+            .FirstOrDefaultAsync(v => v.Id == id);
 
         if (vente == null)
         {
             return false;
         }
+
+        // On remet les quantités en stock
+        await AjusterStocks(vente.Lignes, +1);
 
         dbContext.Ventes.Remove(vente);
         await dbContext.SaveChangesAsync();
@@ -182,4 +196,28 @@ public class VenteService
         return vente;
     }
 
+    /// <summary>
+    /// Ajuste les stocks selon les lignes de vente.
+    /// facteur = -1 → décrémente (vente)
+    /// facteur = +1 → incrémente (annulation / suppression)
+    /// </summary>
+    private async Task AjusterStocks(IEnumerable<LigneVente> lignes, int facteur)
+    {
+        var produitIds = lignes.Select(l => l.ProduitId).Distinct().ToList();
+
+        var stocks = await dbContext.Stocks
+            .Where(s => produitIds.Contains(s.IdProduit))
+            .ToListAsync();
+
+        foreach (var ligne in lignes)
+        {
+            var stock = stocks.FirstOrDefault(s => s.IdProduit == ligne.ProduitId);
+
+            if (stock != null)
+            {
+                stock.Quantite += ligne.Quantite * facteur;
+            }
+            // Si pas de stock trouvé, on ignore (ou tu peux logger)
+        }
+    }
 }

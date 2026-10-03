@@ -1,17 +1,19 @@
 using Magasin.Api.Database;
 using Magasin.Api.Database.Entities;
-using Microsoft.EntityFrameworkCore;
 using Magasin.Api.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace Magasin.Api.Services;
 
 public class ProduitService
 {
     private readonly MagasinDbContext dbContext;
+    private readonly StockService stockService;
 
-    public ProduitService(MagasinDbContext dbContext)
+    public ProduitService(MagasinDbContext dbContext, StockService stockService)
     {
         this.dbContext = dbContext;
+        this.stockService = stockService;
     }
 
     public async Task<Produit?> GetByCodeBarre(string codeBarre)
@@ -27,6 +29,7 @@ public class ProduitService
             .ToListAsync();
     }
 
+    // CREATE : Crée le produit + son stock (quantité à 0)
     public async Task<Produit> Create(ProduitLightDto produit)
     {
         Produit entity = new Produit
@@ -36,7 +39,10 @@ public class ProduitService
         };
 
         dbContext.Produits.Add(entity);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(); // génère le CodeBarre
+
+        // Création automatique du stock
+        await stockService.Create(new StockDto(entity.CodeBarre, 1));
 
         return entity;
     }
@@ -60,6 +66,7 @@ public class ProduitService
         return entity;
     }
 
+    // DELETE : Supprime le produit (le stock est supprimé automatiquement grâce au Cascade)
     public async Task<bool> Delete(int id)
     {
         Produit? entity = await dbContext.Produits
@@ -71,7 +78,7 @@ public class ProduitService
         }
 
         dbContext.Produits.Remove(entity);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(); // Cascade → supprime aussi le Stock
 
         return true;
     }

@@ -12,6 +12,7 @@ public class MagasinDbContext : DbContext
 
     public DbSet<Produit> Produits { get; set; }
     public DbSet<Vente> Ventes { get; set; }
+    public DbSet<Stock> Stocks { get; set; }
 
     public DbSet<LigneVente> LignesVente { get; set; }
 
@@ -30,6 +31,15 @@ public class MagasinDbContext : DbContext
 
         modelBuilder.Entity<Produit>()
             .HasIndex(p => p.CodeBarre)
+            .IsUnique();
+
+        modelBuilder.Entity<Stock>()
+            .HasOne(s => s.Produit)
+            .WithMany()
+            .HasForeignKey(s => s.IdProduit)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Stock>()
+            .HasIndex(s => s.IdProduit)
             .IsUnique();
     }
 }

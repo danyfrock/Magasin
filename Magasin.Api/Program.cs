@@ -12,6 +12,8 @@ builder.Services.AddDbContext<MagasinDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Magasin")));
 builder.Services.AddScoped<ProduitService>();
 builder.Services.AddScoped<VenteService>();
+builder.Services.AddScoped<StockService>();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
