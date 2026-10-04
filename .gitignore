@@ -480,3 +480,16 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Installateur local Inno Setup
+*.iss
+Installer/resources/
+Installer/output/
+Installer/*.exe
+*.log
+Installer/dernier-log.txt
+
+# Publish
+**/publish/
+**/bin/
+**/obj/
