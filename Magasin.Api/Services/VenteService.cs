@@ -124,21 +124,10 @@ public class VenteService
 
     private async Task<Vente?> CreerVente(VenteDto dto)
     {
-        // Validation
-        if (!dto.Lignes.Any())
-        {
-            return null;
-        }
-
         // Produits
         List<Produit> produits = await dbContext.Produits
             .Where(p => dto.Lignes.Select(l => l.ProduitId).Contains(p.Id))
             .ToListAsync();
-
-        if (produits.Count != dto.Lignes.Count)
-        {
-            return null;
-        }
 
         // Lignes de vente
         Vente vente = new Vente
@@ -157,21 +146,11 @@ public class VenteService
             }).ToList()
         };
 
-        if (vente.Lignes.Any(l => l.Quantite <= 0))
-        {
-            return null;
-        }
-
         vente.Total = vente.Lignes.Sum(l => l.Quantite * l.PrixUnitaire);
 
         // Paiements
         int totalPaye = dto.Paiements.Sum(p => p.Montant);
         int rendu = totalPaye - vente.Total;
-
-        if (dto.Paiements.Any(p => p.Montant <= 0) || rendu < 0 || dto.Rendu != rendu)
-        {
-            return null;
-        }
 
         vente.Paiements = dto.Paiements
             .Select(p => new LignePaiement
@@ -183,7 +162,7 @@ public class VenteService
             .ToList();
 
         // Rendu
-        if (dto.Rendu > 0)
+        if (dto.Rendu != 0)
         {
             vente.Paiements.Add(new LignePaiement
             {

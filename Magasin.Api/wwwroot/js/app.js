@@ -187,6 +187,7 @@ function ajouterPaiement(mode) {
 async  function validerVente() {
     const total = calculerTotalNumerique();
     const paye  = totalPaye();
+    const rendu = Number(montantRenduInput.value) || 0;
 
     if (panier.length === 0) return alert("Panier vide");
     if (paye < total) return alert(`Il reste ${total - paye} F`);
@@ -195,7 +196,7 @@ async  function validerVente() {
         date: new Date().toISOString(),
         total,
         montantPaye: paye,
-        monnaieRendue: paye > total ? paye - total : 0,
+        monnaieRendue: rendu,
         paiements: [...paiements],
         articles: panier.map(p => ({
             id: p.id,
