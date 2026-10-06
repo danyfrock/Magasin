@@ -497,3 +497,5 @@ Installer/dernier-log.txt
 # Images
 Images/*
 !Images/.gitkeep
+Magasin.Api/Images/*
+!Magasin.Api/Images/.gitkeep

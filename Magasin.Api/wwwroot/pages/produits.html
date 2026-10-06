@@ -42,7 +42,18 @@
 
                     <div class="form-group">
                         <label for="image">Image</label>
-                        <input type="file" id="image" accept="image/*">
+
+                        <div>
+                            <button type="button" id="btn-choisir-image" class="btn btn-primary">
+                                Choisir
+                            </button>
+
+                            <button type="button" id="btn-ajouter-image" class="btn btn-secondary">
+                                Ajouter
+                            </button>
+
+                            <input type="file" id="image" accept="image/*" hidden>
+                        </div>
                     </div>
 
                 </div>
@@ -85,6 +96,21 @@
             <div id="produit-table" class="grille"></div>
         </section>
 
+    </div>
+
+    <div id="modal-images" class="modal">
+        <div class="modal-content">
+
+            <h2>Choisir une image</h2>
+
+            <div id="liste-images">
+            </div>
+
+            <button type="button" id="btn-fermer-modal">
+                Fermer
+            </button>
+
+        </div>
     </div>
 
     <script src="../lib/tabulator/tabulator.min.js"></script>

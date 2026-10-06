@@ -317,3 +317,63 @@ td button:hover {
         padding: 16px 12px 32px;
     }
 }
+
+/* =========================================================
+   MODALES
+   ========================================================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal.visible {
+    display: flex;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+.modal-content h2 {
+    margin: 0 0 20px;
+}
+
+#liste-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.image-selection {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    background: white;
+    cursor: pointer;
+}
+
+.image-selection:hover {
+    border-color: var(--primary);
+}
+
+.image-selection img {
+    display: block;
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
+}

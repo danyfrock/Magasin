@@ -1,6 +1,7 @@
 using Magasin.Api.Database;
 using Magasin.Api.Database.Entities;
 using Magasin.Api.Dtos;
+using Magasin.Api.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Magasin.Api.Services;
@@ -21,7 +22,16 @@ public class ImageService
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
-    public async Task<List<Image>> GetAll()
+    public async Task<List<ImageResponseDto>> GetAll()
+    {
+        var images = await GetAllEntity();
+
+        return images
+            .Select(i => i.ToDto())
+            .ToList();
+    }
+
+    private async Task<List<Image>> GetAllEntity()
     {
         return await dbContext.Images
             .AsNoTracking()

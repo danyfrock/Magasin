@@ -1,4 +1,5 @@
 let produitTable = null;
+let imageSelectionnee = null;
 
 document.addEventListener("DOMContentLoaded", function () {
     initialiserGrille();
@@ -91,12 +92,84 @@ function initialiserGrille() {
 function initialiserFormulaire() {
     const formulaire = document.getElementById("produit-form");
     const boutonAnnuler = document.getElementById("btn-annuler");
+    const boutonAjouterImage = document.getElementById("btn-ajouter-image");
     const image = document.getElementById("image");
 
     formulaire.addEventListener("submit", enregistrerProduit);
     boutonAnnuler.addEventListener("click", nettoyerFormulaire);
+    boutonAjouterImage.addEventListener("click", function () {
+        image.click();
+    });
 
     image.addEventListener("change", afficherNouvelleImage);
+
+    // MODALE
+    // OUVRIR
+    const boutonChoisirImage = document.getElementById("btn-choisir-image");
+    const modalImages = document.getElementById("modal-images");
+    boutonChoisirImage.addEventListener("click", function () {
+        chargerImages();
+        modalImages.classList.add("visible");
+    });
+    // FERMER
+    const boutonFermerModal = document.getElementById("btn-fermer-modal");
+    boutonFermerModal.addEventListener("click", function () {
+        modalImages.classList.remove("visible");
+    });
+}
+
+// Charge les images existantes depuis l'API.
+async function chargerImages() {
+    const response = await fetch("/api/image");
+
+    if (!response.ok) {
+        afficherErreur("Impossible de charger les images.");
+        return;
+    }
+
+    const images = await response.json();
+
+    const liste = document.getElementById("liste-images");
+
+    // Vide la liste avant de la remplir.
+    liste.innerHTML = "";
+
+    // Ajoute chaque image dans la modale.
+    images.forEach(function (image) {
+        const nomFichier = image.imagePath.split("\\").pop();
+
+        liste.innerHTML += `
+            <div class="image-selection" data-image-id="${image.id}">
+                <img src="/Images/${nomFichier}" alt="Image">
+            </div>
+        `;
+    });
+
+    // Récupère toutes les images affichées.
+    const imagesSelection = document.querySelectorAll(".image-selection");
+
+    // Permet de sélectionner une image au clic.
+    imagesSelection.forEach(function (element) {
+        element.addEventListener("click", function () {
+            const imageId = Number(element.dataset.imageId);
+
+            // Retrouve l'image sélectionnée dans la liste.
+            imageSelectionnee = images.find(function (image) {
+                return image.id === imageId;
+            });
+
+            console.log("Image sélectionnée :", imageSelectionnee);
+
+            // Affiche l'image sélectionnée dans le formulaire.
+            afficherImageExistante({
+                imageResponse: imageSelectionnee,
+                imageData: null
+            });
+
+            // Ferme la modale.
+            modalImages.classList.remove("visible");
+        });
+    });
 }
 
 // Charge tous les produits depuis l'API.
@@ -120,6 +193,7 @@ async function chargerProduits() {
 
 // Charge un produit dans le formulaire.
 function chargerProduitDansFormulaire(produit) {
+    imageSelectionnee = null;
     document.getElementById("produit-id").value = produit.id;
     document.getElementById("code-barre").value = produit.codeBarre;
     document.getElementById("nom").value = produit.nom;
@@ -152,6 +226,9 @@ function afficherImageExistante(imageSwitch) {
 
 // Affiche l'image nouvellement sélectionnée.
 function afficherNouvelleImage() {
+    // Une nouvelle image remplace une éventuelle sélection existante.
+    imageSelectionnee = null;
+
     const fichier = document.getElementById("image").files[0];
 
     if (!fichier) {
@@ -192,6 +269,7 @@ function fichierVersBase64(fichier) {
 async function construireImage(produitExistant) {
     const fichier = document.getElementById("image").files[0];
 
+    // Une nouvelle image a été sélectionnée.
     if (fichier) {
         return {
             imageResponse: null,
@@ -202,6 +280,15 @@ async function construireImage(produitExistant) {
         };
     }
 
+    // Une image existante a été sélectionnée.
+    if (imageSelectionnee) {
+        return {
+            imageResponse: imageSelectionnee,
+            imageData: null
+        };
+    }
+
+    // Aucune nouvelle image n'a été sélectionnée.
     if (produitExistant && produitExistant.image && produitExistant.image.imageResponse) {
         return {
             imageResponse: produitExistant.image.imageResponse,
@@ -319,6 +406,7 @@ async function supprimerProduit(id) {
 
 // Réinitialise le formulaire.
 function nettoyerFormulaire() {
+    imageSelectionnee = null;
     document.getElementById("produit-form").reset();
     document.getElementById("produit-id").value = "";
     document.getElementById("code-barre").value = "";
