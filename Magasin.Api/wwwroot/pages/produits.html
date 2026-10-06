@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des produits</title>
+    <link rel="stylesheet" href="../lib/tabulator/tabulator.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/grille.css">
     <link rel="stylesheet" href="../css/produits.css">
 </head>
 <body>
 
-    <main class="container">
+    <div class="app">
 
         <a href="../index.html" class="back-link">← Retour au menu</a>
         <br>
@@ -23,6 +24,7 @@
                 <input type="hidden" id="produit-id">
 
                 <div class="form-grid">
+
                     <div class="form-group">
                         <label for="code-barre">Code-barres</label>
                         <input type="text" id="code-barre" readonly>
@@ -37,37 +39,55 @@
                         <label for="prix">Prix</label>
                         <input type="number" id="prix" min="0" step="1" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="image">Image</label>
+                        <input type="file" id="image" accept="image/*">
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+
+                <div id="image-preview-container" class="image-preview-container">
+                    <span id="image-preview-empty">Aucune image</span>
+                    <img id="image-preview" alt="Aperçu du produit">
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    <button type="button" id="btn-annuler" class="btn btn-secondary">Nettoyer</button>
+                    <button type="submit" class="btn btn-primary">
+                        Enregistrer
+                    </button>
+
+                    <button type="button" id="btn-annuler" class="btn btn-secondary">
+                        Nettoyer
+                    </button>
                 </div>
+
                 <div id="message-succes" class="message-succes">
                     ✓ Produit enregistré
                 </div>
             </form>
         </section>
 
-        <section class="liste-section">
-            <h2>Produits</h2>
+        <section class="card">
+            <div class="liste-header">
+                <h2>Produits</h2>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code-barres</th>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="produits-body">
-                </tbody>
-            </table>
+                <button type="button" id="btn-imprimer" class="btn btn-secondary">
+                    Imprimer
+                </button>
+            </div>
+
+            <div id="produit-table" class="grille"></div>
         </section>
 
-    </main>
+    </div>
 
+    <script src="../lib/tabulator/tabulator.min.js"></script>
     <script src="../js/produits.js"></script>
 </body>
 </html>

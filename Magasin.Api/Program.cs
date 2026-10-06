@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Magasin.Api.Database;
 using Magasin.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddDbContext<MagasinDbContext>(options =>
 builder.Services.AddScoped<ProduitService>();
 builder.Services.AddScoped<VenteService>();
 builder.Services.AddScoped<StockService>();
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -49,6 +51,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Images")),
+    RequestPath = "/Images"
+});
 app.MapControllers();
 
 // EF Core : création automatique de la base + tables

@@ -3,6 +3,7 @@ using System;
 using Magasin.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Magasin.Api.Migrations
 {
     [DbContext(typeof(MagasinDbContext))]
-    partial class MagasinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005085224_AjoutDescriptionImageProduit")]
+    partial class AjoutDescriptionImageProduit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,27 +27,6 @@ namespace Magasin.Api.Migrations
 
             modelBuilder.HasSequence("CodeBarreSequence")
                 .StartsAt(200000000001L);
-
-            modelBuilder.Entity("Magasin.Api.Database.Entities.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Images");
-                });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.LignePaiement", b =>
                 {
@@ -121,8 +103,8 @@ namespace Magasin.Api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("text");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -135,8 +117,6 @@ namespace Magasin.Api.Migrations
 
                     b.HasIndex("CodeBarre")
                         .IsUnique();
-
-                    b.HasIndex("ImageId");
 
                     b.ToTable("Produits");
                 });
@@ -210,15 +190,6 @@ namespace Magasin.Api.Migrations
                     b.Navigation("Produit");
 
                     b.Navigation("Vente");
-                });
-
-            modelBuilder.Entity("Magasin.Api.Database.Entities.Produit", b =>
-                {
-                    b.HasOne("Magasin.Api.Database.Entities.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
-                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.Stock", b =>

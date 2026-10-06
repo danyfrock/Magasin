@@ -1,7 +1,6 @@
 using Magasin.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Magasin.Api.Dtos;
-using Magasin.Api.Database.Entities;
 
 namespace Magasin.Api.Controllers;
 
@@ -32,7 +31,7 @@ public class ProduitController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(ProduitLightDto produit)
     {
-        Produit created = await produitService.Create(produit);
+        ProduitDto created = await produitService.Create(produit);
 
         return Ok(created);
     }
@@ -40,7 +39,7 @@ public class ProduitController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> Update(ProduitDto produit)
     {
-        Produit? updated = await produitService.Update(produit);
+        ProduitDto? updated = await produitService.Update(produit);
 
         if (updated == null)
         {
@@ -53,7 +52,7 @@ public class ProduitController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        IEnumerable<Produit> produits = await produitService.GetAll();
+        IEnumerable<ProduitDto> produits = await produitService.GetAll();
 
         return Ok(produits);
     }

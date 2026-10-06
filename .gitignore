@@ -493,3 +493,7 @@ Installer/dernier-log.txt
 **/publish/
 **/bin/
 **/obj/
+
+# Images
+Images/*
+!Images/.gitkeep

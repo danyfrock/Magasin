@@ -3,6 +3,7 @@ using System;
 using Magasin.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Magasin.Api.Migrations
 {
     [DbContext(typeof(MagasinDbContext))]
-    partial class MagasinDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261006114553_AjoutImageProduit")]
+    partial class AjoutImageProduit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,9 +120,6 @@ namespace Magasin.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValueSql("nextval('\"CodeBarreSequence\"')::text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
 
                     b.Property<int?>("ImageId")
                         .HasColumnType("integer");

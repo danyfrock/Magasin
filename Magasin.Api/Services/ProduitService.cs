@@ -2,52 +2,56 @@ using Magasin.Api.Database;
 using Magasin.Api.Database.Entities;
 using Magasin.Api.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Magasin.Api.Mappings;
 
 namespace Magasin.Api.Services;
 
-public class ProduitService
+public class ProduitService : ConteneurImageService<Produit>
 {
     private readonly MagasinDbContext dbContext;
     private readonly StockService stockService;
 
-    public ProduitService(MagasinDbContext dbContext, StockService stockService)
+
+    public ProduitService(MagasinDbContext dbContext, StockService stockService, ImageService imageService) : base(imageService)
     {
         this.dbContext = dbContext;
         this.stockService = stockService;
     }
 
-    public async Task<Produit?> GetByCodeBarre(string codeBarre)
-    {
-        return await dbContext.Produits
-            .FirstOrDefaultAsync(p => p.CodeBarre == codeBarre);
-    }
+public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
+{
+    Produit? produit = await dbContext.Produits
+        .Include(p => p.Image)
+        .FirstOrDefaultAsync(p => p.CodeBarre == codeBarre);
 
-    public async Task<List<Produit>> GetAll()
+    return produit?.ToDto();
+}
+
+    public async Task<List<ProduitDto>> GetAll()
     {
         return await dbContext.Produits
+            .Include(p => p.Image)
             .OrderBy(p => p.Nom)
+            .Select(p => p.ToDto())
             .ToListAsync();
     }
 
     // CREATE : Crée le produit + son stock (quantité à 0)
-    public async Task<Produit> Create(ProduitLightDto produit)
+    public async Task<ProduitDto> Create(ProduitLightDto produit)
     {
-        Produit entity = new Produit
-        {
-            Nom = produit.Nom,
-            Prix = produit.Prix
-        };
+        Produit entity = produit.ToEntity();
 
         dbContext.Produits.Add(entity);
+        await TraiterImage(entity, produit.Image);
         await dbContext.SaveChangesAsync(); // génère le CodeBarre
 
         // Création automatique du stock
         await stockService.Create(new StockDto(entity.CodeBarre, 1));
 
-        return entity;
+        return entity.ToDto();
     }
 
-    public async Task<Produit?> Update(ProduitDto produit)
+    public async Task<ProduitDto?> Update(ProduitDto produit)
     {
         Produit? entity = await dbContext.Produits
             .FindAsync(produit.Id);
@@ -57,13 +61,12 @@ public class ProduitService
             return null;
         }
 
-        entity.CodeBarre = produit.CodeBarre;
-        entity.Nom = produit.Nom;
-        entity.Prix = produit.Prix;
+        produit.UpdateProduit(ref entity);
+        await TraiterImage(entity, produit.Image);
 
         await dbContext.SaveChangesAsync();
 
-        return entity;
+        return entity.ToDto();
     }
 
     // DELETE : Supprime le produit (le stock est supprimé automatiquement grâce au Cascade)
@@ -82,4 +85,10 @@ public class ProduitService
 
         return true;
     }
+
+    protected override void AssignerImage(Produit entity, Image? image)
+    {
+        entity.Image = image;
+    }
+
 }

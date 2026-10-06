@@ -13,6 +13,7 @@ public class MagasinDbContext : DbContext
     public DbSet<Produit> Produits { get; set; }
     public DbSet<Vente> Ventes { get; set; }
     public DbSet<Stock> Stocks { get; set; }
+    public DbSet<Image> Images { get; set; }
 
     public DbSet<LigneVente> LignesVente { get; set; }
 

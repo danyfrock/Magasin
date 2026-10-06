@@ -11,4 +11,6 @@ public class Produit
     public string CodeBarre { get; set; } = null!;
     public required string Nom { get; set; }
     public int Prix { get; set; }
+    public string? Description { get; set; }
+    public Image? Image { get; set; } = null;
 }
