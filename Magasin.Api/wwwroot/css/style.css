@@ -377,3 +377,27 @@ td button:hover {
     height: 100px;
     object-fit: contain;
 }
+
+.action-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-modifier {
+    background: #3b82f6;
+}
+
+.btn-supprimer {
+    background: #ef4444;
+}

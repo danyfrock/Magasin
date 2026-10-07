@@ -52,8 +52,7 @@ if (app.Environment.IsDevelopment())
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// IMAGES
-var imagesPath = Path.Combine(AppContext.BaseDirectory, "Images");
+var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "Images");
 Directory.CreateDirectory(imagesPath);
 app.UseStaticFiles(new StaticFileOptions
 {

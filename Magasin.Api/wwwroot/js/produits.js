@@ -78,6 +78,7 @@ function initialiserGrille() {
             },
             {
                 title: "Actions",
+                width: 220,
                 formatter: function () {
                     return `
                         <button class="action-btn btn-modifier">Modifier</button>
