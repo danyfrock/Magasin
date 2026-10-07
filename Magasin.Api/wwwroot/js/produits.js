@@ -323,8 +323,21 @@ async function construireImage(produitExistant) {
 }
 
 // Enregistre ou modifie un produit.
+// Enregistre ou modifie un produit.
 async function enregistrerProduit(event) {
     event.preventDefault();
+
+    const boutonSubmit = document.querySelector('#produit-form button[type="submit"]');
+    
+    // Empêche les clics multiples
+    if (boutonSubmit.disabled) {
+        return;
+    }
+
+    // Feedback visuel
+    boutonSubmit.disabled = true;
+    const texteOriginal = boutonSubmit.textContent;
+    boutonSubmit.textContent = "Enregistrement…";
 
     const id = document.getElementById("produit-id").value;
     const codeBarre = document.getElementById("code-barre").value.trim();
@@ -393,10 +406,16 @@ async function enregistrerProduit(event) {
         chargerProduitDansFormulaire(produit);
         await chargerProduits();
 
+        nettoyerFormulaire();
         afficherSucces();
     }
     catch (error) {
         afficherErreur("Impossible de contacter le serveur.");
+    }
+    finally {
+        // Toujours restaurer le bouton
+        boutonSubmit.disabled = false;
+        boutonSubmit.textContent = texteOriginal;
     }
 }
 
@@ -448,10 +467,6 @@ function afficherSucces() {
 
     message.textContent = "✓ Produit enregistré";
     message.classList.add("visible");
-
-    setTimeout(function () {
-        message.classList.remove("visible");
-    }, 2500);
 }
 
 // Masque le message de succès.

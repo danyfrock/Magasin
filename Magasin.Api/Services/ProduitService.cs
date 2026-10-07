@@ -41,8 +41,8 @@ public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
     {
         Produit entity = produit.ToEntity();
 
-        dbContext.Produits.Add(entity);
         await TraiterImage(entity, produit.Image);
+        dbContext.Produits.Add(entity);
         await dbContext.SaveChangesAsync(); // génère le CodeBarre
 
         // Création automatique du stock
@@ -61,8 +61,8 @@ public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
             return null;
         }
 
-        produit.UpdateProduit(ref entity);
         await TraiterImage(entity, produit.Image);
+        produit.UpdateProduit(ref entity);
 
         await dbContext.SaveChangesAsync();
 

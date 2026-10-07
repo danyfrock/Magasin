@@ -18,7 +18,6 @@ public class ImageService
     public async Task<Image?> GetById(int id)
     {
         return await dbContext.Images
-            .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
@@ -34,7 +33,6 @@ public class ImageService
     private async Task<List<Image>> GetAllEntity()
     {
         return await dbContext.Images
-            .AsNoTracking()
             .OrderBy(i => i.Id)
             .ToListAsync();
     }
