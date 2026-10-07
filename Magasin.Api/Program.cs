@@ -51,12 +51,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+// IMAGES
+var imagesPath = Path.Combine(AppContext.BaseDirectory, "Images");
+Directory.CreateDirectory(imagesPath);
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "Images")),
+    FileProvider = new PhysicalFileProvider(imagesPath),
     RequestPath = "/Images"
 });
+
 app.MapControllers();
 
 // EF Core : création automatique de la base + tables

@@ -10,6 +10,7 @@ namespace Magasin.Api.Dtos
         int ProduitId,
         string ProduitNom,
         string CodeBarre,
-        int Quantite
+        int Quantite,
+        string? ScannableCodebarre
     );
 }

@@ -39,6 +39,25 @@ function initialiserGrille() {
                 sorter: "string"
             },
             {
+                title: "Code-barres scannable",
+                field: "scannableCodebarre",
+                formatter: function (cell) {
+                    const base64 = cell.getValue();
+            
+                    if (!base64) {
+                        return "";
+                    }
+            
+                    // Affiche l'image du code-barres
+                    return `<img src="data:image/png;base64,${base64}" 
+                                 alt="Code-barres" 
+                                 style="height: 50px; max-width: 180px;">`;
+                },
+                hozAlign: "center",
+                headerSort: false,
+                width: 200
+            },
+            {
                 title: "Nom",
                 field: "nom",
                 headerFilter: "input",

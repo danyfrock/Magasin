@@ -1,6 +1,7 @@
 using Magasin.Api.Database;
 using Magasin.Api.Database.Entities;
 using Magasin.Api.Dtos;
+using Magasin.Api.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace Magasin.Api.Services;
@@ -17,33 +18,58 @@ public class StockService
     // GET : Récupère le stock d'un produit par son code-barres
     public async Task<StockResponseDto?> GetByCodeBarre(string codeBarre)
     {
-        return await dbContext.Stocks
+        var stock = await dbContext.Stocks
             .AsNoTracking()
             .Where(s => s.Produit.CodeBarre == codeBarre)
-            .Select(s => new StockResponseDto(
+            .Select(s => new
+            {
                 s.Id,
                 s.IdProduit,
-                s.Produit.Nom,
-                s.Produit.CodeBarre,
+                ProduitNom = s.Produit.Nom,
+                CodeBarre = s.Produit.CodeBarre,
                 s.Quantite
-            ))
+            })
             .FirstOrDefaultAsync();
+
+        if (stock is null)
+            return null;
+
+        // Génère le code-barres après la requête (SkiaSharp non traduisible en SQL)
+        return new StockResponseDto(
+            stock.Id,
+            stock.IdProduit,
+            stock.ProduitNom,
+            stock.CodeBarre,
+            stock.Quantite,
+            ProduitMapping.GenererCodeBarre(stock.CodeBarre)
+        );
     }
 
     // GET : Récupère tous les stocks (triés par nom de produit)
     public async Task<List<StockResponseDto>> GetAll()
     {
-        return await dbContext.Stocks
+        var stocks = await dbContext.Stocks
             .AsNoTracking()
             .OrderBy(s => s.Produit.Nom)
-            .Select(s => new StockResponseDto(
+            .Select(s => new
+            {
                 s.Id,
                 s.IdProduit,
-                s.Produit.Nom,
-                s.Produit.CodeBarre,
+                ProduitNom = s.Produit.Nom,
+                CodeBarre = s.Produit.CodeBarre,
                 s.Quantite
-            ))
+            })
             .ToListAsync();
+
+        // Génère les codes-barres après la requête
+        return stocks.Select(s => new StockResponseDto(
+            s.Id,
+            s.IdProduit,
+            s.ProduitNom,
+            s.CodeBarre,
+            s.Quantite,
+            ProduitMapping.GenererCodeBarre(s.CodeBarre)
+        )).ToList();
     }
 
     // CREATE : Crée un stock pour un produit qui n'en a pas encore
@@ -76,7 +102,8 @@ public class StockService
             stock.IdProduit,
             produit.Nom,
             produit.CodeBarre,
-            stock.Quantite
+            stock.Quantite,
+            ProduitMapping.GenererCodeBarre(produit.CodeBarre)
         );
     }
 
@@ -98,7 +125,8 @@ public class StockService
             stock.IdProduit,
             stock.Produit.Nom,
             stock.Produit.CodeBarre,
-            stock.Quantite
+            stock.Quantite,
+            ProduitMapping.GenererCodeBarre(stock.Produit.CodeBarre)
         );
     }
 }
