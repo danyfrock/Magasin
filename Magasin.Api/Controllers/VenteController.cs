@@ -1,10 +1,12 @@
 using Magasin.Api.Database.Entities;
 using Magasin.Api.Dtos;
 using Magasin.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Magasin.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/ventes")]
 public class VenteController : ControllerBase

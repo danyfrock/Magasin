@@ -19,6 +19,8 @@ public class MagasinDbContext : DbContext
 
     public DbSet<LignePaiement> LignesPaiement { get; set; }
 
+    public DbSet<Utilisateur> Utilisateurs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasSequence<long>("CodeBarreSequence")
@@ -41,6 +43,9 @@ public class MagasinDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Stock>()
             .HasIndex(s => s.IdProduit)
+            .IsUnique();
+        modelBuilder.Entity<Utilisateur>()
+            .HasIndex(u => u.Username)
             .IsUnique();
     }
 }

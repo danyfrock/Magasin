@@ -1,12 +1,13 @@
+// --- État global du stock ---
 let stockTable = null;
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     initialiserGrille();
     initialiserFormulaire();
     chargerStocks();
 });
 
-// Initialise la grille des stocks.
+// --- Grille (Tabulator) ---
 function initialiserGrille() {
     stockTable = new Tabulator("#stock-table", {
         layout: "fitColumns",
@@ -14,7 +15,6 @@ function initialiserGrille() {
         paginationSize: 15,
         paginationSizeSelector: [10, 15, 25, 50],
         placeholder: "Aucun stock",
-
         columns: [
             {
                 title: "Produit",
@@ -31,17 +31,10 @@ function initialiserGrille() {
             {
                 title: "Code-barres scannable",
                 field: "scannableCodebarre",
-                formatter: function (cell) {
+                formatter: (cell) => {
                     const base64 = cell.getValue();
-            
-                    if (!base64) {
-                        return "";
-                    }
-            
-                    // Affiche l'image du code-barres
-                    return `<img src="data:image/png;base64,${base64}" 
-                                 alt="Code-barres" 
-                                 style="height: 50px; max-width: 180px;">`;
+                    if (!base64) return "";
+                    return `<img src="data:image/png;base64,${base64}" alt="Code-barres" style="height: 50px; max-width: 180px;">`;
                 },
                 hozAlign: "center",
                 headerSort: false,
@@ -57,12 +50,10 @@ function initialiserGrille() {
         ]
     });
 
-    document
-        .getElementById("btn-imprimer")
-        .addEventListener("click", imprimerStocks);
+    document.getElementById("btn-imprimer").addEventListener("click", () => window.print());
 }
 
-// Initialise les événements du formulaire.
+// --- Formulaire & Événements ---
 function initialiserFormulaire() {
     const codeBarre = document.getElementById("code-barre");
     const quantite = document.getElementById("quantite");
@@ -76,26 +67,17 @@ function initialiserFormulaire() {
     boutonAnnuler.addEventListener("click", nettoyerFormulaire);
 }
 
-// Charge tous les stocks depuis l'API.
+// --- Chargement des données ---
 async function chargerStocks() {
     try {
-        const response = await fetch("/api/stocks");
-
-        if (!response.ok) {
-            afficherErreur("Impossible de charger les stocks.");
-            return;
-        }
-
-        const stocks = await response.json();
-
+        const stocks = await apiCall("/api/stocks");
         stockTable.setData(stocks);
-    }
-    catch (error) {
-        afficherErreur("Impossible de contacter le serveur.");
+    } catch (error) {
+        afficherErreur("Impossible de charger les stocks.");
     }
 }
 
-// Vérifie que le code-barres correspond à un stock existant.
+// --- Vérification interactive du formulaire ---
 async function verifierFormulaire() {
     const codeBarre = document.getElementById("code-barre").value.trim();
     const quantite = document.getElementById("quantite").value;
@@ -103,98 +85,65 @@ async function verifierFormulaire() {
 
     boutonValider.disabled = true;
 
-    if (codeBarre === "" || quantite === "") {
-        return;
-    }
-
-    if (!Number.isInteger(Number(quantite))) {
+    if (codeBarre === "" || quantite === "" || !Number.isInteger(Number(quantite))) {
         return;
     }
 
     try {
-        const response = await fetch(
-            "/api/stocks/codebarre/" + encodeURIComponent(codeBarre)
-        );
-
-        boutonValider.disabled = !response.ok;
-    }
-    catch (error) {
+        await apiCall(`/api/stocks/codebarre/${encodeURIComponent(codeBarre)}`);
+        boutonValider.disabled = false;
+    } catch (error) {
         boutonValider.disabled = true;
     }
 }
 
-// Met à jour la quantité du stock.
+// --- Mise à jour du stock ---
 async function mettreAJourStock(event) {
     event.preventDefault();
 
     const codeBarre = document.getElementById("code-barre").value.trim();
     const quantite = Number(document.getElementById("quantite").value);
-
-    if (codeBarre === "" || !Number.isInteger(quantite)) {
-        return;
-    }
-
     const boutonValider = document.getElementById("btn-valider");
+
+    if (codeBarre === "" || !Number.isInteger(quantite)) return;
+
     boutonValider.disabled = true;
 
     try {
-        const response = await fetch("/api/stocks", {
+        await apiCall("/api/stocks", {
             method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                codeBarre: codeBarre,
-                quantite: quantite
-            })
+            body: JSON.stringify({ codeBarre, quantite })
         });
-
-        if (response.status === 404) {
-            afficherErreur("Aucun stock trouvé pour ce code-barres.");
-            boutonValider.disabled = false;
-            return;
-        }
-
-        if (!response.ok) {
-            afficherErreur("Impossible de mettre à jour le stock.");
-            boutonValider.disabled = false;
-            return;
-        }
 
         afficherSucces();
         nettoyerFormulaire();
         await chargerStocks();
-    }
-    catch (error) {
-        afficherErreur("Impossible de contacter le serveur.");
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            afficherErreur("Aucun stock trouvé pour ce code-barres.");
+        } else {
+            afficherErreur("Impossible de mettre à jour le stock.");
+        }
         boutonValider.disabled = false;
     }
 }
 
-// Réinitialise le formulaire.
+// --- Utilitaires visuels et de réinitialisation ---
 function nettoyerFormulaire() {
     document.getElementById("stock-form").reset();
     document.getElementById("btn-valider").disabled = true;
 }
 
-// Affiche le message de succès.
 function afficherSucces() {
     const message = document.getElementById("message-succes");
-
     message.textContent = "✓ Stock mis à jour";
     message.classList.add("visible");
 
-    setTimeout(function () {
+    setTimeout(() => {
         message.classList.remove("visible");
     }, 2500);
 }
 
-// Affiche un message d'erreur.
 function afficherErreur(messageTexte) {
     alert(messageTexte);
-}
-
-// Imprime les stocks actuellement affichés.
-function imprimerStocks() {
-    window.print();
 }

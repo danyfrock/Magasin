@@ -1,13 +1,14 @@
+// --- État global du module ---
 let produitTable = null;
 let imageSelectionnee = null;
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     initialiserGrille();
     initialiserFormulaire();
     chargerProduits();
 });
 
-// Initialise la grille des produits.
+// --- Grille (Tabulator) ---
 function initialiserGrille() {
     produitTable = new Tabulator("#produit-table", {
         layout: "fitColumns",
@@ -15,19 +16,14 @@ function initialiserGrille() {
         paginationSize: 15,
         paginationSizeSelector: [10, 15, 25, 50],
         placeholder: "Aucun produit",
-
         columns: [
             {
                 title: "Image",
                 field: "image",
-                formatter: function (cell) {
-                    const image = cell.getValue();
-
-                    if (!image || !image.imageResponse) {
-                        return "";
-                    }
-
-                    return `<img src="/${image.imageResponse.imagePath}" class="produit-image" alt="Produit">`;
+                formatter: (cell) => {
+                    const img = cell.getValue();
+                    if (!img?.imageResponse) return "";
+                    return `<img src="/${img.imageResponse.imagePath}" class="produit-image" alt="Produit">`;
                 },
                 hozAlign: "center",
                 headerSort: false
@@ -41,17 +37,10 @@ function initialiserGrille() {
             {
                 title: "Code-barres scannable",
                 field: "scannableCodebarre",
-                formatter: function (cell) {
+                formatter: (cell) => {
                     const base64 = cell.getValue();
-            
-                    if (!base64) {
-                        return "";
-                    }
-            
-                    // Affiche l'image du code-barres
-                    return `<img src="data:image/png;base64,${base64}" 
-                                 alt="Code-barres" 
-                                 style="height: 50px; max-width: 180px;">`;
+                    if (!base64) return "";
+                    return `<img src="data:image/png;base64,${base64}" alt="Code-barres" style="height: 50px; max-width: 180px;">`;
                 },
                 hozAlign: "center",
                 headerSort: false,
@@ -79,22 +68,19 @@ function initialiserGrille() {
             {
                 title: "Actions",
                 width: 220,
-                formatter: function () {
-                    return `
-                        <button class="action-btn btn-modifier">Modifier</button>
-                        <button class="action-btn btn-supprimer">Supprimer</button>
-                    `;
-                },
+                formatter: () => `
+                    <button class="action-btn btn-modifier">Modifier</button>
+                    <button class="action-btn btn-supprimer">Supprimer</button>
+                `,
                 hozAlign: "center",
                 headerSort: false,
-                cellClick: function (event, cell) {
+                cellClick: (event, cell) => {
                     const produit = cell.getRow().getData();
                     const bouton = event.target;
 
                     if (bouton.classList.contains("btn-modifier")) {
                         chargerProduitDansFormulaire(produit);
                     }
-
                     if (bouton.classList.contains("btn-supprimer")) {
                         supprimerProduit(produit.id);
                     }
@@ -103,115 +89,78 @@ function initialiserGrille() {
         ]
     });
 
-    document
-        .getElementById("btn-imprimer")
-        .addEventListener("click", imprimerProduits);
+    document.getElementById("btn-imprimer").addEventListener("click", () => window.print());
 }
 
-// Initialise les événements du formulaire.
+// --- Formulaire & Modale ---
 function initialiserFormulaire() {
     const formulaire = document.getElementById("produit-form");
     const boutonAnnuler = document.getElementById("btn-annuler");
     const boutonAjouterImage = document.getElementById("btn-ajouter-image");
-    const image = document.getElementById("image");
+    const champImage = document.getElementById("image");
 
     formulaire.addEventListener("submit", enregistrerProduit);
     boutonAnnuler.addEventListener("click", nettoyerFormulaire);
-    boutonAjouterImage.addEventListener("click", function () {
-        image.click();
-    });
+    boutonAjouterImage.addEventListener("click", () => champImage.click());
+    champImage.addEventListener("change", afficherNouvelleImage);
 
-    image.addEventListener("change", afficherNouvelleImage);
-
-    // MODALE
-    // OUVRIR
+    // Gestion de la modale d'images
     const boutonChoisirImage = document.getElementById("btn-choisir-image");
     const modalImages = document.getElementById("modal-images");
-    boutonChoisirImage.addEventListener("click", function () {
-        chargerImages();
-        modalImages.classList.add("visible");
-    });
-    // FERMER
     const boutonFermerModal = document.getElementById("btn-fermer-modal");
-    boutonFermerModal.addEventListener("click", function () {
+
+    boutonChoisirImage.addEventListener("click", async () => {
+        await chargerImages(modalImages);
+    });
+
+    boutonFermerModal.addEventListener("click", () => {
         modalImages.classList.remove("visible");
     });
 }
 
-// Charge les images existantes depuis l'API.
-async function chargerImages() {
-    const response = await fetch("/api/image");
+// --- Chargement des données ---
+async function chargerImages(modalImages) {
+    try {
+        const images = await apiCall("/api/image");
+        const liste = document.getElementById("liste-images");
 
-    if (!response.ok) {
-        afficherErreur("Impossible de charger les images.");
-        return;
-    }
+        // Optimisation : génération du HTML en une seule fois
+        liste.innerHTML = images.map(image => {
+            const nomFichier = image.imagePath.split("\\").pop();
+            return `
+                <div class="image-selection" data-image-id="${image.id}">
+                    <img src="/Images/${nomFichier}" alt="Image">
+                </div>
+            `;
+        }).join('');
 
-    const images = await response.json();
+        // Attachement des écouteurs sur les éléments générés
+        document.querySelectorAll(".image-selection").forEach(element => {
+            element.addEventListener("click", () => {
+                const imageId = Number(element.dataset.imageId);
+                imageSelectionnee = images.find(img => img.id === imageId);
 
-    const liste = document.getElementById("liste-images");
-
-    // Vide la liste avant de la remplir.
-    liste.innerHTML = "";
-
-    // Ajoute chaque image dans la modale.
-    images.forEach(function (image) {
-        const nomFichier = image.imagePath.split("\\").pop();
-
-        liste.innerHTML += `
-            <div class="image-selection" data-image-id="${image.id}">
-                <img src="/Images/${nomFichier}" alt="Image">
-            </div>
-        `;
-    });
-
-    // Récupère toutes les images affichées.
-    const imagesSelection = document.querySelectorAll(".image-selection");
-
-    // Permet de sélectionner une image au clic.
-    imagesSelection.forEach(function (element) {
-        element.addEventListener("click", function () {
-            const imageId = Number(element.dataset.imageId);
-
-            // Retrouve l'image sélectionnée dans la liste.
-            imageSelectionnee = images.find(function (image) {
-                return image.id === imageId;
+                afficherImageExistante({ imageResponse: imageSelectionnee, imageData: null });
+                modalImages.classList.remove("visible");
             });
-
-            console.log("Image sélectionnée :", imageSelectionnee);
-
-            // Affiche l'image sélectionnée dans le formulaire.
-            afficherImageExistante({
-                imageResponse: imageSelectionnee,
-                imageData: null
-            });
-
-            // Ferme la modale.
-            modalImages.classList.remove("visible");
         });
-    });
+
+        modalImages.classList.add("visible");
+    } catch (error) {
+        afficherErreur("Impossible de charger les images.");
+    }
 }
 
-// Charge tous les produits depuis l'API.
 async function chargerProduits() {
     try {
-        const response = await fetch("/api/produits");
-
-        if (!response.ok) {
-            afficherErreur("Impossible de charger les produits.");
-            return;
-        }
-
-        const produits = await response.json();
-
+        const produits = await apiCall("/api/produits");
         produitTable.setData(produits);
-    }
-    catch (error) {
+    } catch (error) {
         afficherErreur("Impossible de contacter le serveur.");
     }
 }
 
-// Charge un produit dans le formulaire.
+// --- Gestion des images du formulaire ---
 function chargerProduitDansFormulaire(produit) {
     imageSelectionnee = null;
     document.getElementById("produit-id").value = produit.id;
@@ -221,17 +170,15 @@ function chargerProduitDansFormulaire(produit) {
     document.getElementById("description").value = produit.description || "";
 
     afficherImageExistante(produit.image);
-
     masquerSucces();
 }
 
-// Affiche l'image existante du produit.
 function afficherImageExistante(imageSwitch) {
     const container = document.getElementById("image-preview-container");
     const image = document.getElementById("image-preview");
     const texte = document.getElementById("image-preview-empty");
 
-    if (!imageSwitch || !imageSwitch.imageResponse) {
+    if (!imageSwitch?.imageResponse) {
         container.classList.remove("visible");
         image.removeAttribute("src");
         texte.style.display = "block";
@@ -244,52 +191,33 @@ function afficherImageExistante(imageSwitch) {
     container.classList.add("visible");
 }
 
-// Affiche l'image nouvellement sélectionnée.
 function afficherNouvelleImage() {
-    // Une nouvelle image remplace une éventuelle sélection existante.
     imageSelectionnee = null;
-
     const fichier = document.getElementById("image").files[0];
-
-    if (!fichier) {
-        return;
-    }
-
-    const url = URL.createObjectURL(fichier);
+    if (!fichier) return;
 
     const container = document.getElementById("image-preview-container");
     const image = document.getElementById("image-preview");
     const texte = document.getElementById("image-preview-empty");
 
-    image.src = url;
+    image.src = URL.createObjectURL(fichier);
     image.style.display = "block";
     texte.style.display = "none";
     container.classList.add("visible");
 }
 
-// Convertit un fichier en Base64.
 function fichierVersBase64(fichier) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         const lecteur = new FileReader();
-
-        lecteur.onload = function () {
-            const resultat = lecteur.result;
-            const base64 = resultat.split(",")[1];
-
-            resolve(base64);
-        };
-
+        lecteur.onload = () => resolve(lecteur.result.split(",")[1]);
         lecteur.onerror = reject;
-
         lecteur.readAsDataURL(fichier);
     });
 }
 
-// Construit les données de l'image à envoyer à l'API.
 async function construireImage(produitExistant) {
     const fichier = document.getElementById("image").files[0];
 
-    // Une nouvelle image a été sélectionnée.
     if (fichier) {
         return {
             imageResponse: null,
@@ -300,41 +228,24 @@ async function construireImage(produitExistant) {
         };
     }
 
-    // Une image existante a été sélectionnée.
     if (imageSelectionnee) {
-        return {
-            imageResponse: imageSelectionnee,
-            imageData: null
-        };
+        return { imageResponse: imageSelectionnee, imageData: null };
     }
 
-    // Aucune nouvelle image n'a été sélectionnée.
-    if (produitExistant && produitExistant.image && produitExistant.image.imageResponse) {
-        return {
-            imageResponse: produitExistant.image.imageResponse,
-            imageData: null
-        };
+    if (produitExistant?.image?.imageResponse) {
+        return { imageResponse: produitExistant.image.imageResponse, imageData: null };
     }
 
-    return {
-        imageResponse: null,
-        imageData: null
-    };
+    return { imageResponse: null, imageData: null };
 }
 
-// Enregistre ou modifie un produit.
-// Enregistre ou modifie un produit.
+// --- Enregistrement & Suppression ---
 async function enregistrerProduit(event) {
     event.preventDefault();
 
     const boutonSubmit = document.querySelector('#produit-form button[type="submit"]');
-    
-    // Empêche les clics multiples
-    if (boutonSubmit.disabled) {
-        return;
-    }
+    if (boutonSubmit.disabled) return;
 
-    // Feedback visuel
     boutonSubmit.disabled = true;
     const texteOriginal = boutonSubmit.textContent;
     boutonSubmit.textContent = "Enregistrement…";
@@ -346,104 +257,54 @@ async function enregistrerProduit(event) {
     const description = document.getElementById("description").value.trim();
 
     let produitExistant = null;
-
     if (id !== "") {
-        const produit = produitTable
-            .getRows()
-            .map(function (row) {
-                return row.getData();
-            })
-            .find(function (produit) {
-                return produit.id === Number(id);
-            });
-
-        produitExistant = produit || null;
+        const lignes = produitTable.getRows().map(row => row.getData());
+        produitExistant = lignes.find(p => p.id === Number(id)) || null;
     }
 
     try {
         const image = await construireImage(produitExistant);
-
-        let response;
-
+        const payload = { codeBarre, nom, prix, description: description || null, image };
+        
+        let produit;
         if (id === "") {
-            response = await fetch("/api/produits", {
+            produit = await apiCall("/api/produits", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nom: nom,
-                    prix: prix,
-                    description: description || null,
-                    image: image
-                })
+                body: JSON.stringify(payload)
             });
-        }
-        else {
-            response = await fetch("/api/produits", {
+        } else {
+            payload.id = Number(id);
+            produit = await apiCall("/api/produits", {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    id: Number(id),
-                    codeBarre: codeBarre,
-                    nom: nom,
-                    prix: prix,
-                    description: description || null,
-                    image: image
-                })
+                body: JSON.stringify(payload)
             });
         }
-
-        if (!response.ok) {
-            afficherErreur("Une erreur est survenue.");
-            return;
-        }
-
-        const produit = await response.json();
 
         chargerProduitDansFormulaire(produit);
         await chargerProduits();
-
         nettoyerFormulaire();
         afficherSucces();
-    }
-    catch (error) {
-        afficherErreur("Impossible de contacter le serveur.");
-    }
-    finally {
-        // Toujours restaurer le bouton
+    } catch (error) {
+        afficherErreur("Une erreur est survenue lors de l'enregistrement.");
+    } finally {
         boutonSubmit.disabled = false;
         boutonSubmit.textContent = texteOriginal;
     }
 }
 
-// Supprime un produit.
 async function supprimerProduit(id) {
-    if (!confirm("Voulez-vous vraiment supprimer ce produit ?")) {
-        return;
-    }
+    if (!confirm("Voulez-vous vraiment supprimer ce produit ?")) return;
 
     try {
-        const response = await fetch("/api/produits/" + id, {
-            method: "DELETE"
-        });
-
-        if (!response.ok) {
-            afficherErreur("Impossible de supprimer le produit.");
-            return;
-        }
-
+        await apiCall(`/api/produits/${id}`, { method: "DELETE" });
         nettoyerFormulaire();
         await chargerProduits();
-    }
-    catch (error) {
-        afficherErreur("Impossible de contacter le serveur.");
+    } catch (error) {
+        afficherErreur("Impossible de supprimer le produit.");
     }
 }
 
-// Réinitialise le formulaire.
+// --- Utilitaires visuels ---
 function nettoyerFormulaire() {
     imageSelectionnee = null;
     document.getElementById("produit-form").reset();
@@ -461,27 +322,16 @@ function nettoyerFormulaire() {
     masquerSucces();
 }
 
-// Affiche le message de succès.
 function afficherSucces() {
     const message = document.getElementById("message-succes");
-
     message.textContent = "✓ Produit enregistré";
     message.classList.add("visible");
 }
 
-// Masque le message de succès.
 function masquerSucces() {
-    document
-        .getElementById("message-succes")
-        .classList.remove("visible");
+    document.getElementById("message-succes").classList.remove("visible");
 }
 
-// Affiche une erreur.
 function afficherErreur(messageTexte) {
     alert(messageTexte);
-}
-
-// Imprime les produits.
-function imprimerProduits() {
-    window.print();
 }

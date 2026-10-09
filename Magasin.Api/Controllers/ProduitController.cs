@@ -1,9 +1,11 @@
 using Magasin.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Magasin.Api.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Magasin.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/produits")]
 public class ProduitController : ControllerBase
