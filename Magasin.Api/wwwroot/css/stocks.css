@@ -105,3 +105,68 @@
         gap: 12px;
     }
 }
+
+/* --- Style des étiquettes pour l'impression (Format standard A4 - 21 par page / 63.5 x 38.1mm) --- */
+.print-container {
+    display: none;
+}
+
+@media print {
+    /* Masquer tout le reste de la page */
+    body * {
+        visibility: hidden;
+    }
+
+    .print-container, .print-container * {
+        visibility: visible;
+    }
+
+    .print-container {
+        display: grid;
+        /* 3 colonnes fixes adaptées au format A4 */
+        grid-template-columns: repeat(3, 63.5mm);
+        /* Petits espaces pour coller aux planches prédécoupées standard */
+        gap: 2mm 2.5mm;
+        position: absolute;
+        top: 5mm; /* Marge haute standard d'une planche A4 */
+        left: 7mm; /* Marge gauche standard d'une planche A4 */
+        width: 196mm;
+    }
+
+    .etiquette {
+        width: 63.5mm;
+        height: 38.1mm;
+        box-sizing: border-box;
+        border: 1px dotted #ccc; /* Discret pour aider à la découpe si papier non prédécoupé */
+        padding: 3mm;
+        text-align: center;
+        background: #fff;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+
+    .etiquette-nom {
+        font-size: 11pt;
+        font-weight: bold;
+        line-height: 1.2;
+        max-height: 2.4em; /* Maximum 2 lignes pour le nom */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2; /* Propriété standard pour la compatibilité */
+        -webkit-box-orient: vertical;
+        width: 100%;
+    }
+
+    .etiquette img {
+        height: 18mm; /* Hauteur idéale pour la lecture d'un code-barres */
+        max-width: 55mm;
+        object-fit: contain;
+    }
+}

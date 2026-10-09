@@ -50,7 +50,66 @@ function initialiserGrille() {
         ]
     });
 
-    document.getElementById("btn-imprimer").addEventListener("click", () => window.print());
+    const btnImprimer = document.getElementById("btn-imprimer");
+            if (btnImprimer) {
+                btnImprimer.addEventListener("click", () => {
+                    imprimerEtiquettes();
+                });
+            }
+}
+
+// --- Fonction de génération et d'impression des étiquettes ---
+function imprimerEtiquettes() {
+    if (!stockTable) return;
+    
+    // Récupérer UNIQUEMENT les lignes filtrées du tableau Tabulator (toutes pages confondues)
+    const donneesFiltrees = stockTable.getData("active");
+    const printArea = document.getElementById("print-area");
+    if (!printArea) return;
+
+    // Vider la zone d'impression précédente
+    printArea.innerHTML = "";
+
+    let totalEtiquettes = 0;
+
+    // Parcourir chaque produit issu du filtre
+    donneesFiltrees.forEach(produit => {
+        const quantite = Number(produit.quantite) || 0;
+
+        // ssi n > 0
+        if (quantite > 0) {
+            // Créer n étiquettes pour ce produit
+            for (let i = 0; i < quantite; i++) {
+                totalEtiquettes++;
+
+                const etiquetteDiv = document.createElement("div");
+                etiquetteDiv.className = "etiquette";
+
+                const nomDiv = document.createElement("div");
+                nomDiv.className = "etiquette-nom";
+                nomDiv.textContent = produit.produitNom || "Produit sans nom";
+
+                etiquetteDiv.appendChild(nomDiv);
+
+                if (produit.scannableCodebarre) {
+                    const img = document.createElement("img");
+                    img.src = `data:image/png;base64,${produit.scannableCodebarre}`;
+                    img.alt = produit.codeBarre || "Code-barres";
+                    etiquetteDiv.appendChild(img);
+                }
+
+                printArea.appendChild(etiquetteDiv);
+            }
+        }
+    });
+
+    if (totalEtiquettes === 0) {
+        alert("Aucune étiquette à imprimer pour ce filtre (quantités à 0 ou aucun résultat).");
+        return;
+    }
+
+    // Lancer la fenêtre d'impression du navigateur
+    window.print();
 }
 
 // --- Formulaire & Événements ---

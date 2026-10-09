@@ -53,8 +53,8 @@
             <div class="liste-header">
                 <h2>Stock</h2>
 
-                <button type="button" id="btn-imprimer" class="btn btn-secondary">
-                    Imprimer
+                <button type="button" id="btn-imprimer" class="btn btn-primary">
+                    Imprimer les étiquettes
                 </button>
             </div>
 
@@ -62,6 +62,9 @@
         </section>
 
     </div>
+
+    <!-- Conteneur invisible à l'écran, utilisé uniquement pour l'impression -->
+    <div id="print-area" class="print-container"></div>
 
     <script src="../js/common.js"></script>
     <script src="../lib/tabulator/tabulator.min.js"></script>
