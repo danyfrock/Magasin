@@ -1,0 +1,113 @@
+/* --- Style de la page de Connexion --- */
+
+.login-page {
+    margin: 0;
+    padding: 0;
+    font-family: inherit;
+    background-color: var(--background, #f4f6f9);
+    color: var(--text, #1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-card {
+    background: #ffffff;
+    padding: 35px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border, #e2e8f0);
+}
+
+.login-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text, #1e293b);
+    text-align: center;
+}
+
+.login-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.login-card .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-card label {
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.login-card input {
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--border, #cbd5e1);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--text, #1e293b);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-card input:focus {
+    border-color: var(--primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.error-message {
+    color: #dc2626;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.login-card .btn {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.login-card .btn-primary {
+    background: var(--primary, #2563eb);
+    color: white;
+}
+
+.login-card .btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.login-card .btn-success {
+    background: #16a34a;
+    color: white;
+}
+
+.login-card .btn-success:hover {
+    background: #15803d;
+}
