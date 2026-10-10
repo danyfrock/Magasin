@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs - Magasin</title>
+    <!-- Styles globaux et grilles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grille.css">
+    <link rel="stylesheet" href="../css/utilisateurs.css">
+    <!-- Tabulator CSS local -->
+    <link href="../lib/tabulator/tabulator.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="users-container">
+        <header class="users-header">
+            <h2>Gestion des Utilisateurs</h2>
+        </header>
+        <a href="../index.html" class="back-link">← Retour au menu</a>
+
+        <!-- Formulaire de Création d'un Utilisateur -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem;">Créer un nouvel utilisateur</h3>
+            <form id="create-user-form">
+                <div class="user-form-grid">
+                    <div class="form-group">
+                        <label for="new-username">Nom d'utilisateur</label>
+                        <input type="text" id="new-username" class="form-control" required placeholder="ex: jean.dupont">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">Mot de passe temporaire</label>
+                        <input type="password" id="new-password" class="form-control" required placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-role">Rôle</label>
+                        <select id="new-role" class="form-control" style="height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-family: inherit;">
+                            <option value="Admin">Admin</option>
+                            <option value="Caissier">Caissier</option>
+                            <option value="Magasinier">Magasinier</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 20px;">Créer</button>
+                </div>
+            </form>
+            <div id="create-error" style="color: var(--danger); margin-top: 12px; font-size: 0.9rem;"></div>
+        </div>
+
+        <!-- Tableau Tabulator -->
+        <div id="users-table"></div>
+    </div>
+
+    <!-- Scripts de l'application -->
+    <script src="../js/common.js"></script>
+    <script src="../lib/tabulator/tabulator.min.js"></script>
+    <script type="module" src="../js/utilisateurs.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+</body>
+</html>

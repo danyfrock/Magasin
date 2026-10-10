@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magasin</title>
-    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="css/index.css"> <!-- Attention au chemin selon l'emplacement exact de ton index.css -->
 </head>
 <body>
 
-```
 <div class="app">
 
     <header class="header">
@@ -51,10 +49,19 @@
             </div>
         </a>
 
+        <!-- Nouvel accès : Gestion des utilisateurs (Réservé Admin) -->
+        <a href="pages/utilisateurs.html" class="menu-item">
+            <div class="menu-icon">👤</div>
+            <div>
+                <h2>Utilisateurs</h2>
+                <p>Gérer les comptes et les rôles</p>
+            </div>
+        </a>
+
     </main>
 
 </div>
 
-<script src="../js/auth.js"></script>
+<script type="module" src="../js/auth.js"></script>
 </body>
 </html>

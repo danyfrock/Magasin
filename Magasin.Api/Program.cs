@@ -22,10 +22,7 @@ if (File.Exists(secretPath))
     }
 }
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5143);
-});
+builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://0.0.0.0:5143");
 
 builder.Services.AddOpenApi();
 
@@ -37,6 +34,7 @@ builder.Services.AddScoped<VenteService>();
 builder.Services.AddScoped<StockService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

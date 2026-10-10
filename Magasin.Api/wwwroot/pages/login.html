@@ -40,12 +40,16 @@
                     <label for="new-password">Nouveau mot de passe :</label>
                     <input type="password" id="new-password" required>
                 </div>
+                <div>
+                    <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+                    <input type="password" id="confirm-password" required />
+                </div>
                 <div id="password-error" class="error-message"></div>
                 <button type="submit" class="btn btn-success">Mettre à jour</button>
             </form>
         </div>
     </div>
 
-    <script src="../js/auth.js"></script>
+    <script type="module" src="../js/auth.js"></script>
 </body>
 </html>

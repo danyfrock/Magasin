@@ -1,0 +1,35 @@
+/* =========================================================
+   STYLE - GESTION DES UTILISATEURS
+   ========================================================= */
+
+.users-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.users-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+.user-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 150px auto;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+    .user-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

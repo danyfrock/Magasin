@@ -62,7 +62,7 @@ public class AuthService
             var admin = new Utilisateur
             {
                 Username = "admin",
-                Role = "Admin",
+                Role = Database.Enums.RoleEnum.Admin.ToString(),
                 DoitChangerMotDePasse = true
             };
 

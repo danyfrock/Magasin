@@ -1,20 +1,21 @@
 (function() {
-    // 1. Interception globale de fetch (détecte le 401 Unauthorized)
+    const isLoginPage = window.location.pathname.includes('login.html');
     const originalFetch = window.fetch;
+
+    // 1. Interception globale de fetch (uniquement hors de la page de login)
     window.fetch = async function(...args) {
         const response = await originalFetch(...args);
         
-        // Si l'API renvoie 401 et qu'on n'est pas déjà sur la page de login
-        if (response.status === 401 && !window.location.pathname.includes('login.html')) {
-            window.location.href = '/pages/login.html';
+        if (response.status === 401 && !isLoginPage) {
+            window.location.href = '../pages/login.html';
             throw new Error("Session expirée ou non authentifié.");
         }
         return response;
     };
 
-    // 2. Vérification au chargement de la page (sauf si on est déjà sur login.html)
+    // 2. Vérification au chargement
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.pathname.includes('login.html')) {
+        if (isLoginPage) {
             initialiserPageLogin(originalFetch);
             return;
         }
@@ -23,22 +24,21 @@
         originalFetch('/api/auth/me')
             .then(res => {
                 if (!res.ok) {
-                    window.location.href = '/pages/login.html';
+                    window.location.href = '../pages/login.html';
                 }
             })
             .catch(() => {
-                window.location.href = '/pages/login.html';
+                window.location.href = '../pages/login.html';
             });
     });
 
-    // 3. Logique spécifique à la page login.html
+    // 3. Logique spécifique à la page login.html (le reste ne bouge pas)
     function initialiserPageLogin(fetchFn) {
         const loginForm = document.getElementById('login-form');
         const passwordForm = document.getElementById('password-form');
         const loginCard = document.getElementById('login-card');
         const passwordCard = document.getElementById('password-card');
 
-        // Soumission du formulaire de connexion
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -56,13 +56,11 @@
 
                     if (response.ok) {
                         const data = await response.json();
-
                         if (data.doitChangerMotDePasse) {
                             if (loginCard) loginCard.style.display = 'none';
                             if (passwordCard) passwordCard.style.display = 'block';
                         } else {
-                            // Redirection vers le menu principal à la racine
-                            window.location.href = '/index.html';
+                            window.location.href = '../index.html';
                         }
                     } else {
                         const err = await response.json();
@@ -74,14 +72,19 @@
             });
         }
 
-        // Soumission du changement de mot de passe obligatoire
         if (passwordForm) {
             passwordForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const oldPassword = document.getElementById('old-password').value;
                 const newPassword = document.getElementById('new-password').value;
+                const confirmPasswordInput = document.getElementById('confirm-password').value;
+        
                 const errorDiv = document.getElementById('password-error');
                 errorDiv.textContent = '';
+                if (newPassword !== confirmPasswordInput) {
+                    errorDiv.textContent = "Les nouveaux mots de passe ne correspondent pas.";
+                    return;
+                }
 
                 try {
                     const response = await fetchFn('/api/auth/change-password', {
@@ -92,7 +95,7 @@
 
                     if (response.ok) {
                         alert("Mot de passe mis à jour avec succès ! Veuillez vous reconnecter.");
-                        window.location.href = '/pages/login.html';
+                        window.location.href = '../pages/login.html';
                     } else {
                         const err = await response.json();
                         errorDiv.textContent = err.message || "Erreur lors du changement.";
