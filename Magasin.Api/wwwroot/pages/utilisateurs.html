@@ -19,8 +19,8 @@
         </header>
 
         <!-- Formulaire de Création d'un Utilisateur -->
-        <div class="card" style="margin-bottom: 24px;">
-            <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 1.1rem;">Créer un nouvel utilisateur</h3>
+        <div class="card create-user-card">
+            <h3 class="create-user-title">Créer un nouvel utilisateur</h3>
             <form id="create-user-form">
                 <div class="user-form-grid">
                     <div class="form-group">
@@ -33,16 +33,16 @@
                     </div>
                     <div class="form-group">
                         <label for="new-role">Rôle</label>
-                        <select id="new-role" class="form-control" style="height: 42px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-family: inherit;">
+                        <select id="new-role" class="form-control form-select">
                             <option value="Admin">Admin</option>
                             <option value="Caissier">Caissier</option>
                             <option value="Magasinier">Magasinier</option>
                         </select>
                     </div>
-                    <button id="utilisateur-submit" type="submit" class="btn btn-primary" style="height: 42px; padding: 0 20px;">Créer</button>
+                    <button id="utilisateur-submit" type="submit" class="btn btn-primary btn-create-user">Créer</button>
                 </div>
             </form>
-            <div id="create-error" style="color: var(--danger); margin-top: 12px; font-size: 0.9rem;"></div>
+            <div id="create-error" class="create-error"></div>
         </div>
 
         <!-- Tableau Tabulator -->

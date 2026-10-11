@@ -2,7 +2,7 @@
    STYLE - GESTION DES UTILISATEURS
    ========================================================= */
 
-.users-container {
+   .users-container {
     margin: 40px auto;
     padding: 0 16px;
 }
@@ -20,11 +20,46 @@
     color: var(--text);
 }
 
+/* Carte formulaire de création */
+.create-user-card {
+    margin-bottom: 24px;
+}
+
+.create-user-title {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+}
+
+/* Grille du formulaire */
 .user-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 150px auto;
     gap: 15px;
     align-items: flex-end;
+}
+
+/* Select rôle */
+.form-select {
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+}
+
+/* Bouton Créer */
+.btn-create-user {
+    height: 42px;
+    padding: 0 20px;
+}
+
+/* Message d'erreur de création */
+.create-error {
+    color: var(--danger);
+    margin-top: 12px;
+    font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
