@@ -23,6 +23,13 @@ public class UserService
         return utilisateurs.Select(u => u.ToDto()).ToList();
     }
 
+    public async Task<UserResponseDto?> GetByIdAsync(int id)
+    {
+        var utilisateur = await dbContext.Utilisateurs.FindAsync(id);
+
+        return utilisateur?.ToDto();
+    }
+
     public async Task<UserResponseDto?> CreateAsync(CreateUserDto dto)
     {
         if (await dbContext.Utilisateurs.AnyAsync(u => u.Username == dto.Username))

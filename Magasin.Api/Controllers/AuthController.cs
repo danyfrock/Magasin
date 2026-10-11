@@ -13,10 +13,12 @@ namespace Magasin.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly AuthService authService;
+    private readonly UserService userService;
 
-    public AuthController(AuthService authService)
+    public AuthController(AuthService authService, UserService userService)
     {
         this.authService = authService;
+        this.userService = userService;
     }
 
     /// <summary>
@@ -112,12 +114,13 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        // Optionnel : on peut aller chercher l'état frais en base si besoin, 
-        // ou simplement retourner les claims du cookie.
-        return Ok(new
+        UserResponseDto? utilisateur = await userService.GetByIdAsync(userId);
+
+        if (utilisateur == null)
         {
-            username = User.FindFirstValue(ClaimTypes.Name),
-            role = User.FindFirstValue(ClaimTypes.Role)
-        });
+            return NotFound();
+        }
+
+        return Ok(utilisateur);
     }
 }

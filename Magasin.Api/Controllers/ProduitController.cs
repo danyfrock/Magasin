@@ -2,6 +2,7 @@ using Magasin.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Magasin.Api.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Magasin.Api.Database.Enums;
 
 namespace Magasin.Api.Controllers;
 
@@ -30,6 +31,7 @@ public class ProduitController : ControllerBase
         return Ok(produit);
     }
     
+    [Authorize(Roles = $"{nameof(RoleEnum.Admin)},{nameof(RoleEnum.Magasinier)}")]
     [HttpPost]
     public async Task<IActionResult> Create(ProduitLightDto produit)
     {
@@ -38,6 +40,7 @@ public class ProduitController : ControllerBase
         return Ok(created);
     }
 
+    [Authorize(Roles = $"{nameof(RoleEnum.Admin)},{nameof(RoleEnum.Magasinier)}")]
     [HttpPut]
     public async Task<IActionResult> Update(ProduitDto produit)
     {
@@ -59,6 +62,7 @@ public class ProduitController : ControllerBase
         return Ok(produits);
     }
 
+    [Authorize(Roles = $"{nameof(RoleEnum.Admin)},{nameof(RoleEnum.Magasinier)}")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

@@ -26,13 +26,26 @@ async function chargerBandeau() {
     const titre = conteneur.dataset.title || "Magasin";
     setTitle(titre);
 
-    const responseUtilisateur = await fetch("/api/auth/me");
+    // Appel de notre fonction dédiée
+    gererLienRetour(conteneur);
+    
+    try {
+        const responseUtilisateur = await fetch("/api/auth/me");
 
-    if (responseUtilisateur.ok) {
-        const utilisateur = await responseUtilisateur.json();
+        if (responseUtilisateur.ok) {
+            const utilisateur = await responseUtilisateur.json();
 
-        document.getElementById("connectedUser").textContent =
-            utilisateur.username;
+            const connectedUserEl = document.getElementById("connectedUser");
+            if (connectedUserEl) {
+                // Affichage propre : Nom (Rôle)
+                connectedUserEl.textContent = `${utilisateur.username} (${utilisateur.role})`;
+            }
+
+            // Optionnel : On stocke le rôle en global ou dans sessionStorage si d'autres scripts en ont besoin
+            sessionStorage.setItem("userRole", utilisateur.role);
+        }
+    } catch (error) {
+        console.error("Erreur lors du chargement de l'utilisateur connecté :", error);
     }
 }
 
@@ -43,6 +56,18 @@ async function logout() {
 
     if (response.ok) {
         window.location.href = "/pages/login.html";
+    }
+}
+
+function gererLienRetour(conteneur) {
+    const backLink = conteneur.querySelector(".back-link");
+    if (!backLink) return;
+
+    const cheminActuel = window.location.pathname;
+
+    // Si on est déjà sur l'accueil, on masque le lien de retour
+    if (cheminActuel.endsWith("index.html") || cheminActuel === "/") {
+        backLink.style.display = "none";
     }
 }
 

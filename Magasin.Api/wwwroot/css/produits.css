@@ -11,7 +11,6 @@ body {
 }
 
 .app {
-    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -25,7 +24,7 @@ h2 {
     font-size: 20px;
 }
 
-.form-section,
+/* .form-section,
 .card {
     background: white;
     padding: 25px;
@@ -38,7 +37,7 @@ h2 {
     display: grid;
     grid-template-columns: 220px 1fr 150px 220px;
     gap: 20px;
-}
+} */
 
 .form-group {
     display: flex;

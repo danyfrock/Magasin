@@ -1,3 +1,4 @@
+using Magasin.Api.Database.Enums;
 using Magasin.Api.Dtos;
 using Magasin.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Magasin.Api.Controllers;
 
-[Authorize(Roles = "Admin")] // Réservé aux admins
+[Authorize(Roles = $"{nameof(RoleEnum.Admin)}")]
 [ApiController]
 [Route("api/users")]
 public class UsersController : ControllerBase

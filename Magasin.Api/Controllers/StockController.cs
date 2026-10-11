@@ -1,3 +1,4 @@
+using Magasin.Api.Database.Enums;
 using Magasin.Api.Dtos;
 using Magasin.Api.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -40,6 +41,7 @@ public class StockController : ControllerBase
     }
 
     // PUT : UPDATEBYCODEBARRE - Modifie la quantité du stock d'un produit via son code-barres
+    [Authorize(Roles = $"{nameof(RoleEnum.Admin)},{nameof(RoleEnum.Magasinier)}")]
     [HttpPut]
     public async Task<IActionResult> UpdateByCodeBarre(StockDto stock)
     {

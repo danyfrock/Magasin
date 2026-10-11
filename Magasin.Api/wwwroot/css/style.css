@@ -37,9 +37,17 @@ body {
    LAYOUT
    ========================================================= */
 .app {
-    max-width: 720px;
+    width: 100%;
+    max-width: 1400px; /* S'élargit confortablement sur grand écran tout en gardant une limite max */
     margin: 0 auto;
     padding: 24px 16px 48px;
+}
+
+/* Optionnel : pour les très grands écrans / TV */
+@media (min-width: 1600px) {
+    .app {
+        max-width: 90%; /* Occupe 90% de la grande dalle proprement */
+    }
 }
 
 .header {
