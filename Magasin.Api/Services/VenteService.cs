@@ -124,55 +124,11 @@ public class VenteService
 
     private async Task<Vente?> CreerVente(VenteDto dto)
     {
-        // Produits
         List<Produit> produits = await dbContext.Produits
             .Where(p => dto.Lignes.Select(l => l.ProduitId).Contains(p.Id))
             .ToListAsync();
 
-        // Lignes de vente
-        Vente vente = new Vente
-        {
-            Date = DateTime.UtcNow,
-            Lignes = dto.Lignes.Select(l =>
-            {
-                Produit produit = produits.First(p => p.Id == l.ProduitId);
-
-                return new LigneVente
-                {
-                    ProduitId = produit.Id,
-                    Quantite = l.Quantite,
-                    PrixUnitaire = produit.Prix
-                };
-            }).ToList()
-        };
-
-        vente.Total = vente.Lignes.Sum(l => l.Quantite * l.PrixUnitaire);
-
-        // Paiements
-        int totalPaye = dto.Paiements.Sum(p => p.Montant);
-        int rendu = totalPaye - vente.Total;
-
-        vente.Paiements = dto.Paiements
-            .Select(p => new LignePaiement
-            {
-                Type = "paiement",
-                MoyenPaiement = p.MoyenPaiement,
-                Montant = p.Montant
-            })
-            .ToList();
-
-        // Rendu
-        if (dto.Rendu != 0)
-        {
-            vente.Paiements.Add(new LignePaiement
-            {
-                Type = "rendu",
-                MoyenPaiement = "especes",
-                Montant = -dto.Rendu
-            });
-        }
-
-        return vente;
+        return dto.ToEntity(produits);
     }
 
     /// <summary>
