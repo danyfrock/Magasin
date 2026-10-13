@@ -10,12 +10,18 @@ public class ProduitService : ConteneurImageService<Produit>
 {
     private readonly MagasinDbContext dbContext;
     private readonly StockService stockService;
+    private readonly JournalService journalService;
 
 
-    public ProduitService(MagasinDbContext dbContext, StockService stockService, ImageService imageService) : base(imageService)
+    public ProduitService(
+            MagasinDbContext dbContext,
+            StockService stockService,
+            ImageService imageService,
+            JournalService journalService) : base(imageService)
     {
         this.dbContext = dbContext;
         this.stockService = stockService;
+        this.journalService = journalService;
     }
 
 public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
@@ -45,6 +51,12 @@ public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
         dbContext.Produits.Add(entity);
         await dbContext.SaveChangesAsync(); // génère le CodeBarre
 
+        await journalService.LogAsync(
+            action: "Création",
+            typeEntite: "Produit",
+            entiteId: entity.Id,
+            nouvellesValeurs: $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}");
+
         // Création automatique du stock
         await stockService.Create(new StockDto(entity.CodeBarre, 1));
 
@@ -61,10 +73,17 @@ public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
             return null;
         }
 
+        string anciennesValeurs = $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}";
         await TraiterImage(entity, produit.Image);
         produit.UpdateProduit(ref entity);
 
         await dbContext.SaveChangesAsync();
+        await journalService.LogAsync(
+            "Modification",
+            "Produit",
+            entity.Id,
+            anciennesValeurs,
+            $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}");
 
         return entity.ToDto();
     }
@@ -80,8 +99,15 @@ public async Task<ProduitDto?> GetByCodeBarre(string codeBarre)
             return false;
         }
 
+        string anciennesValeurs = $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}";
         dbContext.Produits.Remove(entity);
         await dbContext.SaveChangesAsync(); // Cascade → supprime aussi le Stock
+
+        await journalService.LogAsync(
+            "Suppression",
+            "Produit",
+            entity.Id,
+            anciennesValeurs);
 
         return true;
     }

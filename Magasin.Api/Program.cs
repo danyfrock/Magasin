@@ -29,6 +29,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<MagasinDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Magasin")));
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ProduitService>();
 builder.Services.AddScoped<VenteService>();
 builder.Services.AddScoped<StockService>();

@@ -28,12 +28,5 @@ namespace Magasin.Api.Controllers
             return Ok(journals);
         }
 
-        // POST : Crée une entrée de journal
-        [HttpPost]
-        public async Task<IActionResult> Create(JournalDto journal)
-        {
-            var created = await journalService.Create(journal);
-            return Ok(created);
-        }
     }
 }

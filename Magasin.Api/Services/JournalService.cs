@@ -3,28 +3,54 @@ using Magasin.Api.Database.Entities;
 using Magasin.Api.Dtos;
 using Magasin.Api.Mappings;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Magasin.Api.Services
 {
     public class JournalService
     {
         private readonly MagasinDbContext dbContext;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public JournalService(
-            MagasinDbContext dbContext)
+            MagasinDbContext dbContext,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.dbContext = dbContext;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Journal> Create(JournalDto journal)
+    public async Task LogAsync(
+        string action,                    // "Création", "Modification", "Suppression", "Vente"...
+        string typeEntite,                // "Produit", "Stock", "Vente", "Utilisateur"...
+        int? entiteId = null,
+        string? anciennesValeurs = null,
+        string? nouvellesValeurs = null)
+    {
+        ClaimsPrincipal? user = httpContextAccessor.HttpContext?.User;
+
+        string? userIdClaim = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        int? utilisateurId = int.TryParse(userIdClaim, out int id)
+            ? id
+            : null;
+
+        Journal journal = new Journal
         {
-            Journal entity = journal.ToEntity();
-            dbContext.JournalModifications.Add(entity);
+            DateUtc = DateTime.UtcNow,
+            UtilisateurId = utilisateurId,
+            NomUtilisateur = user?.Identity?.Name,
+            Action = action,
+            TypeEntite = typeEntite,
+            EntiteId = entiteId,
+            AnciennesValeurs = anciennesValeurs,
+            NouvellesValeurs = nouvellesValeurs,
+            NomPoste = null
+        };
 
-            await dbContext.SaveChangesAsync();
-
-            return entity;
-        }
+        dbContext.JournalModifications.Add(journal);
+        await dbContext.SaveChangesAsync();
+    }
 
         public async Task<List<JournalDto>> GetAll(
             string? typeEntite = null,
