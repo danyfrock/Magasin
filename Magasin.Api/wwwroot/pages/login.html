@@ -20,7 +20,10 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Mot de passe :</label>
-                    <input type="password" id="login-password" required>
+                    <div class="password-container">
+                        <input type="password" id="login-password" required>
+                        <button type="button" class="toggle-password" aria-label="Afficher le mot de passe">👁</button>
+                    </div>
                 </div>
                 <div id="login-error" class="error-message"></div>
                 <button type="submit" class="btn btn-primary">Se connecter</button>
@@ -28,21 +31,30 @@
         </div>
 
         <!-- Formulaire de Changement de Mot de Passe (Premier lancement) -->
-        <div id="password-card" class="login-card" style="display:none;">
+        <div id="password-card" class="login-card is-hidden">
             <h2>Changement requis</h2>
             <p class="login-subtitle">C'est votre première connexion. Veuillez modifier votre mot de passe temporaire.</p>
             <form id="password-form">
                 <div class="form-group">
                     <label for="old-password">Ancien mot de passe :</label>
-                    <input type="password" id="old-password" required>
+                    <div class="password-container">
+                        <input type="password" id="old-password" required>
+                        <button type="button" class="toggle-password" aria-label="Afficher le mot de passe">👁</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="new-password">Nouveau mot de passe :</label>
-                    <input type="password" id="new-password" required>
+                    <div class="password-container">
+                        <input type="password" id="new-password" required>
+                        <button type="button" class="toggle-password" aria-label="Afficher le mot de passe">👁</button>
+                    </div>
                 </div>
-                <div>
-                    <label for="confirm-password">Confirmer le nouveau mot de passe</label>
-                    <input type="password" id="confirm-password" required />
+                <div class="form-group">
+                    <label for="confirm-password">Confirmer le nouveau mot de passe :</label>
+                    <div class="password-container">
+                        <input type="password" id="confirm-password" required>
+                        <button type="button" class="toggle-password" aria-label="Afficher le mot de passe">👁</button>
+                    </div>
                 </div>
                 <div id="password-error" class="error-message"></div>
                 <button type="submit" class="btn btn-success">Mettre à jour</button>

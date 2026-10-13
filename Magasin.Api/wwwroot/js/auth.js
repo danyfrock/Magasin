@@ -2,6 +2,19 @@
     const isLoginPage = window.location.pathname.includes('login.html');
     const originalFetch = window.fetch;
 
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', () => {
+            const input = button.parentElement.querySelector('input');
+            const visible = input.type === 'password';
+    
+            input.type = visible ? 'text' : 'password';
+            button.setAttribute(
+                'aria-label',
+                visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+            );
+        });
+    });
+
     // 1. Interception globale de fetch (uniquement hors de la page de login)
     window.fetch = async function(...args) {
         const response = await originalFetch(...args);

@@ -111,3 +111,40 @@
 .login-card .btn-success:hover {
     background: #15803d;
 }
+
+.is-hidden {
+    display: none;
+}
+
+.is-visible {
+    display: block;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    width: 100%;
+    padding-right: 42px;
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.toggle-password:hover {
+    color: var(--primary, #2563eb);
+}
