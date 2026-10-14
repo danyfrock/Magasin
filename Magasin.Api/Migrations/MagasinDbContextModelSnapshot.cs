@@ -46,6 +46,50 @@ namespace Magasin.Api.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("Magasin.Api.Database.Entities.Journal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AnciennesValeurs")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("EntiteId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("NomPoste")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NomUtilisateur")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NouvellesValeurs")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeEntite")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UtilisateurId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UtilisateurId");
+
+                    b.ToTable("Journaux");
+                });
+
             modelBuilder.Entity("Magasin.Api.Database.Entities.LignePaiement", b =>
                 {
                     b.Property<int>("Id")
@@ -211,6 +255,15 @@ namespace Magasin.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ventes");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.Journal", b =>
+                {
+                    b.HasOne("Magasin.Api.Database.Entities.Utilisateur", "Utilisateur")
+                        .WithMany()
+                        .HasForeignKey("UtilisateurId");
+
+                    b.Navigation("Utilisateur");
                 });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.LignePaiement", b =>

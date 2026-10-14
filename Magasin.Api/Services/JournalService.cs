@@ -48,7 +48,7 @@ namespace Magasin.Api.Services
             NomPoste = null
         };
 
-        dbContext.JournalModifications.Add(journal);
+        dbContext.Journaux.Add(journal);
         await dbContext.SaveChangesAsync();
     }
 
@@ -58,7 +58,7 @@ namespace Magasin.Api.Services
             int? limit = null)
         {
             IQueryable<Journal> query =
-                dbContext.JournalModifications;
+                dbContext.Journaux;
 
             if (!string.IsNullOrWhiteSpace(typeEntite))
             {

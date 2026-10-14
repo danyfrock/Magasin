@@ -20,7 +20,7 @@ public class MagasinDbContext : DbContext
     public DbSet<LignePaiement> LignesPaiement { get; set; }
 
     public DbSet<Utilisateur> Utilisateurs { get; set; }
-    public DbSet<Journal> JournalModifications { get; set; }
+    public DbSet<Journal> Journaux { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
