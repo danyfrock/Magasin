@@ -137,24 +137,41 @@ async function chargerStocks() {
 }
 
 // --- Vérification interactive du formulaire ---
-async function verifierFormulaire() {
-    const codeBarre = document.getElementById("code-barre").value.trim();
-    const quantite = document.getElementById("quantite").value;
-    const boutonValider = document.getElementById("btn-valider");
+    async function verifierFormulaire() {
+        const codeBarre = document.getElementById("code-barre").value.trim();
+        const quantite = document.getElementById("quantite").value;
+        const boutonValider = document.getElementById("btn-valider");
+        const message = document.getElementById("message-validation");
 
-    boutonValider.disabled = true;
-
-    if (codeBarre === "" || quantite === "" || !Number.isInteger(Number(quantite))) {
-        return;
-    }
-
-    try {
-        await apiCall(`/api/stocks/codebarre/${encodeURIComponent(codeBarre)}`);
-        boutonValider.disabled = false;
-    } catch (error) {
         boutonValider.disabled = true;
+        message.textContent = "";
+
+        if (codeBarre === "") {
+            message.textContent = "Saisir un code-barres.";
+            return;
+        }
+
+        if (quantite === "") {
+            message.textContent = "Saisir une quantité.";
+            return;
+        }
+
+        if (!Number.isInteger(Number(quantite))) {
+            message.textContent = "La quantité doit être un nombre entier.";
+            return;
+        }
+
+        try {
+            await apiCall(`/api/stocks/codebarre/${encodeURIComponent(codeBarre)}`);
+
+            boutonValider.disabled = false;
+            message.textContent = "";
+        }
+        catch (error) {
+            boutonValider.disabled = true;
+            message.textContent = "Code-barres introuvable.";
+        }
     }
-}
 
 // --- Mise à jour du stock ---
 async function mettreAJourStock(event) {

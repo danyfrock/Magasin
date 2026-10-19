@@ -9,10 +9,14 @@ namespace Magasin.Api.Services;
 public class StockService
 {
     private readonly MagasinDbContext dbContext;
+    private readonly JournalService journalService;
 
-    public StockService(MagasinDbContext dbContext)
+    public StockService(
+        MagasinDbContext dbContext,
+        JournalService journalService)
     {
         this.dbContext = dbContext;
+        this.journalService = journalService;
     }
 
     // GET : Récupère le stock d'un produit par son code-barres
@@ -91,11 +95,18 @@ public class StockService
         {
             IdProduit = produit.Id,
             Quantite = dto.Quantite,
-            Produit = produit          // obligatoire à cause du "required"
+            Produit = produit // obligatoire à cause du "required"
         };
 
         dbContext.Stocks.Add(stock);
         await dbContext.SaveChangesAsync();
+
+        await journalService.LogAsync(
+            action: "Création",
+            typeEntite: "Stock",
+            entiteId: stock.Id,
+            nouvellesValeurs:
+                $"Produit : {produit.Nom}, Quantité : {stock.Quantite}");
 
         return new StockResponseDto(
             stock.Id,
@@ -117,8 +128,20 @@ public class StockService
         if (stock is null)
             return null; // Stock introuvable
 
+        string anciennesValeurs =
+            $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}";
+
         stock.Quantite = dto.Quantite;
+
         await dbContext.SaveChangesAsync();
+
+        await journalService.LogAsync(
+            action: "Modification",
+            typeEntite: "Stock",
+            entiteId: stock.Id,
+            anciennesValeurs: anciennesValeurs,
+            nouvellesValeurs:
+                $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}");
 
         return new StockResponseDto(
             stock.Id,

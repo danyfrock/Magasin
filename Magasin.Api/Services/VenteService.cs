@@ -9,10 +9,14 @@ namespace Magasin.Api.Services;
 public class VenteService
 {
     private readonly MagasinDbContext dbContext;
+    private readonly JournalService journalService;
 
-    public VenteService(MagasinDbContext dbContext)
+    public VenteService(
+        MagasinDbContext dbContext,
+        JournalService journalService)
     {
         this.dbContext = dbContext;
+        this.journalService = journalService;
     }
 
     public async Task<VenteResponseDto?> GetById(int id)
@@ -52,6 +56,12 @@ public class VenteService
         dbContext.Ventes.Add(vente);
         await dbContext.SaveChangesAsync();
 
+        await journalService.LogAsync(
+            action: "Création",
+            typeEntite: "Vente",
+            entiteId: vente.Id,
+            nouvellesValeurs: $"Total : {vente.Total}");
+
         return vente.ToResponseDto();
     }
 
@@ -73,6 +83,8 @@ public class VenteService
         {
             return null;
         }
+
+        string anciennesValeurs = $"Total : {vente.Total}";
 
         // 1. On remet les quantités de l'ancienne vente
         await AjusterStocks(vente.Lignes, +1);
@@ -98,6 +110,12 @@ public class VenteService
         }
 
         await dbContext.SaveChangesAsync();
+        await journalService.LogAsync(
+            action: "Modification",
+            typeEntite: "Vente",
+            entiteId: vente.Id,
+            anciennesValeurs: anciennesValeurs,
+            nouvellesValeurs: $"Total : {vente.Total}");
 
         return vente.ToResponseDto();
     }
@@ -113,11 +131,18 @@ public class VenteService
             return false;
         }
 
+        string anciennesValeurs = $"Total : {vente.Total}";
         // On remet les quantités en stock
         await AjusterStocks(vente.Lignes, +1);
 
         dbContext.Ventes.Remove(vente);
         await dbContext.SaveChangesAsync();
+
+        await journalService.LogAsync(
+            action: "Suppression",
+            typeEntite: "Vente",
+            entiteId: vente.Id,
+            anciennesValeurs: anciennesValeurs);
 
         return true;
     }
