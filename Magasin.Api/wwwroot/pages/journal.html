@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal</title>
+    <link rel="stylesheet" href="../lib/tabulator/tabulator.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/grille.css">
+</head>
+<body>
+
+    <div class="app">
+
+        <div id="bandeau" data-title="Journal"></div>
+
+        <section class="card">
+            <h2>Journal d'activité</h2>
+            <div id="journal-table" class="grille"></div>
+        </section>
+
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../lib/tabulator/tabulator.min.js"></script>
+    <script src="../js/journal.js"></script>
+    <script src="../js/bandeau.js"></script>
+    <script src="../js/permissions.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+</body>
+</html>
