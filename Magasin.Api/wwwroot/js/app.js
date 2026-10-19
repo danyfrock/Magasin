@@ -66,16 +66,15 @@ function mettreAJourAffichagePaiement() {
 function afficherPanier() {
     const tbody = document.getElementById("panier");
 
-    // Optimisation : génération du tableau en une seule fois
     tbody.innerHTML = panier.map(produit => `
         <tr>
             <td>${produit.nom}</td>
             <td>${produit.prix} F</td>
             <td>
                 <span id="quantite-${produit.id}">${produit.quantite}</span>
-                <button data-id="${produit.id}" data-action="plus">+</button>
-                <button data-id="${produit.id}" data-action="moins">-</button>
-                <button data-id="${produit.id}" data-action="supprimer">Supprimer</button>
+                <button type="button" class="btn-qty" data-id="${produit.id}" data-action="plus">+</button>
+                <button type="button" class="btn-qty" data-id="${produit.id}" data-action="moins">-</button>
+                <button type="button" class="btn-supprimer" data-id="${produit.id}" data-action="supprimer">Supprimer</button>
             </td>
         </tr>
     `).join("");
@@ -177,6 +176,38 @@ document.getElementById("payerMoov").onclick = () => ajouterPaiement("moov");
 
 document.getElementById("validerVente").onclick = validerVente;
 document.getElementById("annulerVente").onclick = annulerVente;
+
+// Gestion des clics sur les boutons du panier (+, -, supprimer)
+// --- Événements ---
+document.getElementById("payerEspeces").onclick = () => ajouterPaiement("especes");
+document.getElementById("payerCarte").onclick = () => ajouterPaiement("carte");
+document.getElementById("payerAirtel").onclick = () => ajouterPaiement("airtel");
+document.getElementById("payerMoov").onclick = () => ajouterPaiement("moov");
+
+document.getElementById("validerVente").onclick = validerVente;
+document.getElementById("annulerVente").onclick = annulerVente;
+
+// Gestion des clics sur les boutons du panier (+, -, supprimer)
+document.getElementById("panier").addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const id = Number(btn.dataset.id);
+    const action = btn.dataset.action;
+    const produit = panier.find(p => p.id === id);
+
+    if (!produit) return;
+
+    if (action === "plus") {
+        produit.quantite++;
+    } else if (action === "moins") {
+        produit.quantite--;
+    } else if (action === "supprimer") {
+        panier = panier.filter(p => p.id !== id);
+    }
+
+    afficherPanier();
+});
 
 inputScan.addEventListener("keydown", e => {
     if (e.key === "Enter") {

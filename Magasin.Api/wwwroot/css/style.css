@@ -461,3 +461,38 @@ td button:hover {
 .logout-button:active {
     transform: translateY(0);
 }
+
+.btn-qty {
+    width: 34px;
+    height: 34px;
+    margin: 0 4px;
+    border: none;
+    border-radius: 10px;
+    background: #e0e5ec;
+    box-shadow: 6px 6px 12px #a3b1c6, -6px -6px 12px #ffffff;
+    color: #374151;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-qty:active {
+    box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+}
+
+.btn-supprimer {
+    margin-left: 10px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    background: #e0e5ec;
+    box-shadow: 6px 6px 12px #a3b1c6, -6px -6px 12px #ffffff;
+    color: #b91c1c;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-supprimer:active {
+    box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+}
