@@ -1,19 +1,6 @@
-:root {
-    --bg: var(--bg);
-    --card-bg: var(--card-bg);
-    --text: var(--text);
-    --text-muted: var(--text-muted);
-    --primary: var(--primary);
-    --border: var(--border);
-    --radius: 14px;
-    --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-    
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+
+html {
+    background: var(--bg);
 }
 
 body {
