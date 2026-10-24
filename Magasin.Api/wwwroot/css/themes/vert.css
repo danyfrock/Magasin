@@ -1,0 +1,28 @@
+/* =========================================================
+   THÈME : VERT EMERALD / NATURE
+   ========================================================= */
+   [data-theme="vert"] {
+    --bg: #10231c;
+    --card-bg: #19382b;
+    --text: #e8f5ed;
+    --text-muted: #b1cbb9;
+
+    --primary: #34d399;
+    --primary-hover: #6ee7b7;
+    --primary-text: #10231c;
+
+    --success: #4ade80;
+    --success-bg: #17452d;
+    --danger: #fb7185;
+    --danger-bg: #48242c;
+    --warning: #fbbf24;
+    --warning-bg: #443718;
+
+    --border: #36594a;
+    --surface-subtle: #203f31;
+    --surface-hover: #2b5140;
+    --input-bg: #142d22;
+    --table-header-bg: #142f23;
+    --focus-ring: rgba(52, 211, 153, 0.25);
+    --overlay: rgba(0, 12, 6, 0.75);
+}

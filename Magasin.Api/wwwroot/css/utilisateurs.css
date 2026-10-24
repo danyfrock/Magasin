@@ -29,6 +29,7 @@
     margin-top: 0;
     margin-bottom: 16px;
     font-size: 1.1rem;
+    color: var(--text);
 }
 
 /* Grille du formulaire */
@@ -45,8 +46,14 @@
     padding: 0 12px;
     border: 1px solid var(--border);
     border-radius: 8px;
-    background: #fff;
+    background: var(--card-bg);
+    color: var(--text);
     font-family: inherit;
+}
+
+.form-select:focus {
+    border-color: var(--primary);
+    outline: none;
 }
 
 /* Bouton Créer */

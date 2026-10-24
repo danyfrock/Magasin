@@ -1,0 +1,28 @@
+/* =========================================================
+   THÈME : ROSE PASTEL / ELEGANT
+   ========================================================= */
+   [data-theme="rose"] {
+    --bg: #fff1f5;
+    --card-bg: #ffffff;
+    --text: #4a2333;
+    --text-muted: #87566b;
+
+    --primary: #c0266d;
+    --primary-hover: #a51d5d;
+    --primary-text: #ffffff;
+
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --danger: #be123c;
+    --danger-bg: #ffe4e6;
+    --warning: #a16207;
+    --warning-bg: #fef3c7;
+
+    --border: #f0c9d8;
+    --surface-subtle: #fff0f5;
+    --surface-hover: #fce0eb;
+    --input-bg: #ffffff;
+    --table-header-bg: #fff5f8;
+    --focus-ring: rgba(192, 38, 109, 0.20);
+    --overlay: rgba(55, 15, 35, 0.55);
+}

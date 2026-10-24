@@ -1,0 +1,29 @@
+/* =========================================================
+   THÈME : CLASSIQUE LIGHT
+   ========================================================= */
+   :root,
+   [data-theme="light"] {
+       --bg: #f0f2f5;
+       --card-bg: #ffffff;
+       --text: #1a1a1a;
+       --text-muted: #6b7280;
+   
+       --primary: #2563eb;
+       --primary-hover: #1d4ed8;
+       --primary-text: #ffffff;
+   
+       --success: #16a34a;
+       --success-bg: #dcfce7;
+       --danger: #dc2626;
+       --danger-bg: #fee2e2;
+       --warning: #d97706;
+       --warning-bg: #fef3c7;
+   
+       --border: #e5e7eb;
+       --surface-subtle: #f1f6fc;
+       --surface-hover: #e8edf5;
+       --input-bg: #ffffff;
+       --table-header-bg: #f8fafc;
+       --focus-ring: rgba(37, 99, 235, 0.20);
+       --overlay: rgba(0, 0, 0, 0.50);
+   }

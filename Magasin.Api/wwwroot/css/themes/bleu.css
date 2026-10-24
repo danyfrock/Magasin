@@ -1,0 +1,28 @@
+/* =========================================================
+   THÈME : BLEU OCEAN / DARK BLUE
+   ========================================================= */
+   [data-theme="bleu"] {
+    --bg: #071827;
+    --card-bg: #102a43;
+    --text: #e6f1ff;
+    --text-muted: #a8bfd4;
+
+    --primary: #22d3ee;
+    --primary-hover: #67e8f9;
+    --primary-text: #071827;
+
+    --success: #34d399;
+    --success-bg: #123d38;
+    --danger: #fb7185;
+    --danger-bg: #482331;
+    --warning: #fbbf24;
+    --warning-bg: #443718;
+
+    --border: #27445f;
+    --surface-subtle: #132f49;
+    --surface-hover: #1b405e;
+    --input-bg: #0b2135;
+    --table-header-bg: #0b2238;
+    --focus-ring: rgba(34, 211, 238, 0.25);
+    --overlay: rgba(0, 8, 20, 0.75);
+}

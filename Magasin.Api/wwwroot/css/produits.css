@@ -6,8 +6,8 @@ body {
     margin: 0;
     padding: 30px;
     font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    color: #222;
+    background: var(--bg);
+    color: var(--text);
 }
 
 .app {
@@ -24,21 +24,6 @@ h2 {
     font-size: 20px;
 }
 
-/* .form-section,
-.card {
-    background: white;
-    padding: 25px;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 220px 1fr 150px 220px;
-    gap: 20px;
-} */
-
 .form-group {
     display: flex;
     flex-direction: column;
@@ -53,15 +38,18 @@ h2 {
     margin-bottom: 7px;
     font-weight: bold;
     font-size: 14px;
+    color: var(--text-muted);
 }
 
 .form-group input,
 .form-group textarea {
     padding: 8px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
     border-radius: 5px;
     font-size: 15px;
     font-family: Arial, sans-serif;
+    background: var(--card-bg);
+    color: var(--text);
 }
 
 .form-group input {
@@ -75,12 +63,12 @@ h2 {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #555;
+    border-color: var(--primary);
 }
 
 .form-group input[readonly] {
-    background: #f0f0f0;
-    color: #666;
+    background: var(--surface-subtle);
+    color: var(--text-muted);
 }
 
 .image-preview-container {
@@ -96,7 +84,7 @@ h2 {
     max-width: 150px;
     max-height: 150px;
     border-radius: 6px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     object-fit: contain;
 }
 
@@ -116,21 +104,22 @@ h2 {
 }
 
 .btn-primary {
-    background: #2563eb;
+    background: var(--primary);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #1d4ed8;
+    background: var(--primary-hover);
 }
 
 .btn-secondary {
-    background: #e5e7eb;
-    color: #333;
+    background: var(--surface-subtle);
+    color: var(--text);
+    border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-    background: #d1d5db;
+    background: var(--border);
 }
 
 .liste-header {
@@ -153,14 +142,14 @@ h2 {
     height: 50px;
     object-fit: contain;
     border-radius: 5px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
 }
 
 .message-succes {
     display: none;
     margin-top: 15px;
     text-align: center;
-    color: #15803d;
+    color: var(--success);
     font-weight: bold;
 }
 

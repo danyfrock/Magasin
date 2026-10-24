@@ -2,31 +2,31 @@
    GRILLES TABULATOR
    ========================================================= */
 
-.grille {
+   .grille {
     width: 100%;
 }
 
 /* Conteneur principal */
 .tabulator {
-    border: 1px solid #dbe4f0;
+    border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
-    background: #ffffff;
+    background: var(--card-bg);
     box-shadow: 0 2px 8px rgba(30, 64, 175, 0.06);
     font-size: 0.9rem;
 }
 
 /* En-tête */
 .tabulator .tabulator-header {
-    background: #f1f6fc;
-    border-bottom: 1px solid #dbe4f0;
-    color: #334155;
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
     font-weight: 600;
 }
 
 .tabulator .tabulator-header .tabulator-col {
     background: transparent;
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid var(--border);
     padding: 4px 0;
 }
 
@@ -40,8 +40,8 @@
 
 /* Lignes */
 .tabulator .tabulator-row {
-    background: #ffffff;
-    border-bottom: 1px solid #eef2f7;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
     min-height: 42px;
     cursor: pointer;
     transition: background-color 0.12s ease;
@@ -52,33 +52,33 @@
 }
 
 .tabulator .tabulator-row:hover {
-    background-color: #f5f9ff;
+    background-color: var(--surface-subtle);
 }
 
 /* Cellules */
 .tabulator .tabulator-cell {
     padding: 10px 12px;
     border-right: none;
-    color: #334155;
+    color: var(--text);
 }
 
 /* Ligne sélectionnée */
 .tabulator .tabulator-row.tabulator-selected {
-    background-color: #e3efff !important;
-    color: #1e40af;
+    background-color: var(--surface-subtle) !important;
+    color: var(--primary);
 }
 
 .tabulator .tabulator-row.tabulator-selected .tabulator-cell {
-    color: #1e40af;
+    color: var(--primary);
 }
 
 /* Tri */
 .tabulator .tabulator-header .tabulator-col.tabulator-sortable:hover {
-    background-color: #e7f0fb;
+    background-color: var(--surface-subtle);
 }
 
 .tabulator .tabulator-header .tabulator-col .tabulator-arrow {
-    border-bottom-color: #64748b;
+    border-bottom-color: var(--text-muted);
 }
 
 /* Filtres */
@@ -86,24 +86,24 @@
 .tabulator .tabulator-header-filter select {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--border);
     border-radius: 7px;
-    background: #ffffff;
-    color: #334155;
+    background: var(--card-bg);
+    color: var(--text);
     outline: none;
 }
 
 .tabulator .tabulator-header-filter input:focus,
 .tabulator .tabulator-header-filter select:focus {
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 /* Bas de grille */
 .tabulator .tabulator-footer {
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    color: #64748b;
+    background: var(--surface-subtle);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
 }
 
 /* Pagination */
@@ -111,18 +111,18 @@
     border: none;
     border-radius: 7px;
     background: transparent;
-    color: #475569;
+    color: var(--text-muted);
     padding: 5px 9px;
 }
 
 .tabulator .tabulator-footer .tabulator-page:hover {
-    background: #e7f0fb;
-    color: #1d4ed8;
+    background: var(--surface-subtle);
+    color: var(--primary-hover);
 }
 
 .tabulator .tabulator-footer .tabulator-page.active {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--surface-subtle);
+    color: var(--primary);
     font-weight: 600;
 }
 
@@ -130,29 +130,29 @@
    TABLES HTML CLASSIQUES
    ========================================================= */
 
-   table {
+table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border: 1px solid #dbe4f0;
+    border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
-    background: #ffffff;
+    background: var(--card-bg);
     box-shadow: 0 2px 8px rgba(30, 64, 175, 0.06);
     font-size: 0.9rem;
 }
 
 table thead {
-    background: #f1f6fc;
+    background: var(--surface-subtle);
 }
 
 table th {
     padding: 12px 14px;
     text-align: left;
     font-weight: 600;
-    color: #334155;
-    border-bottom: 1px solid #dbe4f0;
-    border-right: 1px solid #e2e8f0;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
 }
 
 table th:last-child {
@@ -161,8 +161,8 @@ table th:last-child {
 
 table td {
     padding: 12px 14px;
-    color: #334155;
-    border-bottom: 1px solid #eef2f7;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
 }
 
 table tbody tr:last-child td {
@@ -175,10 +175,10 @@ table tbody tr {
 }
 
 table tbody tr:hover {
-    background-color: #f5f9ff;
+    background-color: var(--surface-subtle);
 }
 
 table tbody tr.selected {
-    background-color: #e3efff;
-    color: #1e40af;
+    background-color: var(--surface-subtle);
+    color: var(--primary);
 }

@@ -1,0 +1,28 @@
+/* =========================================================
+   THÈME : BLACK & GOLD
+   ========================================================= */
+   [data-theme="black"] {
+    --bg: #0d0d0d;
+    --card-bg: #1a1a1a;
+    --text: #f5f5f5;
+    --text-muted: #b0b0b0;
+
+    --primary: #d4af37;
+    --primary-hover: #c5a059;
+    --primary-text: #0d0d0d;
+
+    --success: #4ade80;
+    --success-bg: #15351f;
+    --danger: #f87171;
+    --danger-bg: #421b1b;
+    --warning: #fbbf24;
+    --warning-bg: #3d3014;
+
+    --border: #38332a;
+    --surface-subtle: #24221d;
+    --surface-hover: #302c23;
+    --input-bg: #151515;
+    --table-header-bg: #24211b;
+    --focus-ring: rgba(212, 175, 55, 0.30);
+    --overlay: rgba(0, 0, 0, 0.75);
+}

@@ -1,10 +1,17 @@
 <header class="top-bar">
-    <link rel="stylesheet" href="../css/style.css">
     <div class="logo">🏪 Magasin</div>
-    <br>
     <h1 id="pageTitle"></h1>
 
     <div class="user-zone">
+        <!-- Sélecteur de thème -->
+        <select id="themeSelector" class="theme-selector" onchange="changerTheme(this.value)" aria-label="Choisir le thème de l'application">
+            <option value="light">☀️ Light</option>
+            <option value="black">🖤 Black & Gold</option>
+            <option value="rose">🌸 Rose</option>
+            <option value="bleu">🌊 Bleu</option>
+            <option value="vert">🌿 Vert</option>
+        </select>
+
         <span id="connectedUser"></span>
         <button class="logout-button" onclick="logout()">
             Déconnexion
