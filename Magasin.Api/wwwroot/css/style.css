@@ -6,14 +6,80 @@
    @import url("themes/rose.css");
    @import url("themes/bleu.css");
    @import url("themes/vert.css");
+   @import url("themes/gold.css");
    
    /* =========================================================
-      VARIABLES COMMUNES À TOUS LES THÈMES
+      VARIABLES COMMUNES ET DÉGRADÉS DYNAMIQUES UNIVERSELS
       ========================================================= */
-   :root {
+   :where(:root) {
        --radius: 12px;
        --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
        --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+   
+       /* Texte dynamique multi-étapes basé sur les variables de thèmes */
+       --text-gradient: linear-gradient(
+           180deg,
+           var(--primary-hover) 0%,
+           var(--border) 35%,
+           var(--primary) 70%,
+           var(--primary-hover) 100%
+       );
+   
+       /* Boutons principaux : Effet relief haut de gamme ciselé */
+       --primary-gradient: linear-gradient(
+           135deg,
+           var(--primary-hover) 0%,
+           var(--border) 25%,
+           var(--primary) 50%,
+           var(--surface-subtle) 75%,
+           var(--primary-hover) 100%
+       );
+   
+       /* Cartes : Profondeur subtile entre le fond de carte et la surface subtile */
+       --card-gradient: linear-gradient(
+           145deg,
+           var(--card-bg) 0%,
+           var(--surface-subtle) 50%,
+           var(--card-bg) 100%
+       );
+   
+       /* Arrière-plan global de l'application */
+       --background-gradient: linear-gradient(
+           135deg,
+           var(--bg) 0%,
+           var(--surface-subtle) 50%,
+           var(--bg) 100%
+       );
+   
+       /* États (Succès, Danger, Warning) dynamiques */
+       --success-gradient: linear-gradient(
+           135deg,
+           var(--success-bg) 0%,
+           var(--success) 50%,
+           var(--success-bg) 100%
+       );
+   
+       --danger-gradient: linear-gradient(
+           135deg,
+           var(--danger-bg) 0%,
+           var(--danger) 50%,
+           var(--danger-bg) 100%
+       );
+   
+       --warning-gradient: linear-gradient(
+           135deg,
+           var(--warning-bg) 0%,
+           var(--warning) 50%,
+           var(--warning-bg) 100%
+       );
+   
+       /* En-têtes des tableaux */
+       --table-header-gradient: linear-gradient(
+           135deg,
+           var(--table-header-bg) 0%,
+           var(--surface-hover) 50%,
+           var(--table-header-bg) 100%
+       );
    }
    
    /* =========================================================
@@ -28,7 +94,7 @@
    body {
        margin: 0;
        font-family: var(--font);
-       background: var(--bg);
+       background: var(--background-gradient);
        color: var(--text);
        line-height: 1.5;
    }
@@ -38,15 +104,14 @@
       ========================================================= */
    .app {
        width: 100%;
-       max-width: 1400px; /* S'élargit confortablement sur grand écran tout en gardant une limite max */
+       max-width: 1400px;
        margin: 0 auto;
        padding: 24px 16px 48px;
    }
    
-   /* Optionnel : pour les très grands écrans / TV */
    @media (min-width: 1600px) {
        .app {
-           max-width: 90%; /* Occupe 90% de la grande dalle proprement */
+           max-width: 90%;
        }
    }
    
@@ -82,7 +147,7 @@
    }
    
    .card {
-       background: var(--card-bg);
+       background: var(--card-gradient);
        border-radius: var(--radius);
        box-shadow: var(--shadow);
        padding: 20px 24px;
@@ -141,6 +206,7 @@
        letter-spacing: 0.03em;
        color: var(--text-muted);
        font-weight: 600;
+       background: var(--table-header-gradient);
    }
    
    td {
@@ -148,7 +214,6 @@
        color: var(--text);
    }
    
-   /* Boutons + / - / Supprimer dans le panier */
    td button {
        margin-left: 4px;
        padding: 4px 8px;
@@ -164,7 +229,6 @@
        background: var(--border);
    }
    
-   /* Total */
    .total-bar {
        font-size: 1.25rem;
        font-weight: 700;
@@ -245,7 +309,6 @@
        box-shadow: 0 0 0 3px var(--focus-ring);
    }
    
-   /* Boutons modes de paiement */
    .boutons-modes {
        display: grid;
        grid-template-columns: repeat(4, 1fr);
@@ -254,6 +317,8 @@
    }
    
    .btn {
+       background: var(--primary-gradient);
+       color: var(--primary-text);
        padding: 12px 16px;
        font-size: 0.9rem;
        font-weight: 600;
@@ -277,14 +342,14 @@
    }
    
    .btn-valider {
-       background: var(--success);
+       background: var(--success-gradient);
        color: white;
        width: 100%;
        margin-bottom: 8px;
    }
    
    .btn-valider:hover:not(:disabled) {
-       background: #15803d;
+       opacity: 0.9;
    }
    
    .btn-valider:disabled {
@@ -294,16 +359,15 @@
    }
    
    .btn-annuler {
-       background: var(--surface-subtle);
-       color: var(--danger);
+       background: var(--danger-gradient);
+       color: white;
        width: 100%;
    }
    
    .btn-annuler:hover {
-       background: var(--border);
+       opacity: 0.9;
    }
    
-   /* À rendre */
    .a-rendre {
        text-align: center;
        font-size: 1.15rem;
@@ -312,7 +376,6 @@
        margin: 12px 0;
    }
    
-   /* Actions finales */
    .actions-vente {
        margin-top: 8px;
    }
@@ -412,7 +475,20 @@
    }
    
    .btn-supprimer {
-       background: var(--danger);
+       margin-left: 10px;
+       padding: 8px 14px;
+       border: none;
+       border-radius: 10px;
+       background: var(--surface-subtle);
+       color: var(--danger);
+       font-size: 0.85rem;
+       cursor: pointer;
+       transition: background 0.2s ease;
+   }
+   
+   .btn-supprimer:hover,
+   .btn-supprimer:active {
+       background: var(--border);
    }
    
    .top-bar {
@@ -484,21 +560,6 @@
    }
    
    .btn-qty:active {
-       background: var(--border);
-   }
-   
-   .btn-supprimer {
-       margin-left: 10px;
-       padding: 8px 14px;
-       border: none;
-       border-radius: 10px;
-       background: var(--surface-subtle);
-       color: var(--danger);
-       font-size: 0.85rem;
-       cursor: pointer;
-   }
-   
-   .btn-supprimer:active {
        background: var(--border);
    }
    

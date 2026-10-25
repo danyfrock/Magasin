@@ -1,0 +1,60 @@
+/* =========================================================
+   THÈME : OR ULTRA-BLING-BLING / QUI FAIT MAL AUX YEUX
+   ========================================================= */
+   [data-theme="gold"] {
+    --bg: #ffe600;
+    --card-bg: #fff9b8;
+
+    --text: #1a1200;
+    --text-muted: #594000;
+
+    --primary: #ff0055;
+    --primary-hover: #ffea00;
+    --primary-text: #ffffff;
+
+    --success: #00ff66;
+    --success-bg: #bfffdb;
+
+    --danger: #ff0000;
+    --danger-bg: #ffcccc;
+
+    --warning: #ff8800;
+    --warning-bg: #fff3b3;
+
+    --border: #ffcc00;
+    --surface-subtle: #ffea40;
+    --surface-hover: #ffd000;
+
+    --input-bg: #ffffff;
+    --table-header-bg: #ffd500;
+
+    --focus-ring: rgba(255, 0, 85, 0.6);
+    --overlay: rgba(50, 40, 0, 0.85);
+    --background-gradient: linear-gradient(
+        135deg,
+        #8f641e 0%,
+        #d9aa45 12%,
+        #fff2b0 22%,
+        #b78322 32%,
+        #6e4710 43%,
+        #f9e59a 52%,
+        #d4af37 63%,
+        #fff4c2 72%,
+        #a87518 84%,
+        #f3d477 94%,
+        #8f641e 100%);
+        
+        --card-gradient: linear-gradient(
+            10deg,
+            #8f641e 0%,
+            #d9aa45 12%,
+            #fff2b0 22%,
+            #b78322 32%,
+            #6e4710 43%,
+            #f9e59a 52%,
+            #d4af37 63%,
+            #fff4c2 72%,
+            #a87518 84%,
+            #f3d477 94%,
+            #8f641e 100%);
+}

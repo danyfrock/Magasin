@@ -1,28 +1,59 @@
 /* =========================================================
-   THÈME : BLACK & GOLD
+   THÈME : BLACK & GOLD (LUXE & OBSIDIENNE)
    ========================================================= */
    [data-theme="black"] {
-    --bg: #0d0d0d;
-    --card-bg: #1a1a1a;
-    --text: #f5f0e6;              /* blanc cassé légèrement chaud (très classe) */
-    --text-muted: #a89f8f;        /* gris-beige élégant */
+    --bg: #0a0a0c;
+    --card-bg: #141418;
 
-    --primary: #d4af37;           /* or classique */
-    --primary-hover: #e0c04a;     /* or un peu plus lumineux au hover */
-    --primary-text: #0d0d0d;
+    --text: #e6c875;          /* Couleur solide lisible pour le texte courant */
+    --text-muted: #9e823b;
+
+    --primary: #ffd700;
+    --primary-hover: #ffea70;
+    --primary-text: #0a0a0c;
 
     --success: #4ade80;
     --success-bg: #15351f;
+
     --danger: #f87171;
     --danger-bg: #421b1b;
+
     --warning: #fbbf24;
     --warning-bg: #3d3014;
 
-    --border: #38332a;
-    --surface-subtle: #24221d;
-    --surface-hover: #302c23;
-    --input-bg: #151515;
-    --table-header-bg: #24211b;
-    --focus-ring: rgba(212, 175, 55, 0.30);
-    --overlay: rgba(0, 0, 0, 0.75);
+    --border: #4a3b12;
+    --surface-subtle: #1c1a14;
+    --surface-hover: #2e2819;
+    --input-bg: #101014;
+    --table-header-bg: #221d12;
+
+    --focus-ring: rgba(255, 215, 0, 0.35);
+    --overlay: rgba(0, 0, 0, 0.85);
+
+    /* Dégradé or lourd à 11 étapes pour les titres et accents */
+    --text-gradient: linear-gradient(
+        180deg,
+        #8f641e 0%,
+        #d9aa45 12%,
+        #fff2b0 22%,
+        #b78322 32%,
+        #6e4710 43%,
+        #f9e59a 52%,
+        #d4af37 63%,
+        #fff4c2 72%,
+        #a87518 84%,
+        #f3d477 94%,
+        #8f641e 100%
+    );
+    /* Dégradé de fond : Diamant Noir & Reflets Or */
+    --background-gradient: linear-gradient(
+        135deg,
+        #0a0a0c 0%,
+        #1c170d 25%,
+        #3b2f15 45%,
+        #6e5621 55%,
+        #3b2f15 65%,
+        #1c170d 80%,
+        #0a0a0c 100%
+    );
 }

@@ -1,28 +1,63 @@
 /* =========================================================
-   THÈME : BLEU OCEAN / DARK BLUE
+   THÈME : BLEU SAPHIR / NÉON ÉTINCELANT
    ========================================================= */
    [data-theme="bleu"] {
-    --bg: #071827;
-    --card-bg: #102a43;
-    --text: #e6f1ff;
-    --text-muted: #a8bfd4;
+    --bg: #03152b;
+    --card-bg: #0b2545;
+    --surface-subtle: #133a63;
+    --surface-hover: #1b4f85;
+    --input-bg: #071b33;
+    --table-header-bg: #0e2d50;
+    --border: #205994;
 
-    --primary: #22d3ee;
-    --primary-hover: #67e8f9;
-    --primary-text: #071827;
+    --text: #f0f6fc;
+    --text-muted: #93c5fd;
+
+    --primary: #38bdf8;
+    --primary-hover: #7dd3fc;
+    --primary-text: #082f49;
 
     --success: #34d399;
-    --success-bg: #123d38;
-    --danger: #fb7185;
-    --danger-bg: #482331;
-    --warning: #fbbf24;
-    --warning-bg: #443718;
+    --success-bg: #0f382b;
 
-    --border: #27445f;
-    --surface-subtle: #132f49;
-    --surface-hover: #1b405e;
-    --input-bg: #0b2135;
-    --table-header-bg: #0b2238;
-    --focus-ring: rgba(34, 211, 238, 0.25);
-    --overlay: rgba(0, 8, 20, 0.75);
+    --danger: #fb7185;
+    --danger-bg: #4c1d24;
+
+    --warning: #fbbf24;
+    --warning-bg: #453611;
+
+    --focus-ring: rgba(56, 189, 248, 0.4);
+    --overlay: rgba(2, 10, 20, 0.85);
+
+    /* Dégradé de fond saphir profond */
+    --background-gradient: linear-gradient(
+        135deg,
+        #03152b 0%,
+        #0c2a4d 30%,
+        #153e6d 55%,
+        #0b2545 80%,
+        #03152b 100%
+    );
+
+    /* Dégradé des cartes effet cristal/saphir */
+    --card-gradient: linear-gradient(
+        10deg,
+        #071f3d 0%,
+        #12365e 20%,
+        #22609c 40%,
+        #38bdf8 55%,
+        #22609c 70%,
+        #12365e 85%,
+        #071f3d 100%
+    );
+
+    /* Dégradé de texte cristallin */
+    --text-gradient: linear-gradient(
+        180deg,
+        #e0f2fe 0%,
+        #7dd3fc 25%,
+        #38bdf8 50%,
+        #0284c7 75%,
+        #bae6fd 100%
+    );
 }

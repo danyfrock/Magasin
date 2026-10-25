@@ -1,28 +1,64 @@
 /* =========================================================
-   THÈME : ROSE PASTEL / ELEGANT
+   THÈME : ROSE RUBIS / PIERRE PRÉCIEUSE
    ========================================================= */
    [data-theme="rose"] {
-    --bg: #fff1f5;
-    --card-bg: #ffffff;
-    --text: #4a2333;
-    --text-muted: #87566b;
+    --bg: #210915;
+    --card-bg: #361023;
+    --surface-subtle: #4d1833;
+    --surface-hover: #662245;
+    --border: #8c3260;
+    --table-header-bg: #3d1229;
 
-    --primary: #c0266d;
-    --primary-hover: #a51d5d;
+    --input-bg: #190610;
+
+    --text: #fce7f3;
+    --text-muted: #f472b6;
+
+    --primary: #f43f5e;
+    --primary-hover: #fb7185;
     --primary-text: #ffffff;
 
-    --success: #15803d;
-    --success-bg: #dcfce7;
-    --danger: #be123c;
-    --danger-bg: #ffe4e6;
-    --warning: #a16207;
-    --warning-bg: #fef3c7;
+    --success: #34d399;
+    --success-bg: #143828;
 
-    --border: #f0c9d8;
-    --surface-subtle: #fff0f5;
-    --surface-hover: #fce0eb;
-    --input-bg: #ffffff;
-    --table-header-bg: #fff5f8;
-    --focus-ring: rgba(192, 38, 109, 0.20);
-    --overlay: rgba(55, 15, 35, 0.55);
+    --danger: #fb7185;
+    --danger-bg: #4c1d24;
+
+    --warning: #fbbf24;
+    --warning-bg: #453611;
+
+    --focus-ring: rgba(244, 63, 94, 0.4);
+    --overlay: rgba(20, 5, 12, 0.85);
+
+    /* Dégradé de fond rubis profond */
+    --background-gradient: linear-gradient(
+        135deg,
+        #210915 0%,
+        #361023 35%,
+        #4d1833 60%,
+        #361023 85%,
+        #210915 100%
+    );
+
+    /* Dégradé des cartes effet rubis rutilant */
+    --card-gradient: linear-gradient(
+        10deg,
+        #2d0c1c 0%,
+        #4c1833 20%,
+        #802854 40%,
+        #f43f5e 55%,
+        #802854 70%,
+        #4c1833 85%,
+        #2d0c1c 100%
+    );
+
+    /* Dégradé de texte rubis lumineux */
+    --text-gradient: linear-gradient(
+        180deg,
+        #ffe4e6 0%,
+        #fb7185 25%,
+        #f43f5e 50%,
+        #be123c 75%,
+        #fbcfe8 100%
+    );
 }

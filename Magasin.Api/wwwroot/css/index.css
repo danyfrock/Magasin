@@ -1,16 +1,8 @@
+/* =========================================================
+   PAGE D'ACCUEIL (index.css)
+   ========================================================= */
 
-html {
-    background: var(--bg);
-}
-
-body {
-    margin: 0;
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-}
-
-.app {
+   .app {
     max-width: 800px;
     margin: 0 auto;
     padding: 48px 20px;
@@ -24,6 +16,10 @@ body {
 .header h1 {
     margin: 0;
     font-size: 2.2rem;
+    background: var(--text-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .header p {
@@ -43,7 +39,7 @@ body {
     align-items: center;
     gap: 20px;
     padding: 24px;
-    background: var(--card-bg);
+    background: var(--card-gradient);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -65,7 +61,8 @@ body {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: var(--surface-subtle);
+    background: var(--table-header-gradient);
+    border: 1px solid var(--border);
     border-radius: 12px;
     font-size: 1.8rem;
 }
