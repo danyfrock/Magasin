@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caisse - Magasin</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/vente.css">
 </head>
 <body>
 
@@ -74,7 +75,7 @@
                     <button id="payerMoov" type="button" class="btn btn-mode">MOOV</button>
                 </div>
 
-                <p id="ligneARendre" class="a-rendre" style="display:none;">
+                <p id="ligneARendre" class="a-rendre">
                     À rendre : <span id="aRendre">0 F</span>
                 </p>
                 <div class="montant-group">
@@ -89,10 +90,10 @@
                     <button id="annulerVente" type="button" class="btn btn-annuler">
                         ANNULER
                     </button>
-                    <div class="montant-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <label class="checkbox-centree">
                         <input type="checkbox" id="imprimerTicketAuto" checked>
-                        <label for="imprimerTicketAuto" style="margin: 0; cursor: pointer;">Imprimer le ticket de caisse automatiquement</label>
-                    </div>
+                        <span>Imprimer le ticket de caisse automatiquement</span>
+                    </label>
                 </div>
             </section>
 
