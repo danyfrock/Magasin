@@ -1,0 +1,37 @@
+<template id="template-ticket-caisse">
+    <div class="ticket-recu">
+        <div class="ticket-header">
+            <h3>MAGASIN</h3>
+            <p>Date : <span class="ticket-date"></span></p>
+            <p>Vente N° : <span class="ticket-id"></span></p>
+        </div>
+        <hr>
+        <table class="ticket-lignes">
+            <thead>
+                <tr>
+                    <th>Art</th>
+                    <th>Qté</th>
+                    <th>P.U</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les lignes de produits seront injectées ici -->
+            </tbody>
+        </table>
+        <hr>
+        <div class="ticket-totaux">
+            <p><strong>Total à payer :</strong> <span class="ticket-total">0</span> F</p>
+        </div>
+        <div class="ticket-paiements">
+            <!-- Les modes de paiements seront injectés ici -->
+        </div>
+        <div class="ticket-rendu" style="display:none;">
+            <p><strong>Rendu :</strong> <span class="ticket-montant-rendu">0</span> F</p>
+        </div>
+        <hr>
+        <div class="ticket-footer">
+            <p>Merci de votre visite !</p>
+        </div>
+    </div>
+</template>

@@ -141,6 +141,14 @@ async function validerVente() {
                 rendu: rendu
             })
         });
+        if (document.getElementById("imprimerTicketAuto")?.checked) {
+            imprimerTicketCaisse({
+                date: new Date(),
+                lignes: panier.map(p => ({ produitNom: p.nom, quantite: p.quantite, prixUnitaire: p.prix })),
+                paiements: paiements,
+                rendu: rendu
+            });
+        }
 
         let msg = `Vente validée\nTotal : ${total} F\n`;
         paiements.forEach(p => msg += `• ${p.mode.toUpperCase()} : ${p.montant} F\n`);

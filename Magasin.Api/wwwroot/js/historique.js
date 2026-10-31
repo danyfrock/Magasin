@@ -35,6 +35,14 @@ function initialiserFiltres() {
     const boutonReinitialiser = document.getElementById("btn-reinitialiser");
     const boutonImprimer = document.getElementById("btn-imprimer");
 
+    document.getElementById("btn-imprimer-selection")?.addEventListener("click", () => {
+        if (!venteSelectionnee) {
+            alert("Veuillez sélectionner une vente dans la liste.");
+            return;
+        }
+        imprimerTicketCaisse(venteSelectionnee);
+    });
+
     typePeriode.addEventListener("change", () => {
         changerTypePeriode();
         appliquerFiltres();
