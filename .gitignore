@@ -483,7 +483,8 @@ $RECYCLE.BIN/
 
 # Installateur local Inno Setup
 !*.iss
-Installer/resources/
+Installer/resources/*
+!Installer/resources/lancer-magasin.bat
 Installer/output/
 Installer/*.exe
 *.log
