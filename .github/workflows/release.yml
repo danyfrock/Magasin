@@ -60,9 +60,12 @@ jobs:
           }
         shell: pwsh
 
-      # 5. Installer Inno Setup (via action → plus fiable que winget)
-      - name: Setup Inno Setup
-        uses: sbwvr/action-inno-setup@v1
+      # 5. Installer Inno Setup
+      - name: Install Inno Setup
+        run: |
+          winget install JRSoftware.InnoSetup --silent --accept-source-agreements --accept-package-agreements
+        shell: pwsh
+
 
       # 6. Compiler l'installeur
       - name: Compile Magasin Installer
