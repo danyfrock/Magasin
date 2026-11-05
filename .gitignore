@@ -488,6 +488,8 @@ Installer/output/
 Installer/*.exe
 *.log
 Installer/dernier-log.txt
+Installer/InstallPostgreSQL.iss
+Installer/InstallPostgreSQL v5.iss
 
 # Publish
 **/publish/
