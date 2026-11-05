@@ -14,32 +14,46 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Installer le SDK .NET 10
+      # 2. Générer le fichier secret depuis GitHub Secrets
+      - name: Create magasin.secret.json
+        run: |
+          New-Item -ItemType Directory -Force -Path Installer\resources
+
+          @"
+          {
+            "ConnectionStrings": {
+              "Magasin": "${{ secrets.MAGASIN_CONNECTION_STRING }}"
+            }
+          }
+          "@ | Out-File Installer\resources\magasin.secret.json -Encoding utf8
+        shell: pwsh
+
+      # 3. Installer le SDK .NET 10
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
 
-      # 3. Publier l'API dans le dossier resources de l'installeur
+      # 4. Publier l'application
       - name: Publish .NET Application
         run: |
           dotnet publish Magasin.Api\Magasin.Api.csproj -c Release -r win-x64 --self-contained true -o Installer\resources\MagasinPublish
         shell: pwsh
 
-      # 4. Installer Inno Setup sur le serveur GitHub
+      # 5. Installer Inno Setup
       - name: Install Inno Setup
         run: |
           winget install JRSoftware.InnoSetup --silent --accept-source-agreements --accept-package-agreements
         shell: pwsh
 
-      # 5. Compiler ton script Inno Setup sans y toucher
+      # 6. Compiler l'installeur
       - name: Compile Magasin Installer
         run: |
           $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
           & $iscc "Installer\InstallMagasin.iss"
         shell: pwsh
 
-      # 6. Publier l'exécutable généré dans une Release GitHub
+      # 7. Publier la release GitHub
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
