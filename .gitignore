@@ -482,7 +482,7 @@ $RECYCLE.BIN/
 *.swp
 
 # Installateur local Inno Setup
-*.iss
+!*.iss
 Installer/resources/
 Installer/output/
 Installer/*.exe

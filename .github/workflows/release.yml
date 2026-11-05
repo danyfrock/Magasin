@@ -1,0 +1,52 @@
+name: Build and Release Magasin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      # 1. Récupérer le code source
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Installer le SDK .NET 10
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      # 3. Publier l'API dans le dossier resources de l'installeur
+      - name: Publish .NET Application
+        run: |
+          dotnet publish Magasin.Api\Magasin.Api.csproj -c Release -r win-x64 --self-contained true -o Installer\resources\MagasinPublish
+        shell: pwsh
+
+      # 4. Installer Inno Setup sur le serveur GitHub
+      - name: Install Inno Setup
+        run: |
+          winget install JRSoftware.InnoSetup --silent --accept-source-agreements --accept-package-agreements
+        shell: pwsh
+
+      # 5. Compiler ton script Inno Setup sans y toucher
+      - name: Compile Magasin Installer
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          & $iscc "Installer\InstallMagasin.iss"
+        shell: pwsh
+
+      # 6. Publier l'exécutable généré dans une Release GitHub
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Installer\output\InstallMagasin-*.exe
+          tag_name: release-${{ github.run_number }}
+          name: "Magasin Release #${{ github.run_number }}"
+          body: "Mise à jour automatique suite au push sur main."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
