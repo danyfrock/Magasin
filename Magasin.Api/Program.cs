@@ -30,6 +30,7 @@ builder.Services.AddDbContext<MagasinDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Magasin")));
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<ProduitService>();
 builder.Services.AddScoped<VenteService>();
 builder.Services.AddScoped<StockService>();
@@ -37,6 +38,7 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JournalService>();
+builder.Services.AddScoped<TauxChangeService>();
 
 
 builder.Services.AddControllers()

@@ -148,6 +148,25 @@ namespace Magasin.Api.Migrations
                     b.ToTable("LignesVente");
                 });
 
+            modelBuilder.Entity("Magasin.Api.Database.Entities.LotTaux", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Source")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LotsTaux");
+                });
+
             modelBuilder.Entity("Magasin.Api.Database.Entities.Produit", b =>
                 {
                     b.Property<int>("Id")
@@ -205,6 +224,35 @@ namespace Magasin.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.TauxChange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BaseCurrency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("LotTauxId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("TargetCurrency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LotTauxId");
+
+                    b.ToTable("TauxChanges");
                 });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.Utilisateur", b =>
@@ -314,6 +362,22 @@ namespace Magasin.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Produit");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.TauxChange", b =>
+                {
+                    b.HasOne("Magasin.Api.Database.Entities.LotTaux", "LotTaux")
+                        .WithMany("Taux")
+                        .HasForeignKey("LotTauxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LotTaux");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.LotTaux", b =>
+                {
+                    b.Navigation("Taux");
                 });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.Vente", b =>

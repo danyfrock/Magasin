@@ -21,6 +21,8 @@ public class MagasinDbContext : DbContext
 
     public DbSet<Utilisateur> Utilisateurs { get; set; }
     public DbSet<Journal> Journaux { get; set; }
+    public DbSet<LotTaux> LotsTaux { get; set; }
+    public DbSet<TauxChange> TauxChanges { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
