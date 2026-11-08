@@ -80,7 +80,9 @@ public static class VenteMapping
         {
             Type = "paiement",
             MoyenPaiement = dto.MoyenPaiement,
-            Montant = dto.Montant
+            Montant = dto.Montant,
+            Devise = dto.Devise,
+            MontantOriginal = dto.MontantOriginal
         };
     }
 
