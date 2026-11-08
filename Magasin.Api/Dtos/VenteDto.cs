@@ -8,6 +8,8 @@ namespace Magasin.Api.Dtos
     public record VenteDto(
         List<LigneVenteDto> Lignes,
         List<LignePaiementDto> Paiements,
-        int Rendu
+        decimal Rendu,
+        int? tauxChangeId,
+        string deviseCaisse
     );
 }

@@ -11,12 +11,16 @@ public class VenteService
     private readonly MagasinDbContext dbContext;
     private readonly JournalService journalService;
 
+    private readonly TauxChangeService tauxChangeService;
+
     public VenteService(
         MagasinDbContext dbContext,
-        JournalService journalService)
+        JournalService journalService,
+        TauxChangeService tauxChangeService)
     {
         this.dbContext = dbContext;
         this.journalService = journalService;
+        this.tauxChangeService = tauxChangeService;
     }
 
     public async Task<VenteResponseDto?> GetById(int id)

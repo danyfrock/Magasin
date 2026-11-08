@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Magasin.Api.Dtos
 {
-    public record ProduitDto(int Id, string CodeBarre, string Nom, int Prix, string? Description, ImageSwitch Image, string? ScannableCodebarre);
+    public record ProduitDto(int Id, string CodeBarre, string Nom, decimal Prix, string? Description, ImageSwitch Image, string? ScannableCodebarre);
 }

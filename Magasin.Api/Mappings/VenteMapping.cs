@@ -8,21 +8,25 @@ public static class VenteMapping
     public static VenteResponseDto ToResponseDto(this Vente vente)
     {
         return new VenteResponseDto(
-            vente.Id,
-            vente.Date,
-            vente.Total,
-            vente.Lignes.Select(l => new LigneVenteResponseDto(
-                l.Id,
-                l.ProduitId,
-                l.Produit?.Nom ?? $"Produit #{l.ProduitId}",
-                l.Quantite,
-                l.PrixUnitaire
+            Id: vente.Id,
+            Date: vente.Date,
+            Total: vente.Total,
+            tauxChangeId: vente.TauxChangeId,
+            deviseCaisse: vente.DeviseCaisse,
+            Lignes: vente.Lignes.Select(l => new LigneVenteResponseDto(
+                Id: l.Id,
+                ProduitId: l.ProduitId,
+                ProduitNom: l.Produit?.Nom ?? $"Produit #{l.ProduitId}",
+                Quantite: l.Quantite,
+                PrixUnitaire: l.PrixUnitaire
             )).ToList(),
-            vente.Paiements.Select(p => new LignePaiementResponseDto(
-                p.Id,
-                p.Type,
-                p.MoyenPaiement,
-                p.Montant
+            Paiements: vente.Paiements.Select(p => new LignePaiementResponseDto(
+                Id: p.Id,
+                Type: p.Type,
+                MoyenPaiement: p.MoyenPaiement,
+                Montant: p.Montant,
+                Devise: p.Devise,
+                MontantOriginal: p.MontantOriginal
             )).ToList()
         );
     }
@@ -32,6 +36,8 @@ public static class VenteMapping
         Vente vente = new()
         {
             Date = DateTime.UtcNow,
+            TauxChangeId = dto.tauxChangeId,
+            DeviseCaisse = dto.deviseCaisse,
             Lignes = dto.Lignes.Select(l => l.ToEntity(produits)).ToList(),
             Paiements = dto.Paiements.Select(p => p.ToEntity()).ToList()
         };
@@ -78,7 +84,7 @@ public static class VenteMapping
         };
     }
 
-    private static LignePaiement CreerRendu(int montant)
+    private static LignePaiement CreerRendu(decimal montant)
     {
         return new LignePaiement
         {

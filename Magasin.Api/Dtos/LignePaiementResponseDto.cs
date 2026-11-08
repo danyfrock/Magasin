@@ -9,6 +9,8 @@ namespace Magasin.Api.Dtos
         int Id,
         string Type,
         string MoyenPaiement,
-        int Montant
+        decimal Montant,
+        string? Devise,
+        decimal? MontantOriginal
     );
 }

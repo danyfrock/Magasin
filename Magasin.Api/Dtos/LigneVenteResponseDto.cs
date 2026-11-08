@@ -10,6 +10,6 @@ namespace Magasin.Api.Dtos
         int ProduitId,
         string ProduitNom,
         int Quantite,
-        int PrixUnitaire
+        decimal PrixUnitaire
     );
 }

@@ -15,7 +15,11 @@ namespace Magasin.Api.Database.Entities
 
         public string MoyenPaiement { get; set; } = null!;
 
-        public int Montant { get; set; }
+        public decimal Montant { get; set; }
+
+        public string? Devise { get; set; }
+
+        public decimal? MontantOriginal { get; set; }
 
         public Vente Vente { get; set; } = null!;
     }

@@ -10,7 +10,7 @@ public class Produit
     public int Id { get; set; }
     public string CodeBarre { get; set; } = null!;
     public required string Nom { get; set; }
-    public int Prix { get; set; }
+    public decimal Prix { get; set; }
     public string? Description { get; set; }
     public Image? Image { get; set; } = null;
 }

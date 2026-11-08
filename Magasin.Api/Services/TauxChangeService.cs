@@ -74,6 +74,18 @@ public class TauxChangeService
         return lot?.ToDto();
     }
 
+    public async Task<LotTauxResponseDto?> GetByDate(DateTime dateVente)
+    {
+        LotTaux? lot = await dbContext.LotsTaux
+            .AsNoTracking()
+            .Include(l => l.Taux)
+            .Where(l => l.UpdatedAt < dateVente)
+            .OrderByDescending(l => l.UpdatedAt)
+            .FirstOrDefaultAsync();
+
+        return lot?.ToDto() ?? await GetLastAsync();
+    }
+
     public async Task<List<LotTauxResponseDto>> GetAllLotsAsync()
     {
         var lots = await dbContext.LotsTaux

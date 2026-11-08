@@ -39,6 +39,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JournalService>();
 builder.Services.AddScoped<TauxChangeService>();
+builder.Services.AddScoped<CaisseService>();
 
 
 builder.Services.AddControllers()

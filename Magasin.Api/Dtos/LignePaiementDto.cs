@@ -7,6 +7,8 @@ namespace Magasin.Api.Dtos
 {
     public record LignePaiementDto(
         string MoyenPaiement,
-        int Montant
+        decimal Montant,
+        string? Devise,
+        decimal? MontantOriginal
 );
 }

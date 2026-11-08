@@ -12,12 +12,16 @@ namespace Magasin.Api.Services
             _matrix = matrix;
         }
 
-        public decimal Convert(decimal amount, string from, string to)
+        public bool IsUpToDate(int lotId) => this.CurrencyMatrix.isUpToDate(lotId);
+        public CurrencyMatrix CurrencyMatrix => this._matrix;
+
+        public (decimal Rate, decimal Value) Convert(decimal amount, string from, string to)
         {
             if (from.Equals(to, StringComparison.OrdinalIgnoreCase))
-                return amount;
+                return (1m, amount);
 
-            return amount * GetRate(from, to);
+            var rate = GetRate(from, to);
+            return (rate, amount * rate);
         }
 
         public decimal GetRate(string from, string to)

@@ -15,7 +15,7 @@ namespace Magasin.Api.Database.Entities
 
         public int Quantite { get; set; }
 
-        public int PrixUnitaire { get; set; }
+        public decimal PrixUnitaire { get; set; }
 
         public Vente Vente { get; set; } = null!;
 

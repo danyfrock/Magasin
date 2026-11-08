@@ -98,8 +98,15 @@ namespace Magasin.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Montant")
-                        .HasColumnType("integer");
+                    b.Property<string>("Devise")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Montant")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal?>("MontantOriginal")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("MoyenPaiement")
                         .IsRequired()
@@ -127,8 +134,9 @@ namespace Magasin.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PrixUnitaire")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("PrixUnitaire")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("ProduitId")
                         .HasColumnType("integer");
@@ -191,8 +199,8 @@ namespace Magasin.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Prix")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Prix")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -242,7 +250,8 @@ namespace Magasin.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Rate")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
 
                     b.Property<string>("TargetCurrency")
                         .IsRequired()
@@ -297,10 +306,20 @@ namespace Magasin.Api.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Total")
+                    b.Property<string>("DeviseCaisse")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TauxChangeId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Total")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TauxChangeId");
 
                     b.ToTable("Ventes");
                 });
@@ -373,6 +392,15 @@ namespace Magasin.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("LotTaux");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.Vente", b =>
+                {
+                    b.HasOne("Magasin.Api.Database.Entities.TauxChange", "TauxChange")
+                        .WithMany()
+                        .HasForeignKey("TauxChangeId");
+
+                    b.Navigation("TauxChange");
                 });
 
             modelBuilder.Entity("Magasin.Api.Database.Entities.LotTaux", b =>

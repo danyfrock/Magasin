@@ -10,13 +10,16 @@ namespace Magasin.Api.Services
     public class CurrencyMatrix
     {
         private readonly Dictionary<string, Dictionary<string, decimal>> _matrix;
-        private readonly DateTime _updatedAt;
+        private int _lotId;
 
         public CurrencyMatrix(LotTauxResponseDto dto)
         {
             _matrix = dto.ToRates();
-            _updatedAt = dto.UpdatedAt;
+            _lotId = dto.Id;
         }
+
+        public bool isUpToDate(int lotId) => _lotId == lotId;
+        public int LotId => _lotId;
 
         public bool TryGetRate(string from, string to, out decimal rate)
         {

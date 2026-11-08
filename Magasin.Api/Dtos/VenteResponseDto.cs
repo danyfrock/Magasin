@@ -8,7 +8,9 @@ namespace Magasin.Api.Dtos
     public record VenteResponseDto(
         int Id,
         DateTime Date,
-        int Total,
+        decimal Total,
+        int? tauxChangeId,
+        string deviseCaisse,
         List<LigneVenteResponseDto> Lignes,
         List<LignePaiementResponseDto> Paiements
     );

@@ -50,5 +50,23 @@ public class MagasinDbContext : DbContext
         modelBuilder.Entity<Utilisateur>()
             .HasIndex(u => u.Username)
             .IsUnique();
+
+        // Montants monétaires
+        modelBuilder.Entity<Vente>()
+            .Property(v => v.Total)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<LigneVente>()
+            .Property(lv => lv.PrixUnitaire)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<LignePaiement>()
+            .Property(lp => lp.Montant)
+            .HasPrecision(18, 2);
+
+        // Taux de change
+        modelBuilder.Entity<TauxChange>()
+            .Property(tc => tc.Rate)
+            .HasPrecision(18, 6);
     }
 }
