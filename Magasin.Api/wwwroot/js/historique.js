@@ -143,7 +143,6 @@ function filtrerVentes(typePeriode, valeurPeriode, produit) {
 function reinitialiserFiltres() {
     document.getElementById("type-periode").value = "";
     document.getElementById("valeur-periode").value = "";
-    // Correction de l'ID du champ produit (aligné sur l'input HTML)
     document.getElementById("produit").value = "";
 
     changerTypePeriode();
@@ -167,7 +166,14 @@ function creerGrilleVentes() {
             {
                 title: "Total",
                 field: "total",
-                formatter: cell => `${cell.getValue()} F`
+                formatter: cell => {
+                    const data = cell.getRow().getData();
+                    return `${cell.getValue()} ${data.deviseCaisse || "XOF"}`;
+                }
+            },
+            {
+                title: "Devise",
+                field: "deviseCaisse"
             },
             {
                 title: "Articles",
@@ -188,11 +194,15 @@ function selectionnerVente(id) {
 
     if (!venteSelectionnee) return;
 
+    const devise = venteSelectionnee.deviseCaisse || "XOF";
+
     document.getElementById("detail-vide").style.display = "none";
     document.getElementById("detail-contenu").style.display = "block";
 
     document.getElementById("detail-date").textContent = new Date(venteSelectionnee.date).toLocaleString("fr-FR");
-    document.getElementById("detail-total").textContent = `${venteSelectionnee.total} F`;
+    document.getElementById("detail-total").textContent = `${venteSelectionnee.total} ${devise}`;
+    document.getElementById("detail-devise-caisse").textContent = devise;
+    document.getElementById("detail-taux-change").textContent = venteSelectionnee.tauxChangeId || "N/A";
 
     afficherGrilleLignes();
     afficherGrillePaiements();
@@ -200,6 +210,8 @@ function selectionnerVente(id) {
 
 function afficherGrilleLignes() {
     if (grilleLignes) grilleLignes.destroy();
+
+    const devise = venteSelectionnee.deviseCaisse || "XOF";
 
     grilleLignes = new Tabulator("#detail-lignes", {
         data: venteSelectionnee.lignes || [],
@@ -209,12 +221,12 @@ function afficherGrilleLignes() {
         columns: [
             { title: "Produit", field: "produitNom" },
             { title: "Qté", field: "quantite" },
-            { title: "Prix unit.", field: "prixUnitaire", formatter: cell => `${cell.getValue()} F` },
+            { title: "Prix unit.", field: "prixUnitaire", formatter: cell => `${cell.getValue()} ${devise}` },
             { 
                 title: "Sous-total", 
                 formatter: cell => {
                     const ligne = cell.getRow().getData();
-                    return `${ligne.quantite * ligne.prixUnitaire} F`;
+                    return `${Number(ligne.quantite) * Number(ligne.prixUnitaire)} ${devise}`;
                 } 
             }
         ]
@@ -224,15 +236,31 @@ function afficherGrilleLignes() {
 function afficherGrillePaiements() {
     if (grillePaiements) grillePaiements.destroy();
 
+    const deviseCaisse = venteSelectionnee.deviseCaisse || "XOF";
+
     grillePaiements = new Tabulator("#detail-paiements", {
         data: venteSelectionnee.paiements || [],
         layout: "fitColumns",
         height: "150px",
         placeholder: "Aucun paiement",
         columns: [
-            { title: "Type", field: "type" },
-            { title: "Moyen", field: "moyenPaiement" },
-            { title: "Montant", field: "montant", formatter: cell => `${cell.getValue()} F` }
+            { 
+                title: "Moyen", 
+                field: "moyenPaiement", 
+                formatter: cell => String(cell.getValue() || "").toUpperCase() 
+            },
+            { 
+                title: "Montant", 
+                field: "montant", 
+                formatter: cell => {
+                    const p = cell.getRow().getData();
+                    
+                    if (p.devise && p.devise !== deviseCaisse) {
+                        return `${p.montantOriginal} ${p.devise} → <strong>${p.montant} ${deviseCaisse}</strong>`;
+                    }
+                    return `${cell.getValue()} ${deviseCaisse}`;
+                } 
+            }
         ]
     });
 }
@@ -253,9 +281,11 @@ function imprimerHistorique() {
     }
 
     let totalGeneral = 0;
+    let premiereDevise = ventesAImprimer[0]?.deviseCaisse || "XOF";
 
     const ventesHtml = ventesAImprimer.map(vente => {
         totalGeneral += Number(vente.total) || 0;
+        const deviseCaisse = vente.deviseCaisse || "XOF";
 
         const lignesHtml = (vente.lignes || []).map(ligne => {
             const sousTotal = Number(ligne.quantite) * Number(ligne.prixUnitaire);
@@ -263,25 +293,30 @@ function imprimerHistorique() {
                 <tr>
                     <td>${ligne.produitNom}</td>
                     <td>${ligne.quantite}</td>
-                    <td class="montant">${ligne.prixUnitaire} F</td>
-                    <td class="montant">${sousTotal} F</td>
+                    <td class="montant">${ligne.prixUnitaire} ${deviseCaisse}</td>
+                    <td class="montant">${sousTotal} ${deviseCaisse}</td>
                 </tr>
             `;
         }).join("");
 
-        const paiementsHtml = (vente.paiements || []).map(paiement => `
-            <tr>
-                <td>${paiement.type}</td>
-                <td>${paiement.moyenPaiement}</td>
-                <td class="montant">${paiement.montant} F</td>
-            </tr>
-        `).join("");
+        const paiementsHtml = (vente.paiements || []).map(paiement => {
+            const montantAffichage = (paiement.devise && paiement.devise !== deviseCaisse)
+                ? `${paiement.montantOriginal} ${paiement.devise} &rarr; ${paiement.montant} ${deviseCaisse}`
+                : `${paiement.montant} ${deviseCaisse}`;
+
+            return `
+                <tr>
+                    <td>${String(paiement.moyenPaiement || "").toUpperCase()}</td>
+                    <td class="montant">${montantAffichage}</td>
+                </tr>
+            `;
+        }).join("");
 
         return `
             <div class="vente">
                 <div class="vente-entete">
                     <span>${new Date(vente.date).toLocaleString("fr-FR")}</span>
-                    <span>${vente.total} F</span>
+                    <span>${vente.total} ${deviseCaisse}</span>
                 </div>
 
                 <div class="section">Articles</div>
@@ -303,9 +338,8 @@ function imprimerHistorique() {
                 <table>
                     <thead>
                         <tr>
-                            <th>Type</th>
                             <th>Moyen</th>
-                            <th>Montant</th>
+                            <th class="montant">Montant</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -340,7 +374,7 @@ function imprimerHistorique() {
             <h1>Historique des ventes</h1>
             ${ventesHtml}
             <div class="total-general">
-                Total des ventes : ${totalGeneral} F
+                Total des ventes : ${totalGeneral} ${premiereDevise}
             </div>
         </body>
         </html>

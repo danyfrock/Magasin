@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Utilisateurs - Magasin</title>
-    <!-- Styles globaux et grilles -->
     <link href="../lib/tabulator/tabulator.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/grille.css">
@@ -38,7 +37,11 @@
                             <option value="Magasinier">Magasinier</option>
                         </select>
                     </div>
-                    <button id="utilisateur-submit" type="submit" class="btn btn-primary btn-create-user">Créer</button>
+                    <div class="form-group form-actions">
+                        <button type="submit" id="utilisateur-submit" class="btn btn-primary">
+                            Créer
+                        </button>
+                    </div>
                 </div>
             </form>
             <div id="create-error" class="create-error"></div>
@@ -48,7 +51,6 @@
         <div id="users-table"></div>
     </div>
 
-    <!-- Scripts de l'application -->
     <script src="../js/common.js"></script>
     <script src="../lib/tabulator/tabulator.min.js"></script>
     <script type="module" src="../js/utilisateurs.js"></script>
