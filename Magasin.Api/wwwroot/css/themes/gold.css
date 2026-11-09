@@ -2,6 +2,7 @@
    THÈME : OR ULTRA-BLING-BLING / QUI FAIT MAL AUX YEUX
    ========================================================= */
    [data-theme="gold"] {
+    --button-txt: white;
     --bg: #ffe600;
     --card-bg: #fff9b8;
 

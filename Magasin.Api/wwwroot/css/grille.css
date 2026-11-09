@@ -1,13 +1,17 @@
 /* =========================================================
-   GRILLES TABULATOR
+   GRILLES TABULATOR + TABLES CLASSIQUES
    ========================================================= */
 
-   .grille {
+.grille {
     width: 100%;
 }
 
-/* Conteneur principal */
-.tabulator {
+/* ---------------------------------------------------------
+   Styles communs (Tabulator + tables HTML)
+   --------------------------------------------------------- */
+.tabulator,
+table {
+    width: 100%;
     border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
@@ -16,7 +20,9 @@
     font-size: 0.9rem;
 }
 
-/* En-tête */
+/* ---------------------------------------------------------
+   TABULATOR
+   --------------------------------------------------------- */
 .tabulator .tabulator-header {
     background: var(--table-header-gradient, var(--surface-subtle));
     border-bottom: 1px solid var(--border);
@@ -38,7 +44,6 @@
     padding: 8px 12px;
 }
 
-/* Lignes */
 .tabulator .tabulator-row {
     background: var(--card-gradient, var(--card-bg));
     border-bottom: 1px solid var(--border);
@@ -55,7 +60,6 @@
     background-color: var(--surface-subtle);
 }
 
-/* Cellules */
 .tabulator .tabulator-cell {
     padding: 10px 12px;
     border-right: none;
@@ -99,14 +103,13 @@
     box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-/* Bas de grille */
+/* Footer + pagination */
 .tabulator .tabulator-footer {
     background: var(--surface-subtle);
     border-top: 1px solid var(--border);
     color: var(--text-muted);
 }
 
-/* Pagination */
 .tabulator .tabulator-footer .tabulator-page {
     border: none;
     border-radius: 7px;
@@ -126,20 +129,12 @@
     font-weight: 600;
 }
 
-/* =========================================================
+/* ---------------------------------------------------------
    TABLES HTML CLASSIQUES
-   ========================================================= */
-
+   --------------------------------------------------------- */
 table {
-    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--card-bg);
-    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.06);
-    font-size: 0.9rem;
 }
 
 table thead {

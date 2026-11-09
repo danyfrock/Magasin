@@ -47,6 +47,9 @@
 
     // 3. Logique spécifique à la page login.html (le reste ne bouge pas)
     function initialiserPageLogin(fetchFn) {
+        const theme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", theme);
+
         const loginForm = document.getElementById('login-form');
         const passwordForm = document.getElementById('password-form');
         const loginCard = document.getElementById('login-card');

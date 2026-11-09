@@ -1,11 +1,16 @@
 /* =========================================================
-   STYLE - GESTION DES UTILISATEURS
+   GESTION DES UTILISATEURS
    ========================================================= */
 
-   .users-container {
+.users-container {
     margin: 40px auto;
     padding: 0 16px;
 }
+
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
 
 .users-header {
     display: flex;
@@ -16,23 +21,21 @@
 
 .users-header h2 {
     margin: 0;
-    font-size: 1.5rem;
-    color: var(--text);
 }
 
-/* Carte formulaire de création */
 .create-user-card {
     margin-bottom: 24px;
 }
 
 .create-user-title {
-    margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 1.1rem;
-    color: var(--text);
+    margin: 0 0 16px;
 }
 
-/* Grille du formulaire */
+
+/* =========================================================
+   FORMULAIRE
+   ========================================================= */
+
 .user-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 150px auto;
@@ -40,37 +43,55 @@
     align-items: flex-end;
 }
 
-/* Select rôle */
 .form-select {
     height: 42px;
     padding: 0 12px;
+
     border: 1px solid var(--border);
     border-radius: 8px;
+
     background: var(--card-bg);
     color: var(--text);
-    font-family: inherit;
+
+    font-family: var(--font);
+    font-size: 0.95rem;
+
+    outline: none;
+
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .form-select:focus {
     border-color: var(--primary);
-    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-/* Bouton Créer */
 .btn-create-user {
     height: 42px;
     padding: 0 20px;
 }
 
-/* Message d'erreur de création */
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
 .create-error {
-    color: var(--danger);
     margin-top: 12px;
+
+    color: var(--danger);
     font-size: 0.9rem;
 }
 
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 768px) {
+
     .user-form-grid {
         grid-template-columns: 1fr;
     }
+
 }

@@ -2,7 +2,7 @@
    FILTRES
    ========================================================= */
 
-   .filtres-ventes {
+.filtres-ventes {
     margin-bottom: 20px;
 }
 
@@ -32,10 +32,16 @@
     border-radius: 8px;
     background: var(--card-bg);
     color: var(--text);
-    font-family: inherit;
+    font-family: var(--font);
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.filtre-groupe select:focus,
+.filtre-groupe input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .filtre-groupe select {
@@ -44,12 +50,6 @@
 
 .filtre-groupe input {
     min-width: 190px;
-}
-
-.filtre-groupe select:focus,
-.filtre-groupe input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .filtre-produit {
@@ -68,10 +68,10 @@
     height: 42px;
     padding: 0 16px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--button-radius);
     background: var(--surface-subtle);
     color: var(--text-muted);
-    font-family: inherit;
+    font-family: var(--font);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -79,7 +79,7 @@
 }
 
 .btn-filtre-reset:hover {
-    background: var(--surface-subtle);
+    background: var(--surface-hover);
     border-color: var(--primary);
     color: var(--primary);
 }
@@ -95,15 +95,9 @@
     gap: 20px;
 }
 
-@media (max-width: 900px) {
-    .layout {
-        grid-template-columns: 1fr;
-    }
-}
-
 
 /* =========================================================
-   DÉTAIL D'UNE VENTE
+   DETAIL D'UNE VENTE
    ========================================================= */
 
 .empty {
@@ -137,6 +131,11 @@
    ========================================================= */
 
 @media (max-width: 900px) {
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
     .filtres-ligne {
         flex-wrap: wrap;
     }
@@ -151,25 +150,20 @@
 }
 
 @media (max-width: 520px) {
+
     .filtres-ligne {
         flex-direction: column;
         align-items: stretch;
     }
 
     .filtre-groupe,
-    .filtre-produit {
-        width: 100%;
-    }
-
-    .filtre-groupe select,
-    .filtre-groupe input {
-        width: 100%;
-    }
-
+    .filtre-produit,
     .filtre-actions {
         width: 100%;
     }
 
+    .filtre-groupe select,
+    .filtre-groupe input,
     .btn-filtre-reset {
         width: 100%;
     }

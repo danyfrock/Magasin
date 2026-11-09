@@ -2,6 +2,7 @@
    THÈME : BLEU SAPHIR / NÉON ÉTINCELANT
    ========================================================= */
    [data-theme="bleu"] {
+    --button-txt: white;
     --bg: #03152b;
     --card-bg: #0b2545;
     --surface-subtle: #133a63;

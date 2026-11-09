@@ -2,6 +2,7 @@
    THÈME : FORÊT D'ÉMERAUDE
    ========================================================= */
 [data-theme="vert"] {
+    --button-txt: white;
     --bg: #17573b;
     --card-bg: #204332;
     --surface-subtle: #81af96;

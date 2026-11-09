@@ -2,6 +2,7 @@
    THÈME : ROSE RUBIS / PIERRE PRÉCIEUSE
    ========================================================= */
    [data-theme="rose"] {
+    --button-txt: white;
     --bg: #210915;
     --card-bg: #361023;
     --surface-subtle: #4d1833;

@@ -1,584 +1,591 @@
 /* =========================================================
    THÈMES
    ========================================================= */
-   @import url("themes/light.css");
-   @import url("themes/black.css");
-   @import url("themes/rose.css");
-   @import url("themes/bleu.css");
-   @import url("themes/vert.css");
-   @import url("themes/gold.css");
-   
-   /* =========================================================
-      VARIABLES COMMUNES ET DÉGRADÉS DYNAMIQUES UNIVERSELS
-      ========================================================= */
-   :where(:root) {
-       --radius: 12px;
-       --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-       --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-   
-       /* Texte dynamique multi-étapes basé sur les variables de thèmes */
-       --text-gradient: linear-gradient(
-           180deg,
-           var(--primary-hover) 0%,
-           var(--border) 35%,
-           var(--primary) 70%,
-           var(--primary-hover) 100%
-       );
-   
-       /* Boutons principaux : Effet relief haut de gamme ciselé */
-       --primary-gradient: linear-gradient(
-           135deg,
-           var(--primary-hover) 0%,
-           var(--border) 25%,
-           var(--primary) 50%,
-           var(--surface-subtle) 75%,
-           var(--primary-hover) 100%
-       );
-   
-       /* Cartes : Profondeur subtile entre le fond de carte et la surface subtile */
-       --card-gradient: linear-gradient(
-           145deg,
-           var(--card-bg) 0%,
-           var(--surface-subtle) 50%,
-           var(--card-bg) 100%
-       );
-   
-       /* Arrière-plan global de l'application */
-       --background-gradient: linear-gradient(
-           135deg,
-           var(--bg) 0%,
-           var(--surface-subtle) 50%,
-           var(--bg) 100%
-       );
-   
-       /* États (Succès, Danger, Warning) dynamiques */
-       --success-gradient: linear-gradient(
-           135deg,
-           var(--success-bg) 0%,
-           var(--success) 50%,
-           var(--success-bg) 100%
-       );
-   
-       --danger-gradient: linear-gradient(
-           135deg,
-           var(--danger-bg) 0%,
-           var(--danger) 50%,
-           var(--danger-bg) 100%
-       );
-   
-       --warning-gradient: linear-gradient(
-           135deg,
-           var(--warning-bg) 0%,
-           var(--warning) 50%,
-           var(--warning-bg) 100%
-       );
-   
-       /* En-têtes des tableaux */
-       --table-header-gradient: linear-gradient(
-           135deg,
-           var(--table-header-bg) 0%,
-           var(--surface-hover) 50%,
-           var(--table-header-bg) 100%
-       );
-   }
-   
-   /* =========================================================
-      RESET + BASE
-      ========================================================= */
-   *,
-   *::before,
-   *::after {
-       box-sizing: border-box;
-   }
-   
-   body {
-       margin: 0;
-       font-family: var(--font);
-       background: var(--background-gradient);
-       color: var(--text);
-       line-height: 1.5;
-   }
-   
-   /* =========================================================
-      LAYOUT
-      ========================================================= */
-   .app {
-       width: 100%;
-       max-width: 1400px;
-       margin: 0 auto;
-       padding: 24px 16px 48px;
-   }
-   
-   @media (min-width: 1600px) {
-       .app {
-           max-width: 90%;
-       }
-   }
-   
-   .header {
-       margin-bottom: 24px;
-   }
-   
-   .header h1 {
-       margin: 0;
-       font-size: 1.75rem;
-       font-weight: 700;
-   }
-   
-   .main {
-       display: flex;
-       flex-direction: column;
-       gap: 20px;
-   }
-   
-   /* =========================================================
-      CARDS
-      ========================================================= */
-   .back-link {
-       display: inline-block;
-       margin-bottom: 16px;
-       color: var(--primary);
-       text-decoration: none;
-       font-weight: 500;
-   }
-   
-   .back-link:hover {
-       text-decoration: underline;
-   }
-   
-   .card {
-       background: var(--card-gradient);
-       border-radius: var(--radius);
-       box-shadow: var(--shadow);
-       padding: 20px 24px;
-   }
-   
-   .card h2 {
-       margin: 0 0 16px;
-       font-size: 1.1rem;
-       font-weight: 600;
-       color: var(--text);
-   }
-   
-   /* =========================================================
-      SCAN
-      ========================================================= */
-   .card-scan input {
-       width: 100%;
-       padding: 12px 16px;
-       font-size: 1rem;
-       border: 1px solid var(--border);
-       border-radius: 8px;
-       background: var(--card-bg);
-       color: var(--text);
-       outline: none;
-       transition: border-color 0.15s, box-shadow 0.15s;
-   }
-   
-   .card-scan input:focus {
-       border-color: var(--primary);
-       box-shadow: 0 0 0 3px var(--focus-ring);
-   }
-   
-   /* =========================================================
-      TABLE PANIER
-      ========================================================= */
-   .table-wrapper {
-       overflow-x: auto;
-       margin-bottom: 16px;
-   }
-   
-   table {
-       width: 100%;
-       border-collapse: collapse;
-   }
-   
-   th,
-   td {
-       padding: 10px 12px;
-       text-align: left;
-       border-bottom: 1px solid var(--border);
-   }
-   
-   th {
-       font-size: 0.8rem;
-       text-transform: uppercase;
-       letter-spacing: 0.03em;
-       color: var(--text-muted);
-       font-weight: 600;
-       background: var(--table-header-gradient);
-   }
-   
-   td {
-       font-size: 0.95rem;
-       color: var(--text);
-   }
-   
-   td button {
-       margin-left: 4px;
-       padding: 4px 8px;
-       font-size: 0.85rem;
-       border: 1px solid var(--border);
-       border-radius: 6px;
-       background: var(--surface-subtle);
-       color: var(--text);
-       cursor: pointer;
-   }
-   
-   td button:hover {
-       background: var(--border);
-   }
-   
-   .total-bar {
-       font-size: 1.25rem;
-       font-weight: 700;
-       text-align: right;
-       padding-top: 8px;
-       border-top: 2px solid var(--border);
-   }
-   
-   /* =========================================================
-      PAIEMENT
-      ========================================================= */
-   .paiements-liste {
-       min-height: 28px;
-       margin-bottom: 16px;
-       font-size: 0.95rem;
-       color: var(--text-muted);
-   }
-   
-   .paiements-liste div {
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-       padding: 6px 0;
-       border-bottom: 1px dashed var(--border);
-   }
-   
-   .paiements-liste button {
-       background: none;
-       border: none;
-       color: var(--danger);
-       cursor: pointer;
-       font-size: 1rem;
-       padding: 0 4px;
-   }
-   
-   .resume-paiement {
-       background: var(--surface-subtle);
-       border-radius: 8px;
-       padding: 12px 16px;
-       margin-bottom: 16px;
-   }
-   
-   .resume-ligne {
-       display: flex;
-       justify-content: space-between;
-       margin-bottom: 4px;
-   }
-   
-   .resume-ligne:last-child {
-       margin-bottom: 0;
-   }
-   
-   .montant-group {
-       margin-bottom: 16px;
-   }
-   
-   .montant-group label {
-       display: block;
-       font-size: 0.875rem;
-       font-weight: 500;
-       margin-bottom: 6px;
-       color: var(--text-muted);
-   }
-   
-   .montant-group input {
-       width: 100%;
-       padding: 12px 16px;
-       font-size: 1.1rem;
-       border: 1px solid var(--border);
-       border-radius: 8px;
-       background: var(--card-bg);
-       color: var(--text);
-       outline: none;
-   }
-   
-   .montant-group input:focus {
-       border-color: var(--primary);
-       box-shadow: 0 0 0 3px var(--focus-ring);
-   }
-   
-   .boutons-modes {
-       display: grid;
-       grid-template-columns: repeat(4, 1fr);
-       gap: 8px;
-       margin-bottom: 16px;
-   }
-   
-   .btn {
-       background: var(--primary-gradient);
-       color: var(--primary-text);
-       padding: 12px 16px;
-       font-size: 0.9rem;
-       font-weight: 600;
-       border: none;
-       border-radius: 8px;
-       cursor: pointer;
-       transition: background 0.15s, transform 0.1s;
-   }
-   
-   .btn:active {
-       transform: scale(0.98);
-   }
-   
-   .btn-mode {
-       background: var(--surface-subtle);
-       color: var(--primary);
-   }
-   
-   .btn-mode:hover {
-       background: var(--border);
-   }
-   
-   .btn-valider {
-       background: var(--success-gradient);
-       color: white;
-       width: 100%;
-       margin-bottom: 8px;
-   }
-   
-   .btn-valider:hover:not(:disabled) {
-       opacity: 0.9;
-   }
-   
-   .btn-valider:disabled {
-       background: var(--surface-subtle);
-       color: var(--text-muted);
-       cursor: not-allowed;
-   }
-   
-   .btn-annuler {
-       background: var(--danger-gradient);
-       color: white;
-       width: 100%;
-   }
-   
-   .btn-annuler:hover {
-       opacity: 0.9;
-   }
-   
-   .a-rendre {
-       text-align: center;
-       font-size: 1.15rem;
-       font-weight: 700;
-       color: var(--success);
-       margin: 12px 0;
-   }
-   
-   .actions-vente {
-       margin-top: 8px;
-   }
-   
-   /* =========================================================
-      RESPONSIVE
-      ========================================================= */
-   @media (max-width: 520px) {
-       .boutons-modes {
-           grid-template-columns: repeat(2, 1fr);
-       }
-   
-       .app {
-           padding: 16px 12px 32px;
-       }
-   }
-   
-   /* =========================================================
-      MODALES
-      ========================================================= */
-   .modal {
-       display: none;
-       position: fixed;
-       inset: 0;
-       background: var(--overlay);
-       align-items: center;
-       justify-content: center;
-       padding: 20px;
-       z-index: 1000;
-   }
-   
-   .modal.visible {
-       display: flex;
-   }
-   
-   .modal-content {
-       width: 100%;
-       max-width: 700px;
-       max-height: 80vh;
-       overflow-y: auto;
-       background: var(--card-bg);
-       border-radius: var(--radius);
-       box-shadow: var(--shadow);
-       padding: 24px;
-       color: var(--text);
-   }
-   
-   .modal-content h2 {
-       margin: 0 0 20px;
-       color: var(--text);
-   }
-   
-   #liste-images {
-       display: grid;
-       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-       gap: 16px;
-       margin-bottom: 20px;
-   }
-   
-   .image-selection {
-       border: 2px solid var(--border);
-       border-radius: 8px;
-       padding: 8px;
-       background: var(--card-bg);
-       cursor: pointer;
-   }
-   
-   .image-selection:hover {
-       border-color: var(--primary);
-   }
-   
-   .image-selection img {
-       display: block;
-       width: 100%;
-       height: 100px;
-       object-fit: contain;
-   }
-   
-   .action-btn {
-       border: none;
-       border-radius: 8px;
-       padding: 8px 14px;
-       font-size: 13px;
-       font-weight: 600;
-       color: white;
-       cursor: pointer;
-       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-       transition: all 0.2s ease;
-   }
-   
-   .action-btn:hover {
-       transform: translateY(-2px);
-   }
-   
-   .btn-modifier {
-       background: var(--primary);
-   }
-   
-   .btn-supprimer {
-       margin-left: 10px;
-       padding: 8px 14px;
-       border: none;
-       border-radius: 10px;
-       background: var(--surface-subtle);
-       color: var(--danger);
-       font-size: 0.85rem;
-       cursor: pointer;
-       transition: background 0.2s ease;
-   }
-   
-   .btn-supprimer:hover,
-   .btn-supprimer:active {
-       background: var(--border);
-   }
-   
-   .top-bar {
-       display: flex;
-       align-items: center;
-       justify-content: space-between;
-       gap: 20px;
-       padding: 16px 24px;
-       background: var(--card-bg);
-       box-shadow: var(--shadow);
-   }
-   
-   .top-bar h1 {
-       margin: 0;
-       font-size: 1.5rem;
-       color: var(--text);
-   }
-   
-   .logo {
-       font-weight: 700;
-       white-space: nowrap;
-       color: var(--text);
-   }
-   
-   .user-zone {
-       display: flex;
-       align-items: center;
-       gap: 16px;
-   }
-   
-   .top-bar .back-link {
-       margin-bottom: 0;
-       white-space: nowrap;
-   }
-   
-   .logout-button {
-       background-color: var(--danger);
-       color: white;
-       border: none;
-       border-radius: 6px;
-       padding: 9px 16px;
-       font-size: 14px;
-       font-weight: 600;
-       cursor: pointer;
-       transition: background-color 0.2s, transform 0.2s;
-   }
-   
-   .logout-button:hover {
-       background-color: #b02a37;
-       transform: translateY(-1px);
-   }
-   
-   .logout-button:active {
-       transform: translateY(0);
-   }
-   
-   .btn-qty {
-       width: 34px;
-       height: 34px;
-       margin: 0 4px;
-       border: none;
-       border-radius: 10px;
-       background: var(--surface-subtle);
-       color: var(--text);
-       font-size: 1.2rem;
-       font-weight: 600;
-       cursor: pointer;
-       transition: all 0.2s ease;
-   }
-   
-   .btn-qty:active {
-       background: var(--border);
-   }
-   
-   /* =========================================================
-      SÉLECTEUR DE THÈME (Bandeau)
-      ========================================================= */
-   .theme-selector {
-       padding: 6px 10px;
-       border-radius: 6px;
-       border: 1px solid var(--border);
-       background: var(--card-bg);
-       color: var(--text);
-       cursor: pointer;
-       font-family: inherit;
-       font-size: 0.9rem;
-       outline: none;
-   }
-   
-   .theme-selector:focus {
-       border-color: var(--primary);
-       box-shadow: 0 0 0 3px var(--focus-ring);
-   }
+@import url("themes/light.css");
+@import url("themes/black.css");
+@import url("themes/rose.css");
+@import url("themes/bleu.css");
+@import url("themes/vert.css");
+@import url("themes/gold.css");
+
+/* =========================================================
+   VARIABLES COMMUNES ET DÉGRADÉS DYNAMIQUES UNIVERSELS
+   ========================================================= */
+:where(:root) {
+    --radius: 12px;
+    --button-radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    /* Texte dynamique multi-étapes basé sur les variables de thèmes */
+    --text-gradient: linear-gradient(
+        180deg,
+        var(--primary-hover) 0%,
+        var(--border) 35%,
+        var(--primary) 70%,
+        var(--primary-hover) 100%
+    );
+
+    /* Boutons principaux : Effet relief haut de gamme ciselé */
+    --primary-gradient: linear-gradient(
+        135deg,
+        var(--primary-hover) 0%,
+        var(--border) 25%,
+        var(--primary) 50%,
+        var(--surface-subtle) 75%,
+        var(--primary-hover) 100%
+    );
+
+    /* Cartes : Profondeur subtile entre le fond de carte et la surface subtile */
+    --card-gradient: linear-gradient(
+        145deg,
+        var(--card-bg) 0%,
+        var(--surface-subtle) 50%,
+        var(--card-bg) 100%
+    );
+
+    /* Arrière-plan global de l'application */
+    --background-gradient: linear-gradient(
+        135deg,
+        var(--bg) 0%,
+        var(--surface-subtle) 50%,
+        var(--bg) 100%
+    );
+
+    /* États (Succès, Danger, Warning) dynamiques */
+    --success-gradient: linear-gradient(
+        135deg,
+        var(--success-bg) 0%,
+        var(--success) 50%,
+        var(--success-bg) 100%
+    );
+
+    --danger-gradient: linear-gradient(
+        135deg,
+        var(--danger-bg) 0%,
+        var(--danger) 50%,
+        var(--danger-bg) 100%
+    );
+
+    --warning-gradient: linear-gradient(
+        135deg,
+        var(--warning-bg) 0%,
+        var(--warning) 50%,
+        var(--warning-bg) 100%
+    );
+
+    /* En-têtes des tableaux */
+    --table-header-gradient: linear-gradient(
+        135deg,
+        var(--table-header-bg) 0%,
+        var(--surface-hover) 50%,
+        var(--table-header-bg) 100%
+    );
+}
+
+/* =========================================================
+   RESET + BASE
+   ========================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font);
+    background: var(--background-gradient);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+.app {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+}
+
+@media (min-width: 1600px) {
+    .app {
+        max-width: 90%;
+    }
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+.back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.card {
+    background: var(--card-gradient);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+}
+
+.card h2 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* =========================================================
+   INPUTS (regroupés)
+   ========================================================= */
+.card-scan input,
+.montant-group input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card-scan input:focus,
+.montant-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.montant-group input {
+    font-size: 1.1rem;
+}
+
+/* =========================================================
+   TABLE PANIER
+   ========================================================= */
+.table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    font-weight: 600;
+    background: var(--table-header-gradient);
+}
+
+td {
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.total-bar {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: right;
+    padding-top: 8px;
+    border-top: 2px solid var(--border);
+}
+
+/* =========================================================
+   PAIEMENT
+   ========================================================= */
+.paiements-liste {
+    min-height: 28px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.paiements-liste div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.paiements-liste button {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 4px;
+}
+
+.resume-paiement {
+    background: var(--surface-subtle);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.resume-ligne {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.resume-ligne:last-child {
+    margin-bottom: 0;
+}
+
+.montant-group {
+    margin-bottom: 16px;
+}
+
+.montant-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+}
+
+.boutons-modes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.a-rendre {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--success);
+    margin: 12px 0;
+}
+
+.actions-vente {
+    margin-top: 8px;
+}
+
+/* =========================================================
+   BOUTONS – base commune + variantes
+   ========================================================= */
+/* =========================================================
+   BOUTONS – 2 familles seulement
+   ========================================================= */
+
+/* Base commune à tous les boutons */
+.btn,
+.btn-primary,
+.btn-valider,
+.btn-modifier,
+.action-btn,
+.btn-secondary,
+.btn-annuler,
+.btn-mode,
+.btn-supprimer,
+.btn-qty,
+.logout-button,
+td button {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s, transform 0.1s, opacity 0.15s, box-shadow 0.15s;
+}
+
+/* ---------- FAMILLE PRINCIPALE (Valider / Confirmer) ---------- */
+.btn,
+.btn-primary,
+.btn-valider,
+.btn-modifier,
+.action-btn {
+    background: var(--primary-gradient);
+    color: var(--primary-text);
+    padding: 12px 16px;
+    font-size: 0.9rem;
+}
+
+.btn:active,
+.btn-primary:active,
+.btn-valider:active,
+.btn-modifier:active,
+.action-btn:active {
+    transform: scale(0.98);
+}
+
+.btn-valider {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.btn-valider:disabled {
+    background: var(--surface-subtle);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.action-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* ---------- FAMILLE SECONDAIRE (Annuler / Neutre) ---------- */
+.btn-secondary,
+.btn-annuler,
+.btn-mode {
+    background: linear-gradient(
+        135deg,
+        var(--surface-subtle) 0%,
+        var(--border) 50%,
+        var(--surface-subtle) 100%
+    );
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-secondary:hover,
+.btn-annuler:hover,
+.btn-mode:hover {
+    background: var(--border);
+}
+
+.btn-annuler {
+    width: 100%;
+    color: var(--danger); /* on garde une touche rouge pour l’annulation */
+}
+
+/* ---------- Cas spéciaux (on les laisse à part) ---------- */
+.btn-supprimer {
+    margin-left: 10px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: var(--surface-subtle);
+    color: var(--danger);
+    font-size: 0.85rem;
+}
+
+.btn-supprimer:hover,
+.btn-supprimer:active {
+    background: var(--border);
+}
+
+.btn-qty {
+    width: 34px;
+    height: 34px;
+    margin: 0 4px;
+    border-radius: 10px;
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-size: 1.2rem;
+}
+
+.btn-qty:active {
+    background: var(--border);
+}
+
+.logout-button {
+    background-color: var(--danger);
+    color: var(--button-txt);
+    border-radius: 6px;
+    padding: 9px 16px;
+    font-size: 14px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.logout-button:hover {
+    background-color: #b02a37;
+    transform: translateY(-1px);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+td button {
+    margin-left: 4px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface-subtle);
+    color: var(--text);
+}
+
+td button:hover {
+    background: var(--border);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 520px) {
+    .boutons-modes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .app {
+        padding: 16px 12px 32px;
+    }
+}
+
+/* =========================================================
+   MODALES
+   ========================================================= */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--overlay);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal.visible {
+    display: flex;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    color: var(--text);
+}
+
+.modal-content h2 {
+    margin: 0 0 20px;
+    color: var(--text);
+}
+
+#liste-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.image-selection {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    background: var(--card-bg);
+    cursor: pointer;
+}
+
+.image-selection:hover {
+    border-color: var(--primary);
+}
+
+.image-selection img {
+    display: block;
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 24px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.top-bar h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text);
+}
+
+.logo {
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--text);
+}
+
+.user-zone {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.top-bar .back-link {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   SÉLECTEUR DE THÈME (Bandeau)
+   ========================================================= */
+.theme-selector {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.theme-selector:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
