@@ -98,11 +98,13 @@ function initialiserFormulaire() {
     const boutonAnnuler = document.getElementById("btn-annuler");
     const boutonAjouterImage = document.getElementById("btn-ajouter-image");
     const champImage = document.getElementById("image");
+    const boutonAnalyserIa = document.getElementById("btn-analyser-ia");
 
     formulaire.addEventListener("submit", enregistrerProduit);
     boutonAnnuler.addEventListener("click", nettoyerFormulaire);
     boutonAjouterImage.addEventListener("click", () => champImage.click());
     champImage.addEventListener("change", afficherNouvelleImage);
+    boutonAnalyserIa.addEventListener("click", analyserImageAvecIa);
 
     // Gestion de la modale d'images
     const boutonChoisirImage = document.getElementById("btn-choisir-image");
@@ -118,13 +120,22 @@ function initialiserFormulaire() {
     });
 }
 
+// --- Gestion de l'état du bouton IA ---
+function mettreAJourEtatBoutonIa() {
+    const fichier = document.getElementById("image").files[0];
+    const imagePreview = document.getElementById("image-preview");
+    const aUneImage = fichier || imageSelectionnee || (imagePreview.getAttribute("src") && imagePreview.getAttribute("src") !== "");
+    
+    const boutonAnalyserIa = document.getElementById("btn-analyser-ia");
+    boutonAnalyserIa.disabled = !aUneImage;
+}
+
 // --- Chargement des données ---
 async function chargerImages(modalImages) {
     try {
         const images = await apiCall("/api/image");
         const liste = document.getElementById("liste-images");
 
-        // Optimisation : génération du HTML en une seule fois
         liste.innerHTML = images.map(image => {
             const nomFichier = image.imagePath.split("\\").pop();
             return `
@@ -134,7 +145,6 @@ async function chargerImages(modalImages) {
             `;
         }).join('');
 
-        // Attachement des écouteurs sur les éléments générés
         document.querySelectorAll(".image-selection").forEach(element => {
             element.addEventListener("click", () => {
                 const imageId = Number(element.dataset.imageId);
@@ -142,6 +152,7 @@ async function chargerImages(modalImages) {
 
                 afficherImageExistante({ imageResponse: imageSelectionnee, imageData: null });
                 modalImages.classList.remove("visible");
+                mettreAJourEtatBoutonIa();
             });
         });
 
@@ -171,6 +182,7 @@ function chargerProduitDansFormulaire(produit) {
 
     afficherImageExistante(produit.image);
     masquerSucces();
+    mettreAJourEtatBoutonIa();
 }
 
 function afficherImageExistante(imageSwitch) {
@@ -182,6 +194,7 @@ function afficherImageExistante(imageSwitch) {
         container.classList.remove("visible");
         image.removeAttribute("src");
         texte.style.display = "block";
+        mettreAJourEtatBoutonIa();
         return;
     }
 
@@ -189,12 +202,16 @@ function afficherImageExistante(imageSwitch) {
     image.style.display = "block";
     texte.style.display = "none";
     container.classList.add("visible");
+    mettreAJourEtatBoutonIa();
 }
 
 function afficherNouvelleImage() {
     imageSelectionnee = null;
     const fichier = document.getElementById("image").files[0];
-    if (!fichier) return;
+    if (!fichier) {
+        mettreAJourEtatBoutonIa();
+        return;
+    }
 
     const container = document.getElementById("image-preview-container");
     const image = document.getElementById("image-preview");
@@ -204,6 +221,7 @@ function afficherNouvelleImage() {
     image.style.display = "block";
     texte.style.display = "none";
     container.classList.add("visible");
+    mettreAJourEtatBoutonIa();
 }
 
 function fichierVersBase64(fichier) {
@@ -237,6 +255,46 @@ async function construireImage(produitExistant) {
     }
 
     return { imageResponse: null, imageData: null };
+}
+
+// --- Analyse IA ---
+async function analyserImageAvecIa() {
+    const boutonAnalyserIa = document.getElementById("btn-analyser-ia");
+    if (boutonAnalyserIa.disabled) return;
+
+    boutonAnalyserIa.disabled = true;
+    const texteOriginal = boutonAnalyserIa.textContent;
+    boutonAnalyserIa.textContent = "Analyse...";
+
+    try {
+        const id = document.getElementById("produit-id").value;
+        let produitExistant = null;
+        if (id !== "") {
+            const lignes = produitTable.getRows().map(row => row.getData());
+            produitExistant = lignes.find(p => p.id === Number(id)) || null;
+        }
+
+        const imageSwitch = await construireImage(produitExistant);
+
+        const resultat = await apiCall("/api/ImageAnalysis/analyze", {
+            method: "POST",
+            body: JSON.stringify(imageSwitch)
+        });
+
+        if (resultat) {
+            if (resultat.title) {
+                document.getElementById("nom").value = resultat.title;
+            }
+            if (resultat.description) {
+                document.getElementById("description").value = resultat.description;
+            }
+        }
+    } catch (error) {
+        afficherErreur("Erreur lors de l'analyse de l'image par l'IA.");
+    } finally {
+        boutonAnalyserIa.disabled = false;
+        boutonAnalyserIa.textContent = texteOriginal;
+    }
 }
 
 // --- Enregistrement & Suppression ---
@@ -320,6 +378,7 @@ function nettoyerFormulaire() {
     texte.style.display = "block";
 
     masquerSucces();
+    mettreAJourEtatBoutonIa();
 }
 
 function afficherSucces() {
