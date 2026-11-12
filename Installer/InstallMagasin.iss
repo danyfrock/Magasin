@@ -1,5 +1,5 @@
 #define MyAppName "Magasin"
-#define MyAppVersion "2.1.3"
+#define MyAppVersion "2.2.1"
 #define MyAppExeName "Magasin.Api.exe"
 
 [Setup]
