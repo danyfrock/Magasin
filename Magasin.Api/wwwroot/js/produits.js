@@ -145,6 +145,9 @@ function initialiserFormulaire() {
     boutonFermerModal.addEventListener("click", () => {
         modalImages.classList.remove("visible");
     });
+
+    document.getElementById("btn-supprimer-orphelines").addEventListener("click", nettoyerImagesOrphelines);
+    document.getElementById("btn-fusionner-doublons").addEventListener("click", fusionnerDoublonsImages);
 }
 
 // --- Gestion de l'état du bouton IA ---
@@ -391,4 +394,38 @@ function masquerSucces() {
 
 function afficherErreur(messageTexte) {
     alert(messageTexte);
+}
+
+async function nettoyerImagesOrphelines() {
+    try {
+        const resultat = await apiCall("/api/image/cleanup-orphans", {
+            method: "POST"
+        });
+        alert(`Nettoyage réussi : ${resultat.supprimees} image(s) orpheline(s) supprimée(s).`);
+        
+        // Optionnel : recharger la liste des images de la modale si elle est ouverte
+        const modalImages = document.getElementById("modal-images");
+        if (modalImages.classList.contains("visible")) {
+            await chargerImages(modalImages);
+        }
+    } catch (error) {
+        afficherErreur("Erreur lors du nettoyage des orphelines.");
+    }
+}
+
+async function fusionnerDoublonsImages() {
+    try {
+        const resultat = await apiCall("/api/image/merge-duplicates", {
+            method: "POST"
+        });
+        alert(`Fusion réussie : ${resultat.fusionnees} image(s) traitée(s) (doublons fusionnés et orphelines nettoyées).`);
+        
+        // Optionnel : recharger la liste des images de la modale
+        const modalImages = document.getElementById("modal-images");
+        if (modalImages.classList.contains("visible")) {
+            await chargerImages(modalImages);
+        }
+    } catch (error) {
+        afficherErreur("Erreur lors de la fusion des doublons.");
+    }
 }

@@ -1,3 +1,4 @@
+using Magasin.Api.Dtos;
 using Magasin.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +20,24 @@ public class ImageController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var images = await imageService.GetAll();
+        List<ImageResponseDto> images = await imageService.GetAll();
 
         return Ok(images);
+    }
+
+    [HttpPost("cleanup-orphans")]
+    public async Task<IActionResult> CleanupOrphans()
+    {
+        int nombreSupprimees = await imageService.SupprimerImagesOrphelinesAsync();
+
+        return Ok(new { Supprimees = nombreSupprimees });
+    }
+
+    [HttpPost("merge-duplicates")]
+    public async Task<IActionResult> MergeDuplicates()
+    {
+        int nombreFusionnees = await imageService.FusionnerDoublonsImagesAsync();
+
+        return Ok(new { Fusionnees = nombreFusionnees });
     }
 }

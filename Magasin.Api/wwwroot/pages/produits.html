@@ -109,9 +109,19 @@
             <div id="liste-images">
             </div>
 
-            <button type="button" id="btn-fermer-modal">
-                Fermer
-            </button>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                <button type="button" id="btn-supprimer-orphelines" class="btn btn-secondary">
+                    Nettoyer inutilisées
+                </button>
+
+                <button type="button" id="btn-fusionner-doublons" class="btn btn-secondary">
+                    Fusionner doublons
+                </button>
+
+                <button type="button" id="btn-fermer-modal" class="btn btn-primary">
+                    Fermer
+                </button>
+            </div>
 
         </div>
     </div>
