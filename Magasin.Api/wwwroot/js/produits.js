@@ -8,6 +8,33 @@ document.addEventListener("DOMContentLoaded", () => {
     chargerProduits();
 });
 
+// --- Mutualisation : Gestion unifiée de l'aperçu image ---
+function appliquerApercuImage(src, afficherTexteVide) {
+    const container = document.getElementById("image-preview-container");
+    const image = document.getElementById("image-preview");
+    const texte = document.getElementById("image-preview-empty");
+
+    if (afficherTexteVide) {
+        container.classList.remove("visible");
+        image.removeAttribute("src");
+        texte.style.display = "block";
+    } else {
+        image.src = src;
+        image.style.display = "block";
+        texte.style.display = "none";
+        container.classList.add("visible");
+    }
+    mettreAJourEtatBoutonIa();
+}
+
+// --- Mutualisation : Récupération du produit en cours d'édition ---
+function getProduitExistantCourant() {
+    const id = document.getElementById("produit-id").value;
+    if (id === "") return null;
+    const lignes = produitTable.getRows().map(row => row.getData());
+    return lignes.find(p => p.id === Number(id)) || null;
+}
+
 // --- Grille (Tabulator) ---
 function initialiserGrille() {
     produitTable = new Tabulator("#produit-table", {
@@ -150,6 +177,9 @@ async function chargerImages(modalImages) {
                 const imageId = Number(element.dataset.imageId);
                 imageSelectionnee = images.find(img => img.id === imageId);
 
+                // CORRECTION 1 : On vide l'input fichier pour éviter le conflit
+                document.getElementById("image").value = "";
+
                 afficherImageExistante({ imageResponse: imageSelectionnee, imageData: null });
                 modalImages.classList.remove("visible");
                 mettreAJourEtatBoutonIa();
@@ -180,48 +210,33 @@ function chargerProduitDansFormulaire(produit) {
     document.getElementById("prix").value = produit.prix;
     document.getElementById("description").value = produit.description || "";
 
+    // On réinitialise aussi l'input fichier au chargement d'un produit
+    document.getElementById("image").value = "";
+
     afficherImageExistante(produit.image);
     masquerSucces();
     mettreAJourEtatBoutonIa();
 }
 
 function afficherImageExistante(imageSwitch) {
-    const container = document.getElementById("image-preview-container");
-    const image = document.getElementById("image-preview");
-    const texte = document.getElementById("image-preview-empty");
-
     if (!imageSwitch?.imageResponse) {
-        container.classList.remove("visible");
-        image.removeAttribute("src");
-        texte.style.display = "block";
-        mettreAJourEtatBoutonIa();
+        appliquerApercuImage(null, true);
         return;
     }
-
-    image.src = "/" + imageSwitch.imageResponse.imagePath;
-    image.style.display = "block";
-    texte.style.display = "none";
-    container.classList.add("visible");
-    mettreAJourEtatBoutonIa();
+    appliquerApercuImage("/" + imageSwitch.imageResponse.imagePath, false);
 }
 
 function afficherNouvelleImage() {
+    // CORRECTION 2 : On détache l'ancienne image existante si on choisit un fichier
     imageSelectionnee = null;
+    
     const fichier = document.getElementById("image").files[0];
     if (!fichier) {
         mettreAJourEtatBoutonIa();
         return;
     }
 
-    const container = document.getElementById("image-preview-container");
-    const image = document.getElementById("image-preview");
-    const texte = document.getElementById("image-preview-empty");
-
-    image.src = URL.createObjectURL(fichier);
-    image.style.display = "block";
-    texte.style.display = "none";
-    container.classList.add("visible");
-    mettreAJourEtatBoutonIa();
+    appliquerApercuImage(URL.createObjectURL(fichier), false);
 }
 
 function fichierVersBase64(fichier) {
@@ -267,13 +282,7 @@ async function analyserImageAvecIa() {
     boutonAnalyserIa.textContent = "Analyse...";
 
     try {
-        const id = document.getElementById("produit-id").value;
-        let produitExistant = null;
-        if (id !== "") {
-            const lignes = produitTable.getRows().map(row => row.getData());
-            produitExistant = lignes.find(p => p.id === Number(id)) || null;
-        }
-
+        const produitExistant = getProduitExistantCourant();
         const imageSwitch = await construireImage(produitExistant);
 
         const resultat = await apiCall("/api/ImageAnalysis/analyze", {
@@ -314,13 +323,8 @@ async function enregistrerProduit(event) {
     const prix = Number(document.getElementById("prix").value);
     const description = document.getElementById("description").value.trim();
 
-    let produitExistant = null;
-    if (id !== "") {
-        const lignes = produitTable.getRows().map(row => row.getData());
-        produitExistant = lignes.find(p => p.id === Number(id)) || null;
-    }
-
     try {
+        const produitExistant = getProduitExistantCourant();
         const image = await construireImage(produitExistant);
         const payload = { codeBarre, nom, prix, description: description || null, image };
         
@@ -368,15 +372,9 @@ function nettoyerFormulaire() {
     document.getElementById("produit-form").reset();
     document.getElementById("produit-id").value = "";
     document.getElementById("code-barre").value = "";
+    document.getElementById("image").value = ""; // On nettoie aussi l'input fichier
 
-    const container = document.getElementById("image-preview-container");
-    const image = document.getElementById("image-preview");
-    const texte = document.getElementById("image-preview-empty");
-
-    container.classList.remove("visible");
-    image.removeAttribute("src");
-    texte.style.display = "block";
-
+    appliquerApercuImage(null, true);
     masquerSucces();
     mettreAJourEtatBoutonIa();
 }
