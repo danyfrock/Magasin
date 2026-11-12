@@ -9,7 +9,12 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Charger le secret en production
+// Charger le secret en production s'il existe
 var secretPath = Path.Combine(builder.Environment.ContentRootPath, "magasin.secret.json");
+if (File.Exists(secretPath))
+{
+    builder.Configuration.AddJsonFile(secretPath, optional: true, reloadOnChange: true);
+}
 
 if (File.Exists(secretPath))
 {
