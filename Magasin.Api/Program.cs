@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Magasin.Api.Database;
 using Magasin.Api.Services;
@@ -8,23 +7,11 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Charger le secret en production
-// Charger le secret en production s'il existe
+// Charger le secret en production s'il existe (gère nativement le format imbriqué standard)
 var secretPath = Path.Combine(builder.Environment.ContentRootPath, "magasin.secret.json");
 if (File.Exists(secretPath))
 {
     builder.Configuration.AddJsonFile(secretPath, optional: true, reloadOnChange: true);
-}
-
-if (File.Exists(secretPath))
-{
-    var json = File.ReadAllText(secretPath);
-    var secrets = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-
-    if (secrets != null && secrets.TryGetValue("ConnectionStrings:Magasin", out string? connectionString))
-    {
-        builder.Configuration["ConnectionStrings:Magasin"] = connectionString;
-    }
 }
 
 builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://0.0.0.0:5143");
@@ -64,7 +51,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
 
-        // API : renvoyer des statuts HTTP au lieu de rediriger vers une page HTML
         options.Events.OnRedirectToLogin = context =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -94,7 +80,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "Images");
-
 Directory.CreateDirectory(imagesPath);
 
 app.UseStaticFiles(new StaticFileOptions
@@ -111,7 +96,6 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<MagasinDbContext>();
     dbContext.Database.Migrate();
 
-    // Création de l'administrateur par défaut après la migration
     var authService = scope.ServiceProvider.GetRequiredService<AuthService>();
     await authService.InitialiserAdminParDefautAsync();
 }
