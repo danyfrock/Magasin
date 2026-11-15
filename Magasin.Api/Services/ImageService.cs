@@ -9,10 +9,18 @@ namespace Magasin.Api.Services;
 public class ImageService
 {
     private readonly MagasinDbContext dbContext;
+    private readonly IConfiguration _configuration;
 
-    public ImageService(MagasinDbContext dbContext)
+    public ImageService(MagasinDbContext dbContext, IConfiguration configuration)
     {
         this.dbContext = dbContext;
+        _configuration = configuration;
+    }
+
+    public bool PeutNettoyerDisque()
+    {
+        // Récupère la valeur en bool, retourne false par défaut si la clé est absente
+        return _configuration.GetValue<bool>("ImageSettings:ActiverNettoyageDisque", false);
     }
 
     public async Task<Image?> GetById(int id)
@@ -37,6 +45,13 @@ public class ImageService
             .ToListAsync();
     }
 
+private string GetImagesDirectory()
+    {
+        var directory = Path.Combine(".", "Images");
+        Directory.CreateDirectory(directory);
+        return directory;
+    }
+
     public async Task<Image> Create(ImageDataDto dto)
     {
         string extension = dto.ContentType switch
@@ -50,8 +65,7 @@ public class ImageService
 
         var fileName = $"{Guid.NewGuid()}{extension}";
         
-        var directory = Path.Combine(".", "Images");
-        Directory.CreateDirectory(directory);
+        var directory = GetImagesDirectory();
 
         var filePath = Path.Combine(directory, fileName);
 
@@ -90,6 +104,17 @@ public class ImageService
 
     public async Task<int> SupprimerImagesOrphelinesAsync()
     {
+        // 1. Nettoyage disque si activé
+        if (PeutNettoyerDisque())
+        {
+            var cheminsEnBase = await dbContext.Images
+                .Select(i => Path.GetFileName(i.Path))
+                .ToListAsync();
+
+            _ = SupprimerFichiersIRLAsync(cheminsEnBase);
+        }
+
+        // 2. Nettoyage base de données
         var orphelines = await dbContext.Images
             .Where(img => !dbContext.Produits.Any(p => p.Image != null && p.Image.Id == img.Id))
             .ToListAsync();
@@ -98,11 +123,37 @@ public class ImageService
 
         foreach (var image in orphelines)
         {
-            try {File.Delete(image.Path);} catch(Exception){}
+            try { File.Delete(image.Path); } catch (Exception) { }
         }
 
         dbContext.Images.RemoveRange(orphelines);
+        
         return await dbContext.SaveChangesAsync();
+    }
+
+    private async Task SupprimerFichiersIRLAsync(List<string> cheminsEnBase)
+    {
+        try
+        {
+            string directory = this.GetImagesDirectory();
+
+            // Exécution purement fichiers sur une autre thread (sans toucher au DbContext)
+            await Task.Run(() =>
+            {
+                Directory.GetFiles(directory)
+                    .Select(Path.GetFileName)
+                    .Except(cheminsEnBase.Append(".gitkeep"), StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+                    .ForEach(f =>
+                    {
+                        try { File.Delete(Path.Combine(directory, f!)); } catch (Exception) { }
+                    });
+            });
+        }
+        catch (Exception)
+        {
+            // Ignoré
+        }
     }
 
     public async Task<int> FusionnerDoublonsImagesAsync()
