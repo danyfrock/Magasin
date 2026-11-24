@@ -58,7 +58,7 @@ namespace Magasin.Api.Services
             int? limit = null)
         {
             IQueryable<Journal> query =
-                dbContext.Journaux;
+                dbContext.Journaux.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(typeEntite))
             {

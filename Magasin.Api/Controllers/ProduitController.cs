@@ -75,4 +75,27 @@ public class ProduitController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchByText([FromQuery] string texte)
+    {
+        List<ProduitDto> produits = await produitService.GetByText(texte);
+
+        return Ok(produits);
+    }
+
+    [HttpGet("smart-search")]
+    public async Task<IActionResult> SmartSearch(
+        [FromQuery] string? texte,
+        [FromQuery] string texteIntelligent,
+        [FromQuery] int topN = 20)
+    {
+        List<ProduitDto> produits = await produitService.SmartSearch(
+            texte,
+            texteIntelligent,
+            topN);
+
+        return Ok(produits);
+    }
+
 }

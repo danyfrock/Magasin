@@ -1,0 +1,104 @@
+/* =========================================================
+   COMPOSANT RECHERCHE PRODUITS (MODALE OU TIROIR LATÉRAL)
+   ========================================================= */
+.modal.picker-drawer .modal-content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(460px, 100vw);
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.picker-header h2 {
+    margin: 0;
+}
+
+.picker-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.picker-controls input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: var(--button-radius);
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.picker-controls input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.picker-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.picker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    text-align: left;
+    border: 1px solid var(--border);
+    border-radius: var(--button-radius);
+    background: var(--surface-subtle);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.picker-item:hover {
+    border-color: var(--primary);
+    background: var(--card-bg);
+}
+
+.picker-item img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: var(--card-bg);
+    flex-shrink: 0;
+}
+
+.picker-item-nom {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.picker-item-prix {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.picker-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--text-muted);
+}

@@ -6,6 +6,7 @@
   <title>Caisse - Magasin</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/vente.css">
+  <link rel="stylesheet" href="../css/product-picker.css">
 </head>
 <body>
 
@@ -20,7 +21,10 @@
       <!-- SCAN -->
       <section class="card card-scan">
         <h2>Recherche produit</h2>
-        <input type="text" id="scan" placeholder="Scanne ou tape le code-barres" autofocus>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="scan" placeholder="Scanne ou tape le code-barres" autofocus>
+          <button type="button" id="btnRechercherProduit" class="btn-secondary">Rechercher</button>
+        </div>
       </section>
 
       <!-- PANIER -->
@@ -144,9 +148,9 @@
   <script src="../js/common.js"></script>
   <script src="../js/ticket.js"></script>
   <script src="../js/currency-converter.js"></script>
-  <script src="../js/app.js"></script>
   <script src="../js/bandeau.js"></script>
   <script src="../js/permissions.js"></script>
   <script type="module" src="../js/auth.js"></script>
+  <script type="module" src="../js/app.js"></script>
 </body>
 </html>

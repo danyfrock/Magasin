@@ -1,3 +1,5 @@
+import { createProductPicker } from "./product-picker.js";
+
 // --- État global ---
 let panier = [];
 let paiements = [];
@@ -9,8 +11,14 @@ const listePaiements = document.getElementById("paiements-effectues");
 const btnValider = document.getElementById("validerVente");
 const montantRenduInput = document.getElementById("montantRendu");
 const inputScan = document.getElementById("scan");
+const btnRechercherProduit = document.getElementById("btnRechercherProduit");
 const modalAutreDevise = document.getElementById("modalAutreDevise");
 const converterModal = document.getElementById("converterModal");
+
+const productPicker = createProductPicker({
+  mode: "modal", // ou "drawer"
+  htmlUrl: "../components/product-picker.html"
+});
 
 // --- Utilitaires ---
 function formatMontant(montant) {
@@ -109,6 +117,20 @@ async function ajouterParCodeBarre(code) {
   } catch {
     alert("Produit inconnu ou erreur serveur");
   }
+}
+
+function selectionnerCodeBarreDansScan(codeBarre) {
+  if (!codeBarre || !inputScan) return;
+
+  inputScan.value = codeBarre;
+  inputScan.focus();
+  inputScan.dispatchEvent(new KeyboardEvent("keydown", {
+    key: "Enter",
+    code: "Enter",
+    keyCode: 13,
+    which: 13,
+    bubbles: true
+  }));
 }
 
 // --- Paiements classiques (devise caisse) ---
@@ -295,6 +317,13 @@ inputScan.addEventListener("keydown", e => {
 
 montantPayeInput.addEventListener("keydown", e => {
   if (e.key === "Enter") ajouterPaiement("especes");
+});
+
+btnRechercherProduit?.addEventListener("click", () => {
+  productPicker.open({
+    initialText: inputScan?.value.trim() ?? "",
+    onSelect: selectionnerCodeBarreDansScan
+  });
 });
 
 // Init
