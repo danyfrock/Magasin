@@ -15,7 +15,7 @@ namespace Magasin.Api.Migrations
                 table: "Ventes",
                 type: "boolean",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "EstSupprime",
