@@ -23,6 +23,7 @@ public class MagasinDbContext : DbContext
     public DbSet<Journal> Journaux { get; set; }
     public DbSet<LotTaux> LotsTaux { get; set; }
     public DbSet<TauxChange> TauxChanges { get; set; }
+    public DbSet<PotCommun> PotsCommuns { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,5 +69,28 @@ public class MagasinDbContext : DbContext
         modelBuilder.Entity<TauxChange>()
             .Property(tc => tc.Rate)
             .HasPrecision(18, 6);
+
+        // PotCommun
+        modelBuilder.Entity<PotCommun>()
+            .HasOne(p => p.Utilisateur)
+            .WithMany()
+            .HasForeignKey(p => p.UtilisateurId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PotCommun>()
+            .HasOne(p => p.Produit)
+            .WithMany()
+            .HasForeignKey(p => p.ProduitId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PotCommun>()
+            .HasOne(p => p.Vente)
+            .WithMany()
+            .HasForeignKey(p => p.VenteId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PotCommun>()
+            .HasIndex(p => p.DateCreation);
+
     }
 }

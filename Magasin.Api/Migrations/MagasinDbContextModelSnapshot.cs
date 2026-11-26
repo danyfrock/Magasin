@@ -175,6 +175,43 @@ namespace Magasin.Api.Migrations
                     b.ToTable("LotsTaux");
                 });
 
+            modelBuilder.Entity("Magasin.Api.Database.Entities.PotCommun", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProduitId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UtilisateurId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("VenteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DateCreation");
+
+                    b.HasIndex("ProduitId");
+
+                    b.HasIndex("UtilisateurId");
+
+                    b.HasIndex("VenteId");
+
+                    b.ToTable("PotsCommuns");
+                });
+
             modelBuilder.Entity("Magasin.Api.Database.Entities.Produit", b =>
                 {
                     b.Property<int>("Id")
@@ -365,6 +402,31 @@ namespace Magasin.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Produit");
+
+                    b.Navigation("Vente");
+                });
+
+            modelBuilder.Entity("Magasin.Api.Database.Entities.PotCommun", b =>
+                {
+                    b.HasOne("Magasin.Api.Database.Entities.Produit", "Produit")
+                        .WithMany()
+                        .HasForeignKey("ProduitId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Magasin.Api.Database.Entities.Utilisateur", "Utilisateur")
+                        .WithMany()
+                        .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magasin.Api.Database.Entities.Vente", "Vente")
+                        .WithMany()
+                        .HasForeignKey("VenteId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Produit");
+
+                    b.Navigation("Utilisateur");
 
                     b.Navigation("Vente");
                 });

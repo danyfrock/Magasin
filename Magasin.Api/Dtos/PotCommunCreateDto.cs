@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 namespace Magasin.Api.Dtos
 {
     public record PotCommunCreateDto(
+        int UtilisateurId,
         string Message,
         int? ProduitId,
-        int? VenteId
+        VenteDto? Vente
     );
 }

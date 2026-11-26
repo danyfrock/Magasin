@@ -34,6 +34,7 @@ builder.Services.AddScoped<TauxChangeService>();
 builder.Services.AddScoped<CaisseService>();
 builder.Services.AddScoped<ImageAnalysisService>();
 builder.Services.AddScoped<TextSearchService>();
+builder.Services.AddScoped<PotCommunService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

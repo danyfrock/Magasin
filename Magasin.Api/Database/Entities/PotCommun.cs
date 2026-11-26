@@ -21,7 +21,5 @@ namespace Magasin.Api.Database.Entities
 
             public int? VenteId { get; set; }
             public Vente? Vente { get; set; }
-
-            public string Titre { get; set; } = string.Empty;
         }
 }
