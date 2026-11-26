@@ -192,6 +192,9 @@ namespace Magasin.Api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<bool>("EstSupprime")
+                        .HasColumnType("boolean");
+
                     b.Property<int?>("ImageId")
                         .HasColumnType("integer");
 
@@ -309,6 +312,9 @@ namespace Magasin.Api.Migrations
                     b.Property<string>("DeviseCaisse")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("EstFinalisee")
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("TauxChangeId")
                         .HasColumnType("integer");
