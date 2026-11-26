@@ -27,7 +27,8 @@ public static class VenteMapping
                 Montant: p.Montant,
                 Devise: p.Devise,
                 MontantOriginal: p.MontantOriginal
-            )).ToList()
+            )).ToList(),
+            EstFinalisee: vente.EstFinalisee
         );
     }
 
@@ -38,6 +39,7 @@ public static class VenteMapping
             Date = DateTime.UtcNow,
             TauxChangeId = dto.tauxChangeId,
             DeviseCaisse = dto.deviseCaisse,
+            EstFinalisee = dto.EstFinalisee,
             Lignes = dto.Lignes.Select(l => l.ToEntity(produits)).ToList(),
             Paiements = dto.Paiements.Select(p => p.ToEntity()).ToList()
         };

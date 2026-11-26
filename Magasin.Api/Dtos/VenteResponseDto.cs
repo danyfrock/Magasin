@@ -12,6 +12,7 @@ namespace Magasin.Api.Dtos
         int? tauxChangeId,
         string deviseCaisse,
         List<LigneVenteResponseDto> Lignes,
-        List<LignePaiementResponseDto> Paiements
+        List<LignePaiementResponseDto> Paiements,
+        bool EstFinalisee
     );
 }

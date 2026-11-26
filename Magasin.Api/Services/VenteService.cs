@@ -40,6 +40,7 @@ public class VenteService
             .Include(v => v.Lignes)
                 .ThenInclude(l => l.Produit)
             .Include(v => v.Paiements)
+            .Where(v => v.EstFinalisee)
             .OrderByDescending(v => v.Date)
             .Select(v => v.ToResponseDto())
             .ToListAsync();

@@ -15,25 +15,26 @@ public static class ProduitMapping
     {
         return new ProduitDto(
             Id: produit.Id,
-            produit.CodeBarre,
-            produit.Nom,
-            produit.Prix,
-            produit.Description,
-            new ImageSwitch(
+            CodeBarre: produit.CodeBarre,
+            Nom: produit.Nom,
+            Prix: produit.Prix,
+            Description: produit.Description,
+            Image: new ImageSwitch(
                 produit.Image?.ToDto(),
                 null
             ),
-            GenererCodeBarre(produit.CodeBarre)
+            ScannableCodebarre: GenererCodeBarre(produit.CodeBarre),
+            EstSupprime: produit.EstSupprime
         );
     }
 
     public static ProduitLightDto ToLightDto(this Produit produit)
     {
         return new ProduitLightDto(
-            produit.Nom,
-            produit.Prix,
-            produit.Description,
-            new ImageSwitch(
+            Nom: produit.Nom,
+            Prix: produit.Prix,
+            Description: produit.Description,
+            Image: new ImageSwitch(
                 produit.Image?.ToDto(),
                 null
             )

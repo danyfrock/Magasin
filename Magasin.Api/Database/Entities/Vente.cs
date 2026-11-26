@@ -20,5 +20,7 @@ namespace Magasin.Api.Database.Entities
         public ICollection<LigneVente> Lignes { get; set; } = new List<LigneVente>();
 
         public ICollection<LignePaiement> Paiements { get; set; } = new List<LignePaiement>();
+
+        public bool EstFinalisee { get; set; } = true;
     }
 }

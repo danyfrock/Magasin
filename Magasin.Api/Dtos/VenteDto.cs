@@ -10,6 +10,7 @@ namespace Magasin.Api.Dtos
         List<LignePaiementDto> Paiements,
         decimal Rendu,
         int? tauxChangeId,
-        string deviseCaisse
+        string deviseCaisse,
+        bool EstFinalisee
     );
 }

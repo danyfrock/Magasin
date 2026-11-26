@@ -13,4 +13,5 @@ public class Produit
     public decimal Prix { get; set; }
     public string? Description { get; set; }
     public Image? Image { get; set; } = null;
+    public bool EstSupprime { get; set; } = false;
 }

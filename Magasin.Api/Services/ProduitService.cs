@@ -31,6 +31,7 @@ public class ProduitService : ConteneurImageService<Produit>
         Produit? produit = await dbContext.Produits
             .AsNoTracking()
             .Include(p => p.Image)
+            .Where(p => !p.EstSupprime) // Exclut les produits supprimés
             .FirstOrDefaultAsync(p => p.CodeBarre == codeBarre);
 
         return produit?.ToDto();
@@ -40,26 +41,30 @@ public class ProduitService : ConteneurImageService<Produit>
     {
         if(string.IsNullOrWhiteSpace(texte)) return []; // Texte vide, retourne une liste vide
 
-        return await dbContext.Produits
+        List<Produit> produits = await dbContext.Produits
             .AsNoTracking()
             .Include(p => p.Image)
+            .Where(p => !p.EstSupprime) // Exclut les produits supprimés
             .Where(p =>
                 p.Nom.Contains(texte) ||
                 (p.Description != null && p.Description.Contains(texte)))
             .OrderByDescending(p => p.Nom.Contains(texte))
             .ThenBy(p => p.Nom)
-            .Select(p => p.ToDto())
             .ToListAsync();
+
+        return produits.Select(p => p.ToDto()).ToList();
     }
 
     public async Task<List<ProduitDto>> GetAll()
     {
-        return await dbContext.Produits
+        List<Produit> produits = await dbContext.Produits
             .AsNoTracking()
             .Include(p => p.Image)
+            .Where(p => !p.EstSupprime) // Exclut les produits supprimés
             .OrderBy(p => p.Nom)
-            .Select(p => p.ToDto())
             .ToListAsync();
+
+        return produits.Select(p => p.ToDto()).ToList();
     }
 
     public async Task<List<ProduitDto>> SmartSearch(string? texte, string texteIntelligent, int topN = 20)
@@ -107,6 +112,7 @@ public class ProduitService : ConteneurImageService<Produit>
         Dictionary<string, Produit> produitsAvecImage = (await dbContext.Produits
                 .AsNoTracking()
                 .Include(p => p.Image)
+                .Where(p => !p.EstSupprime) // Exclut les produits supprimés
                 .Where(p => codesElus.Contains(p.CodeBarre))
                 .ToListAsync())
             .ToDictionary(p => p.CodeBarre);
@@ -174,16 +180,26 @@ public class ProduitService : ConteneurImageService<Produit>
     // DELETE : Supprime le produit (le stock est supprimé automatiquement grâce au Cascade)
     public async Task<bool> Delete(int id)
     {
-        Produit? entity = await dbContext.Produits
-            .FindAsync(id);
+        // prepare et verifie
+        Produit? entity = await dbContext.Produits.FindAsync(id);
+        if (entity == null) { return false; }
+        bool estUtiliseDansUneVente = await dbContext.LignesVente
+                    .AsNoTracking()
+                    .AnyAsync(lv => lv.ProduitId == entity.Id);
+        if (estUtiliseDansUneVente && entity.EstSupprime) { return false; }
 
-        if (entity == null)
+        // applique la supression
+        string anciennesValeurs = $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}";
+
+        if (estUtiliseDansUneVente)
         {
-            return false;
+            entity.EstSupprime = true;
+        } else
+        {
+            dbContext.Produits.Remove(entity);
         }
 
-        string anciennesValeurs = $"Code-barres : {entity.CodeBarre}, Nom : {entity.Nom}, Prix : {entity.Prix}";
-        dbContext.Produits.Remove(entity);
+        // enragistrer
         await dbContext.SaveChangesAsync(); // Cascade → supprime aussi le Stock
 
         await journalService.LogAsync(

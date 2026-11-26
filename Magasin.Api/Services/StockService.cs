@@ -22,31 +22,17 @@ public class StockService
     // GET : Récupère le stock d'un produit par son code-barres
     public async Task<StockResponseDto?> GetByCodeBarre(string codeBarre)
     {
-        var stock = await dbContext.Stocks
+        Stock? stock = await dbContext.Stocks
             .AsNoTracking()
+            .Include(s => s.Produit)
             .Where(s => s.Produit.CodeBarre == codeBarre)
-            .Select(s => new
-            {
-                s.Id,
-                s.IdProduit,
-                ProduitNom = s.Produit.Nom,
-                CodeBarre = s.Produit.CodeBarre,
-                s.Quantite
-            })
+            .Where(s => !s.Produit.EstSupprime) // Exclut les produits supprimés
             .FirstOrDefaultAsync();
 
-        if (stock is null)
-            return null;
+        if (stock is null) return null;
 
         // Génère le code-barres après la requête (SkiaSharp non traduisible en SQL)
-        return new StockResponseDto(
-            stock.Id,
-            stock.IdProduit,
-            stock.ProduitNom,
-            stock.CodeBarre,
-            stock.Quantite,
-            ProduitMapping.GenererCodeBarre(stock.CodeBarre)
-        );
+        return stock.ToDto();
     }
 
     // GET : Récupère tous les stocks (triés par nom de produit)
@@ -54,26 +40,13 @@ public class StockService
     {
         var stocks = await dbContext.Stocks
             .AsNoTracking()
+            .Include(s => s.Produit)
+            .Where(s => !s.Produit.EstSupprime) // Exclut les produits supprimés
             .OrderBy(s => s.Produit.Nom)
-            .Select(s => new
-            {
-                s.Id,
-                s.IdProduit,
-                ProduitNom = s.Produit.Nom,
-                CodeBarre = s.Produit.CodeBarre,
-                s.Quantite
-            })
             .ToListAsync();
 
         // Génère les codes-barres après la requête
-        return stocks.Select(s => new StockResponseDto(
-            s.Id,
-            s.IdProduit,
-            s.ProduitNom,
-            s.CodeBarre,
-            s.Quantite,
-            ProduitMapping.GenererCodeBarre(s.CodeBarre)
-        )).ToList();
+        return stocks.Select(s => s.ToDto()).ToList();
     }
 
     // CREATE : Crée un stock pour un produit qui n'en a pas encore
@@ -91,12 +64,7 @@ public class StockService
         if (stockExiste)
             return null; // Un stock existe déjà pour ce produit
 
-        var stock = new Stock
-        {
-            IdProduit = produit.Id,
-            Quantite = dto.Quantite,
-            Produit = produit // obligatoire à cause du "required"
-        };
+        Stock stock = dto.ToEntity(produit);
 
         dbContext.Stocks.Add(stock);
         await dbContext.SaveChangesAsync();
@@ -108,14 +76,7 @@ public class StockService
             nouvellesValeurs:
                 $"Produit : {produit.Nom}, Quantité : {stock.Quantite}");
 
-        return new StockResponseDto(
-            stock.Id,
-            stock.IdProduit,
-            produit.Nom,
-            produit.CodeBarre,
-            stock.Quantite,
-            ProduitMapping.GenererCodeBarre(produit.CodeBarre)
-        );
+        return stock.ToDto();
     }
 
     // UPDATE : Modifie uniquement la quantité d'un stock existant
@@ -129,7 +90,7 @@ public class StockService
             return null; // Stock introuvable
 
         string anciennesValeurs =
-            $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}";
+            $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}, supprimé : {(stock.Produit.EstSupprime?"Oui":"Non").ToString()}";
 
         stock.Quantite = dto.Quantite;
 
@@ -141,15 +102,8 @@ public class StockService
             entiteId: stock.Id,
             anciennesValeurs: anciennesValeurs,
             nouvellesValeurs:
-                $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}");
+                $"Produit : {stock.Produit.Nom}, Quantité : {stock.Quantite}, supprimé : {(stock.Produit.EstSupprime?"Oui":"Non").ToString()}");
 
-        return new StockResponseDto(
-            stock.Id,
-            stock.IdProduit,
-            stock.Produit.Nom,
-            stock.Produit.CodeBarre,
-            stock.Quantite,
-            ProduitMapping.GenererCodeBarre(stock.Produit.CodeBarre)
-        );
+        return stock.ToDto();
     }
 }
