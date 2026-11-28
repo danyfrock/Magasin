@@ -5,26 +5,40 @@ let panier = [];
 let paiements = [];
 let deviseCaisse = "XOF";
 
+const getElement = id => document.getElementById(id);
+
 // --- Éléments DOM ---
-const montantPayeInput = document.getElementById("montantPaye");
-const montantRenduInput = document.getElementById("montantRendu");
-const listePaiements = document.getElementById("paiements-effectues");
-const tbodyPanier = document.getElementById("panier");
-const totalElement = document.getElementById("total");
-const dejaPayeElement = document.getElementById("dejaPaye");
-const resteAPayerElement = document.getElementById("resteAPayer");
-const ligneARendreElement = document.getElementById("ligneARendre");
-const aRendreElement = document.getElementById("aRendre");
-const btnValider = document.getElementById("validerVente");
-const inputScan = document.getElementById("scan");
-const btnRechercherProduit = document.getElementById("btnRechercherProduit");
-const modalAutreDevise = document.getElementById("modalAutreDevise");
-const converterModal = document.getElementById("converterModal");
+const montantPayeInput = getElement("montantPaye");
+const montantRenduInput = getElement("montantRendu");
+const listePaiements = getElement("paiements-effectues");
+const tbodyPanier = getElement("panier");
+const totalElement = getElement("total");
+const dejaPayeElement = getElement("dejaPaye");
+const resteAPayerElement = getElement("resteAPayer");
+const ligneARendreElement = getElement("ligneARendre");
+const aRendreElement = getElement("aRendre");
+const btnValider = getElement("validerVente");
+const inputScan = getElement("scan");
+const btnRechercherProduit = getElement("btnRechercherProduit");
+const modalAutreDevise = getElement("modalAutreDevise");
+const converterModal = getElement("converterModal");
 
 const productPicker = createProductPicker({
   mode: "modal",
   htmlUrl: "../components/product-picker.html"
 });
+
+const DEVISE_PAR_DEFAUT = "XOF";
+
+const ACTION_PLUS = "plus";
+const ACTION_MOINS = "moins";
+const ACTION_SUPPRIMER = "supprimer";
+const ACTION_POT = "pot";
+
+const MODE_ESPECES = "especes";
+const MODE_CARTE = "carte";
+const MODE_AIRTEL = "airtel";
+const MODE_MOOV = "moov";
 
 // --- Calculs et formatage ---
 function formatMontant(montant) {
@@ -99,14 +113,21 @@ function modifierQuantiteProduit(id, action) {
   const produit = panier.find(element => element.id === id);
   if (!produit) return;
 
-  if (action === "plus") {
-    produit.quantite++;
-  } else if (action === "moins") {
-    produit.quantite--;
-  } else if (action === "supprimer") {
-    panier = panier.filter(element => element.id !== id);
-  } else {
-    return;
+  switch (action) {
+    case ACTION_PLUS:
+      produit.quantite++;
+      break;
+
+    case ACTION_MOINS:
+      produit.quantite--;
+      break;
+
+    case ACTION_SUPPRIMER:
+      panier = panier.filter(element => element.id !== id);
+      break;
+
+    default:
+      return;
   }
 
   afficherPanier();
@@ -241,8 +262,7 @@ function afficherListePaiements() {
 function mettreAJourAffichagePaiement() {
   const total = calculerTotalNumerique();
   const paye = totalPaye();
-  const reste = Math.max(0, total - paye);
-  const aRendre = Math.max(0, paye - total);
+  const { reste, aRendre } = calculerSituationPaiement(total, paye);
 
   totalElement.textContent = formatMontant(total);
   dejaPayeElement.textContent = formatMontant(paye);
@@ -265,7 +285,7 @@ function creerBoutonPanier(id, action, libelle) {
   const bouton = document.createElement("button");
 
   bouton.type = "button";
-  bouton.className = (action === "supprimer"|| action === "pot") ? "btn-supprimer" : "btn-qty";
+  bouton.className = (action === ACTION_SUPPRIMER|| action === ACTION_POT) ? "btn-supprimer" : "btn-qty";
   bouton.dataset.id = String(id);
   bouton.dataset.action = action;
   bouton.textContent = libelle;
@@ -290,10 +310,10 @@ function afficherPanier() {
 
     actions.append(
       quantite,
-      creerBoutonPanier(produit.id, "plus", "+"),
-      creerBoutonPanier(produit.id, "moins", "-"),
-      creerBoutonPanier(produit.id, "supprimer", "Supprimer"),
-      creerBoutonPanier(produit.id, "pot", "Envoyer dans le pot")
+      creerBoutonPanier(produit.id, ACTION_PLUS, "+"),
+      creerBoutonPanier(produit.id, ACTION_MOINS, "-"),
+      creerBoutonPanier(produit.id, ACTION_SUPPRIMER, "Supprimer"),
+      creerBoutonPanier(produit.id, ACTION_POT, "Envoyer dans le pot")
     );
 
     ligne.append(nom, prix, actions);
@@ -343,7 +363,7 @@ function ajouterPaiementAutreDevise() {
 
   mettreAJourAffichagePaiement();
   modalAutreDevise.close();
-  converterModal?.reset();
+  reinitialiserConvertisseur();
 }
 
 function supprimerPaiement(index) {
@@ -388,11 +408,7 @@ async function validerVente() {
       });
     }
 
-    let message = `Vente validée\nTotal : ${formatMontant(total)}\n`;
-    paiements.forEach(paiement => {
-      message += `• ${formaterLibellePaiement(paiement)}\n`;
-    });
-    if (rendu > 0) message += `À rendre : ${formatMontant(rendu)}`;
+    let message = construireMessageValidation(total, paiements, rendu);
 
     alert(message);
     reinitialiserCaisse();
@@ -432,25 +448,25 @@ async function chargerDeviseCaisse() {
 }
 
 // --- Événements ---
-document.getElementById("payerEspeces").addEventListener("click", () => ajouterPaiement("especes"));
-document.getElementById("payerCarte").addEventListener("click", () => ajouterPaiement("carte"));
-document.getElementById("payerAirtel").addEventListener("click", () => ajouterPaiement("airtel"));
-document.getElementById("payerMoov").addEventListener("click", () => ajouterPaiement("moov"));
+document.getElementById("payerEspeces").addEventListener("click", () => ajouterPaiement(MODE_ESPECES));
+document.getElementById("payerCarte").addEventListener("click", () => ajouterPaiement(MODE_CARTE));
+document.getElementById("payerAirtel").addEventListener("click", () => ajouterPaiement(MODE_AIRTEL));
+document.getElementById("payerMoov").addEventListener("click", () => ajouterPaiement(MODE_MOOV));
 document.getElementById("validerVente").addEventListener("click", validerVente);
 document.getElementById("annulerVente").addEventListener("click", annulerVente);
 
 document.getElementById("payerAutreDevise").addEventListener("click", () => {
-  converterModal?.reset();
+  reinitialiserConvertisseur();
   modalAutreDevise.showModal();
 });
 
 document.getElementById("annulerPaiementDevise").addEventListener("click", () => {
   modalAutreDevise.close();
-  converterModal?.reset();
+  reinitialiserConvertisseur();
 });
 
 document.getElementById("validerPaiementDevise").addEventListener("click", ajouterPaiementAutreDevise);
-modalAutreDevise.addEventListener("close", () => converterModal?.reset());
+modalAutreDevise.addEventListener("close", () => reinitialiserConvertisseur());
 
 // Un seul écouteur pour les actions du panier, même après son réaffichage.
 tbodyPanier.addEventListener("click", event => {
@@ -489,7 +505,7 @@ inputScan.addEventListener("keydown", event => {
 montantPayeInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     event.preventDefault();
-    ajouterPaiement("especes");
+    ajouterPaiement(MODE_ESPECES);
   }
 });
 
@@ -513,6 +529,31 @@ async function initialiserCaisse() {
     sessionStorage.removeItem("reprendreVenteId");
     await reprendreDepuisPotCommun({ venteId: Number(repriseId) });
   }
+}
+
+function reinitialiserConvertisseur() {
+  converterModal?.reset();
+}
+
+function calculerSituationPaiement(total, paye) {
+  return {
+    reste: Math.max(0, total - paye),
+    aRendre: Math.max(0, paye - total)
+  };
+}
+
+function construireMessageValidation(total, paiements, rendu) {
+  let message = `Vente validée\nTotal : ${formatMontant(total)}\n`;
+
+  paiements.forEach(paiement => {
+    message += `• ${formaterLibellePaiement(paiement)}\n`;
+  });
+
+  if (rendu > 0) {
+    message += `À rendre : ${formatMontant(rendu)}`;
+  }
+
+  return message;
 }
 
 void initialiserCaisse();

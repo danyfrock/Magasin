@@ -6,6 +6,7 @@
             this.getCurrentUserId = getCurrentUserId;
             this.onReprendre = onReprendre;
 
+            // Éléments DOM
             this.toggleBtn = document.getElementById("pot-commun-toggle");
             this.closeBtn = document.getElementById("pot-commun-close");
             this.drawer = document.getElementById("pot-commun-drawer");
@@ -18,19 +19,25 @@
             this.listEl = document.getElementById("pot-commun-list");
             this.statusEl = document.getElementById("pot-commun-status");
 
-            // venteActive : vente en cours côté page / pot
-            // venteJointe : true si la vente est actuellement affichée en PJ
-            // produitEnAttente : produit prêt si pas de vente ou si la vente est retirée
+            // État des pièces jointes
+            // venteActive  : vente en cours côté page
+            // venteJointe  : la vente est actuellement affichée en PJ
+            // produitEnAttente : produit prêt si pas de vente (ou si la vente est retirée)
             this.venteActive = null;
             this.venteLabel = null;
             this.venteJointe = false;
             this.produitEnAttente = null;
             this.produitJoint = null;
+
             this.isRefreshing = false;
 
             this.bindEvents();
             this.refresh();
         }
+
+        /* ------------------------------------------------------------------ */
+        /*  Événements                                                        */
+        /* ------------------------------------------------------------------ */
 
         bindEvents() {
             this.toggleBtn?.addEventListener("click", () => this.toggle());
@@ -45,6 +52,10 @@
                 }
             });
         }
+
+        /* ------------------------------------------------------------------ */
+        /*  Ouverture / fermeture du tiroir                                   */
+        /* ------------------------------------------------------------------ */
 
         open() {
             if (!this.drawer || !this.toggleBtn) return;
@@ -68,6 +79,10 @@
             if (!this.drawer) return;
             this.drawer.hidden ? this.open() : this.close();
         }
+
+        /* ------------------------------------------------------------------ */
+        /*  Gestion de l’état des pièces jointes                              */
+        /* ------------------------------------------------------------------ */
 
         clear() {
             this.venteActive = null;
@@ -153,65 +168,45 @@
             this.targetPreview.textContent = "";
         }
 
+        /* ------------------------------------------------------------------ */
+        /*  Helpers API                                                       */
+        /* ------------------------------------------------------------------ */
+
+        async fetchProduitByCode(code) {
+            try {
+                const res = await fetch(`/api/produits/${encodeURIComponent(code)}`, {
+                    credentials: "include"
+                });
+                if (!res.ok) return null;
+
+                const produit = await res.json();
+                return produit?.id ? produit : null;
+            } catch {
+                return null;
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Saisie & envoi                                                    */
+        /* ------------------------------------------------------------------ */
+
         async handleInputKeydown(event) {
             if (event.key !== "Enter") return;
 
             const texte = this.input?.value.trim() ?? "";
             if (!texte || !/^\d{6,14}$/.test(texte)) return;
 
-            // Uniquement si aucune vente n'est présente dans le pot
+            // Uniquement si aucune vente n'est présente
             if (this.venteActive || this.venteJointe) return;
 
             event.preventDefault();
-            try {
-                const res = await fetch(`/api/produits/${encodeURIComponent(texte)}`, {
-                    credentials: "include"
-                });
-                if (!res.ok) return;
 
-                const produit = await res.json();
-                if (!produit?.id) return;
+            const produit = await this.fetchProduitByCode(texte);
+            if (!produit) return;
 
-                this.input.value = "";
-                this.chargerProduit(produit, { openDrawer: true });
-                this.afficherStatut("Produit ajouté en pièce jointe.");
-            } catch {
-                // Ignore si ce n'est pas un code-barres produit
-            }
-        }
-
-        afficherStatut(message, erreur = false) {
-            if (!this.statusEl) return;
-            this.statusEl.textContent = message;
-            this.statusEl.classList.toggle("is-error", erreur);
-        }
-
-        async refresh() {
-            if (this.isRefreshing) return;
-
-            this.isRefreshing = true;
-            try {
-                const response = await fetch(API_BASE, { credentials: "include" });
-                if (!response.ok) {
-                    this.afficherStatut("Impossible de charger les messages.", true);
-                    return;
-                }
-
-                const items = await response.json();
-                if (!Array.isArray(items)) {
-                    this.afficherStatut("Réponse invalide du serveur.", true);
-                    return;
-                }
-
-                this.afficherStatut("");
-                this.renderBadge(items.length);
-                this.renderList(items);
-            } catch (error) {
-                this.afficherStatut("Connexion au Pot commun impossible.", true);
-                console.error("Erreur de chargement du Pot commun :", error);
-            } finally {
-                this.isRefreshing = false;
-            }
+            this.input.value = "";
+            this.chargerProduit(produit, { openDrawer: true });
+            this.afficherStatut("Produit ajouté en pièce jointe.");
         }
 
         async handleSubmit(event) {
@@ -219,23 +214,14 @@
 
             let message = this.input?.value.trim() ?? "";
 
-            // Si aucune vente n'est présente et que le message est un code-barres
+            // Si aucune vente et que le message ressemble à un code-barres → on tente de joindre le produit
             if (!this.venteActive && !this.venteJointe && !this.produitJoint && /^\d{6,14}$/.test(message)) {
-                try {
-                    const res = await fetch(`/api/produits/${encodeURIComponent(message)}`, {
-                        credentials: "include"
-                    });
-                    if (res.ok) {
-                        const produit = await res.json();
-                        if (produit?.id) {
-                            this.input.value = "";
-                            this.chargerProduit(produit, { openDrawer: true });
-                            this.afficherStatut("Produit ajouté en pièce jointe.");
-                            return;
-                        }
-                    }
-                } catch {
-                    // Envoi normal du texte si pas un produit
+                const produit = await this.fetchProduitByCode(message);
+                if (produit) {
+                    this.input.value = "";
+                    this.chargerProduit(produit, { openDrawer: true });
+                    this.afficherStatut("Produit ajouté en pièce jointe.");
+                    return;
                 }
             }
 
@@ -275,7 +261,8 @@
 
                 if (this.input) this.input.value = "";
 
-                // Supprime la PJ produit après envoi ; si une vente est active, elle redevient prioritaire
+                // On retire la PJ produit après envoi.
+                // Si une vente est toujours active, elle redevient prioritaire.
                 if (this.produitJoint) {
                     this.produitJoint = null;
                     this.produitEnAttente = null;
@@ -292,6 +279,38 @@
                 console.error("Erreur d'envoi au Pot commun :", error);
             } finally {
                 if (submitButton) submitButton.disabled = false;
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Chargement & affichage de la liste                                */
+        /* ------------------------------------------------------------------ */
+
+        async refresh() {
+            if (this.isRefreshing) return;
+
+            this.isRefreshing = true;
+            try {
+                const response = await fetch(API_BASE, { credentials: "include" });
+                if (!response.ok) {
+                    this.afficherStatut("Impossible de charger les messages.", true);
+                    return;
+                }
+
+                const items = await response.json();
+                if (!Array.isArray(items)) {
+                    this.afficherStatut("Réponse invalide du serveur.", true);
+                    return;
+                }
+
+                this.afficherStatut("");
+                this.renderBadge(items.length);
+                this.renderList(items);
+            } catch (error) {
+                this.afficherStatut("Connexion au Pot commun impossible.", true);
+                console.error("Erreur de chargement du Pot commun :", error);
+            } finally {
+                this.isRefreshing = false;
             }
         }
 
@@ -314,77 +333,98 @@
             }
 
             for (const item of items) {
-                const card = document.createElement("article");
-                card.className = "card pot-commun-item";
-
-                const meta = document.createElement("div");
-                meta.className = "pot-commun-item-meta";
-
-                const author = document.createElement("strong");
-                author.textContent = item.auteur ?? "Utilisateur";
-
-                const time = document.createElement("span");
-                time.textContent = item.dateCreation ? ` • ${this.formatTime(item.dateCreation)}` : "";
-                meta.append(author, time);
-                card.appendChild(meta);
-
-                if (item.message) {
-                    const message = document.createElement("p");
-                    message.className = "pot-commun-item-commentaire";
-                    message.textContent = item.message;
-                    card.appendChild(message);
-                }
-
-                if (item.produitId) {
-                    const target = document.createElement("div");
-                    target.className = "pot-commun-cible";
-                    target.textContent = item.produitNom
-                        ? `Produit : ${item.produitNom}`
-                        : `Produit #${item.produitId}`;
-                    card.appendChild(target);
-                }
-
-                if (item.venteId) {
-                    const target = document.createElement("div");
-                    target.className = "pot-commun-cible";
-                    const total = Number(item.venteTotal);
-                    const totalText = Number.isFinite(total) ? ` — ${total.toLocaleString()}` : "";
-                    target.textContent = `Vente #${item.venteId}${totalText}`;
-                    card.appendChild(target);
-                }
-
-                if (item.produitId || item.venteId) {
-                    const actions = document.createElement("div");
-                    actions.className = "pot-commun-item-actions";
-
-                    const button = document.createElement("button");
-                    button.type = "button";
-                    button.className = "btn-primary";
-                    button.textContent = "Reprendre";
-                    button.addEventListener("click", () => {
-                        const payload = {
-                            produitId: item.produitId ?? undefined,
-                            venteId: item.venteId ?? undefined,
-                            item
-                        };
-
-                        if (payload.venteId && !document.getElementById("validerVente")) {
-                            sessionStorage.setItem("reprendreVenteId", String(payload.venteId));
-                            this.close();
-                            window.location.href = "/pages/vente.html";
-                            return;
-                        }
-
-                        this.onReprendre?.(payload);
-                        this.close();
-                    });
-
-                    actions.appendChild(button);
-                    card.appendChild(actions);
-                }
-
-                this.listEl.appendChild(card);
+                this.listEl.appendChild(this.renderItem(item));
             }
+        }
+
+        renderItem(item) {
+            const card = document.createElement("article");
+            card.className = "card pot-commun-item";
+
+            // Meta (auteur + heure)
+            const meta = document.createElement("div");
+            meta.className = "pot-commun-item-meta";
+
+            const author = document.createElement("strong");
+            author.textContent = item.auteur ?? "Utilisateur";
+
+            const time = document.createElement("span");
+            time.textContent = item.dateCreation ? ` • ${this.formatTime(item.dateCreation)}` : "";
+            meta.append(author, time);
+            card.appendChild(meta);
+
+            // Message texte
+            if (item.message) {
+                const message = document.createElement("p");
+                message.className = "pot-commun-item-commentaire";
+                message.textContent = item.message;
+                card.appendChild(message);
+            }
+
+            // Cible produit
+            if (item.produitId) {
+                const target = document.createElement("div");
+                target.className = "pot-commun-cible";
+                target.textContent = item.produitNom
+                    ? `Produit : ${item.produitNom}`
+                    : `Produit #${item.produitId}`;
+                card.appendChild(target);
+            }
+
+            // Cible vente
+            if (item.venteId) {
+                const target = document.createElement("div");
+                target.className = "pot-commun-cible";
+                const total = Number(item.venteTotal);
+                const totalText = Number.isFinite(total) ? ` — ${total.toLocaleString()}` : "";
+                target.textContent = `Vente #${item.venteId}${totalText}`;
+                card.appendChild(target);
+            }
+
+            // Bouton "Reprendre"
+            if (item.produitId || item.venteId) {
+                const actions = document.createElement("div");
+                actions.className = "pot-commun-item-actions";
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "btn-primary";
+                button.textContent = "Reprendre";
+                button.addEventListener("click", () => this.handleReprendre(item));
+
+                actions.appendChild(button);
+                card.appendChild(actions);
+            }
+
+            return card;
+        }
+
+        handleReprendre(item) {
+            const payload = {
+                produitId: item.produitId ?? undefined,
+                venteId: item.venteId ?? undefined,
+                item
+            };
+
+            if (payload.venteId && !document.getElementById("validerVente")) {
+                sessionStorage.setItem("reprendreVenteId", String(payload.venteId));
+                this.close();
+                window.location.href = "/pages/vente.html";
+                return;
+            }
+
+            this.onReprendre?.(payload);
+            this.close();
+        }
+
+        /* ------------------------------------------------------------------ */
+        /*  Utilitaires                                                       */
+        /* ------------------------------------------------------------------ */
+
+        afficherStatut(message, erreur = false) {
+            if (!this.statusEl) return;
+            this.statusEl.textContent = message;
+            this.statusEl.classList.toggle("is-error", erreur);
         }
 
         formatTime(dateString) {
