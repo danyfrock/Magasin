@@ -488,10 +488,15 @@ document.addEventListener("pot-commun:reprendre", event => {
   void reprendreDepuisPotCommun(event.detail);
 });
 
-// --- Initialisation ---
 async function initialiserCaisse() {
   await chargerDeviseCaisse();
   afficherPanier();
+
+  const repriseId = sessionStorage.getItem("reprendreVenteId");
+  if (repriseId) {
+    sessionStorage.removeItem("reprendreVenteId");
+    await reprendreDepuisPotCommun({ venteId: Number(repriseId) });
+  }
 }
 
 void initialiserCaisse();

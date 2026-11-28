@@ -254,13 +254,22 @@
                     button.className = "btn-primary";
                     button.textContent = "Reprendre";
                     button.addEventListener("click", () => {
-                        this.onReprendre?.({
-                            produitId: item.produitId ?? undefined,
-                            venteId: item.venteId ?? undefined,
-                            item
-                        });
+                    const payload = {
+                        produitId: item.produitId ?? undefined,
+                        venteId: item.venteId ?? undefined,
+                        item
+                    };
+
+                    if (payload.venteId && !document.getElementById("validerVente")) {
+                        sessionStorage.setItem("reprendreVenteId", String(payload.venteId));
                         this.close();
-                    });
+                        window.location.href = "/pages/vente.html";
+                        return;
+                    }
+
+                    this.onReprendre?.(payload);
+                    this.close();
+                });
 
                     actions.appendChild(button);
                     card.appendChild(actions);
