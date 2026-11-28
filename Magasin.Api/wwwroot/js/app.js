@@ -37,6 +37,103 @@ function calculerTotal() {
   document.getElementById("total").textContent = formatMontant(calculerTotalNumerique());
 }
 
+function construireVenteDto(estFinalisee) {
+  const rendu = Number(montantRenduInput?.value) || 0;
+
+  return {
+    lignes: panier.map(p => ({ produitId: p.id, quantite: p.quantite })),
+    paiements: paiements.map(p => ({
+      moyenPaiement: p.mode,
+      montant: p.montant,
+      devise: p.devise || deviseCaisse,
+      montantOriginal: p.montantOriginal ?? p.montant
+    })),
+    rendu,
+    deviseCaisse,
+    estFinalisee
+  };
+}
+
+function synchroniserVentePotCommun() {
+  if (!window.potCommun) return;
+
+  if (panier.length === 0) {
+    window.potCommun.chargerVente(null);
+    return;
+  }
+
+  const total = calculerTotalNumerique();
+  window.potCommun.chargerVente(construireVenteDto(false), {
+    openDrawer: false,
+    label: `Joint au message : Vente en cours (${formatMontant(total)})`
+  });
+}
+
+// --- Reprise depuis Pot commun ---
+async function reprendreDepuisPotCommun(detail = {}) {
+  const { produitId, venteId } = detail;
+
+  if (produitId) {
+    try {
+      const produit = await apiCall(`/api/produits/${produitId}`);
+      if (!produit) {
+        alert("Produit introuvable");
+        return;
+      }
+
+      if (produit.codeBarre) {
+        selectionnerCodeBarreDansScan(produit.codeBarre);
+      } else {
+        const existant = panier.find(p => p.id === produit.id);
+        if (existant) {
+          existant.quantite++;
+        } else {
+          panier.push({ ...produit, quantite: 1 });
+        }
+        afficherPanier();
+      }
+    } catch {
+      alert("Impossible de reprendre le produit.");
+    }
+    return;
+  }
+
+  if (venteId) {
+    try {
+      const vente = await apiCall(`/api/ventes/${venteId}`);
+      if (!vente) {
+        alert("Vente introuvable");
+        return;
+      }
+
+      const lignesSource = vente.lignes ?? [];
+      panier = lignesSource.map(l => ({
+        id: l.produitId,
+        nom: l.produitNom ?? `Produit #${l.produitId}`,
+        prix: Number(l.prixUnitaire ?? l.prix ?? 0),
+        quantite: Number(l.quantite ?? 1),
+        codeBarre: l.codeBarre
+      }));
+
+      const paiementsSource = vente.paiements ?? [];
+      paiements = paiementsSource.map(p => ({
+        mode: p.moyenPaiement ?? p.mode ?? "especes",
+        montant: Number(p.montant ?? 0),
+        devise: p.devise || deviseCaisse,
+        montantOriginal: Number(p.montantOriginal ?? p.montant ?? 0)
+      }));
+
+      if (montantRenduInput) {
+        montantRenduInput.value = vente.rendu ? String(vente.rendu) : "";
+      }
+
+      afficherPanier();
+    } catch {
+      alert("Impossible de reprendre la vente.");
+    }
+  }
+}
+
 // --- Affichage ---
 function mettreAJourAffichagePaiement() {
   const total = calculerTotalNumerique();
@@ -78,6 +175,7 @@ function mettreAJourAffichagePaiement() {
   });
 
   btnValider.disabled = !(panier.length > 0 && reste === 0);
+  synchroniserVentePotCommun();
 }
 
 function afficherPanier() {
@@ -208,17 +306,7 @@ async function validerVente() {
   try {
     await apiCall("/api/ventes", {
       method: "POST",
-      body: JSON.stringify({
-        lignes: panier.map(p => ({ produitId: p.id, quantite: p.quantite })),
-        paiements: paiements.map(p => ({
-          moyenPaiement: p.mode,
-          montant: p.montant,
-          devise: p.devise || deviseCaisse,
-          montantOriginal: p.montantOriginal ?? p.montant
-        })),
-        rendu: rendu,
-        deviseCaisse: deviseCaisse
-      })
+      body: JSON.stringify(construireVenteDto(true))
     });
 
     if (document.getElementById("imprimerTicketAuto")?.checked) {
@@ -260,6 +348,7 @@ function reinitialiserCaisse() {
   afficherPanier();
   montantPayeInput.value = "";
   montantRenduInput.value = "";
+  window.potCommun?.clear();
   inputScan.focus();
 }
 
@@ -324,6 +413,10 @@ btnRechercherProduit?.addEventListener("click", () => {
     initialText: inputScan?.value.trim() ?? "",
     onSelect: selectionnerCodeBarreDansScan
   });
+});
+
+document.addEventListener("pot-commun:reprendre", (event) => {
+  reprendreDepuisPotCommun(event.detail);
 });
 
 // Init

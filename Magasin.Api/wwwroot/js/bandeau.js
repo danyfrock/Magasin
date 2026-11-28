@@ -32,7 +32,6 @@ async function chargerBandeau() {
     const titre = conteneur.dataset.title || "Magasin";
     setTitle(titre);
 
-    // Synchroniser uniquement le sélecteur (le thème est déjà appliqué)
     const themeSauvegarde = localStorage.getItem('theme') || 'light';
     const selectTheme = document.getElementById("themeSelector");
     if (selectTheme) {
@@ -50,10 +49,59 @@ async function chargerBandeau() {
             if (connectedUserEl) {
                 connectedUserEl.textContent = `${utilisateur.username} (${utilisateur.role})`;
             }
+
             sessionStorage.setItem("userRole", utilisateur.role);
+
+            const userId = utilisateur.id ?? utilisateur.utilisateurId ?? null;
+            if (userId != null) {
+                sessionStorage.setItem("userId", String(userId));
+            }
         }
     } catch (error) {
         console.error("Erreur lors du chargement de l'utilisateur connecté :", error);
+    }
+
+    await chargerPotCommun();
+}
+
+async function chargerPotCommun() {
+    const bouton = document.getElementById("pot-commun-toggle");
+    if (!bouton) return;
+
+    try {
+        if (!document.querySelector('link[href="/css/pot-commun.css"]')) {
+            const css = document.createElement("link");
+            css.rel = "stylesheet";
+            css.href = "/css/pot-commun.css";
+            document.head.appendChild(css);
+        }
+
+        if (!document.getElementById("pot-commun-drawer")) {
+            const response = await fetch("/components/pot-commun.html");
+            if (!response.ok) {
+                throw new Error("Impossible de charger le Pot commun.");
+            }
+            document.body.insertAdjacentHTML("beforeend", await response.text());
+        }
+
+        if (!window.PotCommun) {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.src = "/js/potCommun.js";
+                script.onload = resolve;
+                script.onerror = () => reject(new Error("Impossible de charger potCommun.js."));
+                document.body.appendChild(script);
+            });
+        }
+
+        window.potCommun = new window.PotCommun({
+            getCurrentUserId: () => sessionStorage.getItem("userId"),
+            onReprendre: (detail) => {
+                document.dispatchEvent(new CustomEvent("pot-commun:reprendre", { detail }));
+            }
+        });
+    } catch (error) {
+        console.error("Erreur lors de l'initialisation du Pot commun :", error);
     }
 }
 

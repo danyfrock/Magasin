@@ -1,0 +1,23 @@
+<aside id="pot-commun-drawer" class="pot-commun-drawer" aria-label="Pot commun" aria-hidden="true" hidden>
+    <div class="pot-commun-drawer-header">
+        <h2>Pot commun</h2>
+        <button type="button" id="pot-commun-close" class="btn-secondary" aria-label="Fermer">&times;</button>
+    </div>
+
+    <div id="pot-commun-status" class="pot-commun-status" role="status" aria-live="polite"></div>
+    <div id="pot-commun-list" class="pot-commun-list" role="region" aria-live="polite"></div>
+
+    <form id="pot-commun-form" class="card pot-commun-depot">
+        <div id="pot-commun-attachment" class="pot-commun-attachment" hidden>
+            <span id="pot-commun-target-preview" class="pot-commun-cible"></span>
+            <button type="button" id="pot-commun-clear-target" class="btn-secondary">Retirer</button>
+        </div>
+
+        <input id="pot-commun-message" name="message" type="text" maxlength="1000"
+               placeholder="Écrire un message..." autocomplete="off" />
+
+        <div class="pot-commun-depot-actions">
+            <button type="submit" class="btn-primary">Envoyer</button>
+        </div>
+    </form>
+</aside>

@@ -1,0 +1,132 @@
+/* wwwroot/css/pot-commun.css */
+.pot-commun-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+}
+
+.pot-commun-badge {
+  background: var(--primary-gradient);
+  color: var(--primary-text);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pot-commun-drawer[hidden] {
+  display: none;
+}
+
+.pot-commun-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(390px, 100vw);
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--card-gradient);
+  color: var(--text);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.pot-commun-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pot-commun-drawer-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.pot-commun-status {
+  min-height: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.pot-commun-status.is-error {
+  color: var(--danger, #c0392b);
+}
+
+.pot-commun-depot {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pot-commun-cible {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.pot-commun-attachment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pot-commun-depot input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--button-radius);
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.pot-commun-depot-actions,
+.pot-commun-item-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pot-commun-list {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.pot-commun-item {
+  padding: 14px;
+}
+
+.pot-commun-item-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.pot-commun-item-commentaire {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.pot-commun-attachment[hidden] {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .pot-commun-drawer {
+    width: 100vw;
+    padding: 16px;
+  }
+}

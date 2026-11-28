@@ -3,7 +3,6 @@
     <h1 id="pageTitle"></h1>
 
     <div class="user-zone">
-        <!-- Sélecteur de thème -->
         <select id="themeSelector" class="theme-selector" onchange="changerTheme(this.value)" aria-label="Choisir le thème de l'application">
             <option value="light">☀️ Light</option>
             <option value="black">🖤 Black & Gold</option>
@@ -13,10 +12,13 @@
             <option value="gold">👑 Gold</option>
         </select>
 
-        <span id="connectedUser"></span>
-        <button class="logout-button" onclick="logout()">
-            Déconnexion
+        <button type="button" id="pot-commun-toggle" class="btn-secondary pot-commun-toggle"
+                aria-expanded="false" aria-controls="pot-commun-drawer">
+            Pot commun <span id="pot-commun-badge" class="pot-commun-badge" hidden>0</span>
         </button>
+
+        <span id="connectedUser"></span>
+        <button class="logout-button" onclick="logout()">Déconnexion</button>
         <a href="../index.html" class="back-link">← Retour au menu</a>
     </div>
 </header>
