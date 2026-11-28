@@ -18,6 +18,19 @@ public class ProduitController : ControllerBase
         this.produitService = produitService;
     }
 
+    [HttpGet("id/{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var produit = await produitService.GetById(id); // selon le nom exact dans ProduitService
+
+        if (produit == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(produit);
+    }
+
     [HttpGet("{codeBarre}")]
     public async Task<IActionResult> GetByCodeBarre(string codeBarre)
     {

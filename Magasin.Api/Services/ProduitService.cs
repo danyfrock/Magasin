@@ -37,6 +37,17 @@ public class ProduitService : ConteneurImageService<Produit>
         return produit?.ToDto();
     }
 
+    public async Task<ProduitDto?> GetById(int id)
+    {
+        Produit? produit = await dbContext.Produits
+            .AsNoTracking()
+            .Include(p => p.Image)
+            .Where(p => !p.EstSupprime) // Exclut les produits supprimés
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        return produit?.ToDto();
+    }
+
     public async Task<List<ProduitDto>> GetByText(string? texte)
     {
         if(string.IsNullOrWhiteSpace(texte)) return []; // Texte vide, retourne une liste vide

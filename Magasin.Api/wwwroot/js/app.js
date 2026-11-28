@@ -143,36 +143,27 @@ function selectionnerCodeBarreDansScan(codeBarre) {
   void traiterCodeScan(codeBarre);
 }
 
-// --- Reprise depuis le Pot commun ---
-async function reprendreDepuisPotCommun(detail = {}) {
-  const { produitId, venteId } = detail;
+async function reprendreProduitDepuisPotCommun(produitId) {
+  if (!produitId) return;
 
-  if (produitId) {
-    try {
-      const produit = await apiCall(`/api/produits/${produitId}`);
-
-      if (!produit) {
-        alert("Produit introuvable");
-        return;
-      }
-
-      if (produit.codeBarre) {
-        selectionnerCodeBarreDansScan(produit.codeBarre);
-      } else {
-        ajouterProduitAuPanier(produit);
-      }
-    } catch {
-      alert("Impossible de reprendre le produit.");
+  try {
+    const produit = await apiCall(`/api/produits/id/${produitId}`);
+    if (!produit) {
+      alert("Produit introuvable");
+      return;
     }
 
-    return;
+    ajouterProduitAuPanier(produit);
+  } catch {
+    alert("Impossible de reprendre le produit.");
   }
+}
 
+async function reprendreVenteDepuisPotCommun(venteId) {
   if (!venteId) return;
 
   try {
     const vente = await apiCall(`/api/ventes/${venteId}`);
-
     if (!vente) {
       alert("Vente introuvable");
       return;
@@ -200,6 +191,19 @@ async function reprendreDepuisPotCommun(detail = {}) {
     afficherPanier();
   } catch {
     alert("Impossible de reprendre la vente.");
+  }
+}
+
+async function reprendreDepuisPotCommun(detail = {}) {
+  const { venteId, produitId } = detail;
+
+  if (venteId) {
+    await reprendreVenteDepuisPotCommun(venteId);
+    return;
+  }
+
+  if (produitId) {
+    await reprendreProduitDepuisPotCommun(produitId);
   }
 }
 
@@ -261,7 +265,7 @@ function creerBoutonPanier(id, action, libelle) {
   const bouton = document.createElement("button");
 
   bouton.type = "button";
-  bouton.className = action === "supprimer" ? "btn-supprimer" : "btn-qty";
+  bouton.className = (action === "supprimer"|| action === "pot") ? "btn-supprimer" : "btn-qty";
   bouton.dataset.id = String(id);
   bouton.dataset.action = action;
   bouton.textContent = libelle;
@@ -288,7 +292,8 @@ function afficherPanier() {
       quantite,
       creerBoutonPanier(produit.id, "plus", "+"),
       creerBoutonPanier(produit.id, "moins", "-"),
-      creerBoutonPanier(produit.id, "supprimer", "Supprimer")
+      creerBoutonPanier(produit.id, "supprimer", "Supprimer"),
+      creerBoutonPanier(produit.id, "pot", "Envoyer dans le pot")
     );
 
     ligne.append(nom, prix, actions);
@@ -452,7 +457,18 @@ tbodyPanier.addEventListener("click", event => {
   const bouton = event.target.closest("button[data-action]");
   if (!bouton || !tbodyPanier.contains(bouton)) return;
 
-  modifierQuantiteProduit(Number(bouton.dataset.id), bouton.dataset.action);
+  const id = Number(bouton.dataset.id);
+  const action = bouton.dataset.action;
+
+  if (action === "pot") {
+    const produit = panier.find(element => element.id === id);
+    if (produit) {
+      window.potCommun?.chargerProduit(produit, { openDrawer: true });
+    }
+    return;
+  }
+
+  modifierQuantiteProduit(id, action);
 });
 
 // Un seul écouteur pour supprimer les paiements.

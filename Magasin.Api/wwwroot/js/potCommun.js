@@ -18,19 +18,26 @@
             this.listEl = document.getElementById("pot-commun-list");
             this.statusEl = document.getElementById("pot-commun-status");
 
-            this.attachment = null;
+            // venteActive : vente en cours côté page / pot
+            // venteJointe : true si la vente est actuellement affichée en PJ
+            // produitEnAttente : produit prêt si pas de vente ou si la vente est retirée
+            this.venteActive = null;
+            this.venteLabel = null;
+            this.venteJointe = false;
+            this.produitEnAttente = null;
+            this.produitJoint = null;
             this.isRefreshing = false;
 
             this.bindEvents();
-            this.clear();
             this.refresh();
         }
 
         bindEvents() {
             this.toggleBtn?.addEventListener("click", () => this.toggle());
             this.closeBtn?.addEventListener("click", () => this.close());
-            this.clearTargetBtn?.addEventListener("click", () => this.clearAttachment());
+            this.clearTargetBtn?.addEventListener("click", () => this.retirerPieceJointe());
             this.form?.addEventListener("submit", (event) => this.handleSubmit(event));
+            this.input?.addEventListener("keydown", (event) => this.handleInputKeydown(event));
 
             document.addEventListener("keydown", (event) => {
                 if (event.key === "Escape" && this.drawer && !this.drawer.hidden) {
@@ -62,15 +69,29 @@
             this.drawer.hidden ? this.open() : this.close();
         }
 
-        clearAttachment() {
-            this.attachment = null;
-            if (this.attachmentBox) this.attachmentBox.hidden = true;
-            if (this.targetPreview) this.targetPreview.textContent = "";
+        clear() {
+            this.venteActive = null;
+            this.venteLabel = null;
+            this.venteJointe = false;
+            this.produitEnAttente = null;
+            this.produitJoint = null;
+            if (this.input) this.input.value = "";
+            this.rafraichirPieceJointe();
         }
 
-        clear() {
-            this.clearAttachment();
-            if (this.input) this.input.value = "";
+        retirerPieceJointe() {
+            if (this.venteJointe) {
+                this.venteJointe = false;
+                if (this.produitEnAttente) {
+                    this.produitJoint = { ...this.produitEnAttente };
+                }
+                this.rafraichirPieceJointe();
+                return;
+            }
+
+            this.produitJoint = null;
+            this.produitEnAttente = null;
+            this.rafraichirPieceJointe();
         }
 
         chargerProduit(produit, { openDrawer = true } = {}) {
@@ -78,31 +99,84 @@
             if (!id) return;
 
             const nom = typeof produit === "object" ? (produit?.nom ?? produit?.Nom) : null;
-            const label = nom ? `Joint au message : Produit — ${nom}` : `Joint au message : Produit #${id}`;
+            const label = nom ? `Produit : ${nom}` : `Produit #${id}`;
+            const itemProduit = { id: Number(id), label };
 
-            this.attachment = { produitId: Number(id), label };
-            this.afficherPieceJointe(label, openDrawer);
+            this.produitEnAttente = itemProduit;
+
+            // La vente est prioritaire : si une vente est jointe, le produit attend
+            if (!this.venteJointe) {
+                this.produitJoint = itemProduit;
+            }
+
+            this.rafraichirPieceJointe();
+            if (openDrawer) this.open();
         }
 
         chargerVente(venteDto, { openDrawer = false, label = null } = {}) {
             if (!venteDto) {
-                this.clearAttachment();
+                this.venteActive = null;
+                this.venteLabel = null;
+                this.venteJointe = false;
+                if (this.produitEnAttente) {
+                    this.produitJoint = { ...this.produitEnAttente };
+                }
+                this.rafraichirPieceJointe();
                 return;
             }
 
-            const texte = label || "Joint au message : Vente en cours";
-            this.attachment = { vente: venteDto, label: texte };
-            this.afficherPieceJointe(texte, openDrawer);
+            this.venteActive = venteDto;
+            this.venteLabel = label || "Vente en cours";
+            this.venteJointe = true;
+            this.produitJoint = null;
+
+            this.rafraichirPieceJointe();
+            if (openDrawer) this.open();
         }
 
-        afficherPieceJointe(label, openDrawer) {
-            if (this.attachmentBox && this.targetPreview) {
+        rafraichirPieceJointe() {
+            if (!this.attachmentBox || !this.targetPreview) return;
+
+            if (this.venteJointe && this.venteActive) {
                 this.attachmentBox.hidden = false;
-                this.targetPreview.textContent = label;
+                this.targetPreview.textContent = `Pièce jointe : ${this.venteLabel}`;
+                return;
             }
 
-            if (openDrawer) {
-                this.open();
+            if (this.produitJoint) {
+                this.attachmentBox.hidden = false;
+                this.targetPreview.textContent = `Pièce jointe : ${this.produitJoint.label}`;
+                return;
+            }
+
+            this.attachmentBox.hidden = true;
+            this.targetPreview.textContent = "";
+        }
+
+        async handleInputKeydown(event) {
+            if (event.key !== "Enter") return;
+
+            const texte = this.input?.value.trim() ?? "";
+            if (!texte || !/^\d{6,14}$/.test(texte)) return;
+
+            // Uniquement si aucune vente n'est présente dans le pot
+            if (this.venteActive || this.venteJointe) return;
+
+            event.preventDefault();
+            try {
+                const res = await fetch(`/api/produits/${encodeURIComponent(texte)}`, {
+                    credentials: "include"
+                });
+                if (!res.ok) return;
+
+                const produit = await res.json();
+                if (!produit?.id) return;
+
+                this.input.value = "";
+                this.chargerProduit(produit, { openDrawer: true });
+                this.afficherStatut("Produit ajouté en pièce jointe.");
+            } catch {
+                // Ignore si ce n'est pas un code-barres produit
             }
         }
 
@@ -143,9 +217,32 @@
         async handleSubmit(event) {
             event.preventDefault();
 
-            const message = this.input?.value.trim() ?? "";
-            const hasAttachment = Boolean(this.attachment?.produitId || this.attachment?.vente);
-            if (!message && !hasAttachment) return;
+            let message = this.input?.value.trim() ?? "";
+
+            // Si aucune vente n'est présente et que le message est un code-barres
+            if (!this.venteActive && !this.venteJointe && !this.produitJoint && /^\d{6,14}$/.test(message)) {
+                try {
+                    const res = await fetch(`/api/produits/${encodeURIComponent(message)}`, {
+                        credentials: "include"
+                    });
+                    if (res.ok) {
+                        const produit = await res.json();
+                        if (produit?.id) {
+                            this.input.value = "";
+                            this.chargerProduit(produit, { openDrawer: true });
+                            this.afficherStatut("Produit ajouté en pièce jointe.");
+                            return;
+                        }
+                    }
+                } catch {
+                    // Envoi normal du texte si pas un produit
+                }
+            }
+
+            const venteAEnvoyer = this.venteJointe ? this.venteActive : null;
+            const produitAEnvoyer = !venteAEnvoyer ? (this.produitJoint?.id ?? null) : null;
+
+            if (!message && !venteAEnvoyer && !produitAEnvoyer) return;
 
             const utilisateurId = this.getCurrentUserId?.();
             if (!utilisateurId) {
@@ -156,8 +253,8 @@
             const payload = {
                 utilisateurId: Number(utilisateurId),
                 message,
-                produitId: this.attachment?.produitId ?? null,
-                vente: this.attachment?.vente ?? null
+                produitId: produitAEnvoyer,
+                vente: venteAEnvoyer
             };
 
             const submitButton = this.form?.querySelector('button[type="submit"]');
@@ -176,8 +273,19 @@
                     return;
                 }
 
-                this.clear();
-                this.afficherStatut(hasAttachment ? "Message envoyé avec élément joint." : "Message envoyé.");
+                if (this.input) this.input.value = "";
+
+                // Supprime la PJ produit après envoi ; si une vente est active, elle redevient prioritaire
+                if (this.produitJoint) {
+                    this.produitJoint = null;
+                    this.produitEnAttente = null;
+                    if (this.venteActive) {
+                        this.venteJointe = true;
+                    }
+                }
+
+                this.rafraichirPieceJointe();
+                this.afficherStatut("Message envoyé.");
                 await this.refresh();
             } catch (error) {
                 this.afficherStatut("Erreur lors de l'envoi du message.", true);
@@ -254,22 +362,22 @@
                     button.className = "btn-primary";
                     button.textContent = "Reprendre";
                     button.addEventListener("click", () => {
-                    const payload = {
-                        produitId: item.produitId ?? undefined,
-                        venteId: item.venteId ?? undefined,
-                        item
-                    };
+                        const payload = {
+                            produitId: item.produitId ?? undefined,
+                            venteId: item.venteId ?? undefined,
+                            item
+                        };
 
-                    if (payload.venteId && !document.getElementById("validerVente")) {
-                        sessionStorage.setItem("reprendreVenteId", String(payload.venteId));
+                        if (payload.venteId && !document.getElementById("validerVente")) {
+                            sessionStorage.setItem("reprendreVenteId", String(payload.venteId));
+                            this.close();
+                            window.location.href = "/pages/vente.html";
+                            return;
+                        }
+
+                        this.onReprendre?.(payload);
                         this.close();
-                        window.location.href = "/pages/vente.html";
-                        return;
-                    }
-
-                    this.onReprendre?.(payload);
-                    this.close();
-                });
+                    });
 
                     actions.appendChild(button);
                     card.appendChild(actions);
