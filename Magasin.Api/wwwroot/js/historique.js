@@ -27,6 +27,44 @@ async function chargerVentes() {
     }
 }
 
+// --- Pot commun ---
+function construireVenteDepuisHistorique(vente) {
+    const deviseCaisse = vente.deviseCaisse || "XOF";
+
+    return {
+        id: vente.id,
+        lignes: (vente.lignes || []).map(ligne => ({
+            produitId: ligne.produitId,
+            quantite: ligne.quantite
+        })),
+        paiements: (vente.paiements || []).map(paiement => ({
+            moyenPaiement: paiement.moyenPaiement,
+            montant: paiement.montant,
+            devise: paiement.devise || deviseCaisse,
+            montantOriginal: paiement.montantOriginal ?? paiement.montant
+        })),
+        rendu: Number(vente.rendu) || 0,
+        tauxChangeId: vente.tauxChangeId ?? null,
+        deviseCaisse,
+        estFinalisee: Boolean(vente.estFinalisee)
+    };
+}
+
+function synchroniserVenteDetailPotCommun(openDrawer = false) {
+    if (!window.potCommun) return;
+
+    if (!venteSelectionnee) {
+        window.potCommun.chargerVente(null);
+        return;
+    }
+
+    const devise = venteSelectionnee.deviseCaisse || "XOF";
+    window.potCommun.chargerVente(construireVenteDepuisHistorique(venteSelectionnee), {
+        openDrawer,
+        label: `Joint au message : Vente #${venteSelectionnee.id} (${venteSelectionnee.total} ${devise})`
+    });
+}
+
 // --- Filtres ---
 function initialiserFiltres() {
     const typePeriode = document.getElementById("type-periode");
@@ -41,6 +79,14 @@ function initialiserFiltres() {
             return;
         }
         imprimerTicketCaisse(venteSelectionnee);
+    });
+
+    document.getElementById("btn-pot-commun-selection")?.addEventListener("click", () => {
+        if (!venteSelectionnee) {
+            alert("Veuillez sélectionner une vente dans la liste.");
+            return;
+        }
+        synchroniserVenteDetailPotCommun(true);
     });
 
     typePeriode.addEventListener("change", () => {
@@ -124,7 +170,7 @@ function filtrerVentes(typePeriode, valeurPeriode, produit) {
         if (!produit) return true;
 
         const termeRecherche = produit.toLowerCase();
-        return (vente.lignes || []).some(ligne => 
+        return (vente.lignes || []).some(ligne =>
             String(ligne.produitNom).toLowerCase().includes(termeRecherche)
         );
     });
@@ -137,6 +183,7 @@ function filtrerVentes(typePeriode, valeurPeriode, produit) {
         venteSelectionnee = null;
         document.getElementById("detail-vide").style.display = "block";
         document.getElementById("detail-contenu").style.display = "none";
+        synchroniserVenteDetailPotCommun(false);
     }
 }
 
@@ -206,6 +253,7 @@ function selectionnerVente(id) {
 
     afficherGrilleLignes();
     afficherGrillePaiements();
+    synchroniserVenteDetailPotCommun(false);
 }
 
 function afficherGrilleLignes() {
@@ -222,12 +270,12 @@ function afficherGrilleLignes() {
             { title: "Produit", field: "produitNom" },
             { title: "Qté", field: "quantite" },
             { title: "Prix unit.", field: "prixUnitaire", formatter: cell => `${cell.getValue()} ${devise}` },
-            { 
-                title: "Sous-total", 
+            {
+                title: "Sous-total",
                 formatter: cell => {
                     const ligne = cell.getRow().getData();
                     return `${Number(ligne.quantite) * Number(ligne.prixUnitaire)} ${devise}`;
-                } 
+                }
             }
         ]
     });
@@ -244,22 +292,22 @@ function afficherGrillePaiements() {
         height: "150px",
         placeholder: "Aucun paiement",
         columns: [
-            { 
-                title: "Moyen", 
-                field: "moyenPaiement", 
-                formatter: cell => String(cell.getValue() || "").toUpperCase() 
+            {
+                title: "Moyen",
+                field: "moyenPaiement",
+                formatter: cell => String(cell.getValue() || "").toUpperCase()
             },
-            { 
-                title: "Montant", 
-                field: "montant", 
+            {
+                title: "Montant",
+                field: "montant",
                 formatter: cell => {
                     const p = cell.getRow().getData();
-                    
+
                     if (p.devise && p.devise !== deviseCaisse) {
                         return `${p.montantOriginal} ${p.devise} → <strong>${p.montant} ${deviseCaisse}</strong>`;
                     }
                     return `${cell.getValue()} ${deviseCaisse}`;
-                } 
+                }
             }
         ]
     });

@@ -1,59 +1,71 @@
 import { createProductPicker } from "./product-picker.js";
 
-// --- État global ---
+// --- État de la caisse ---
 let panier = [];
 let paiements = [];
-let deviseCaisse = "XOF"; // sera mis à jour au démarrage
+let deviseCaisse = "XOF";
 
-// Éléments DOM
+// --- Éléments DOM ---
 const montantPayeInput = document.getElementById("montantPaye");
-const listePaiements = document.getElementById("paiements-effectues");
-const btnValider = document.getElementById("validerVente");
 const montantRenduInput = document.getElementById("montantRendu");
+const listePaiements = document.getElementById("paiements-effectues");
+const tbodyPanier = document.getElementById("panier");
+const totalElement = document.getElementById("total");
+const dejaPayeElement = document.getElementById("dejaPaye");
+const resteAPayerElement = document.getElementById("resteAPayer");
+const ligneARendreElement = document.getElementById("ligneARendre");
+const aRendreElement = document.getElementById("aRendre");
+const btnValider = document.getElementById("validerVente");
 const inputScan = document.getElementById("scan");
 const btnRechercherProduit = document.getElementById("btnRechercherProduit");
 const modalAutreDevise = document.getElementById("modalAutreDevise");
 const converterModal = document.getElementById("converterModal");
 
 const productPicker = createProductPicker({
-  mode: "modal", // ou "drawer"
+  mode: "modal",
   htmlUrl: "../components/product-picker.html"
 });
 
-// --- Utilitaires ---
+// --- Calculs et formatage ---
 function formatMontant(montant) {
   return `${montant} ${deviseCaisse}`;
 }
 
 function calculerTotalNumerique() {
-  return panier.reduce((sum, p) => sum + p.prix * p.quantite, 0);
+  return panier.reduce((total, produit) => total + produit.prix * produit.quantite, 0);
 }
 
 function totalPaye() {
-  return paiements.reduce((sum, p) => sum + p.montant, 0);
+  return paiements.reduce((total, paiement) => total + paiement.montant, 0);
 }
 
-function calculerTotal() {
-  document.getElementById("total").textContent = formatMontant(calculerTotalNumerique());
+function formaterLibellePaiement(paiement) {
+  const libelle = `${paiement.mode.toUpperCase()} : ${formatMontant(paiement.montant)}`;
+
+  return paiement.devise && paiement.devise !== deviseCaisse
+    ? `${libelle} (${paiement.montantOriginal} ${paiement.devise})`
+    : libelle;
 }
 
 function construireVenteDto(estFinalisee) {
-  const rendu = Number(montantRenduInput?.value) || 0;
-
   return {
-    lignes: panier.map(p => ({ produitId: p.id, quantite: p.quantite })),
-    paiements: paiements.map(p => ({
-      moyenPaiement: p.mode,
-      montant: p.montant,
-      devise: p.devise || deviseCaisse,
-      montantOriginal: p.montantOriginal ?? p.montant
+    lignes: panier.map(produit => ({
+      produitId: produit.id,
+      quantite: produit.quantite
     })),
-    rendu,
+    paiements: paiements.map(paiement => ({
+      moyenPaiement: paiement.mode,
+      montant: paiement.montant,
+      devise: paiement.devise || deviseCaisse,
+      montantOriginal: paiement.montantOriginal ?? paiement.montant
+    })),
+    rendu: Number(montantRenduInput?.value) || 0,
     deviseCaisse,
     estFinalisee
   };
 }
 
+// --- Synchronisation avec le Pot commun ---
 function synchroniserVentePotCommun() {
   if (!window.potCommun) return;
 
@@ -63,19 +75,82 @@ function synchroniserVentePotCommun() {
   }
 
   const total = calculerTotalNumerique();
+
   window.potCommun.chargerVente(construireVenteDto(false), {
     openDrawer: false,
     label: `Joint au message : Vente en cours (${formatMontant(total)})`
   });
 }
 
-// --- Reprise depuis Pot commun ---
+// --- Gestion du panier ---
+function ajouterProduitAuPanier(produit) {
+  const existant = panier.find(element => element.id === produit.id);
+
+  if (existant) {
+    existant.quantite++;
+  } else {
+    panier.push({ ...produit, quantite: 1 });
+  }
+
+  afficherPanier();
+}
+
+function modifierQuantiteProduit(id, action) {
+  const produit = panier.find(element => element.id === id);
+  if (!produit) return;
+
+  if (action === "plus") {
+    produit.quantite++;
+  } else if (action === "moins") {
+    produit.quantite--;
+  } else if (action === "supprimer") {
+    panier = panier.filter(element => element.id !== id);
+  } else {
+    return;
+  }
+
+  afficherPanier();
+}
+
+async function ajouterParCodeBarre(code) {
+  try {
+    const produit = await apiCall(`/api/produits/${encodeURIComponent(code)}`);
+
+    if (!produit) {
+      alert("Produit inconnu");
+      return;
+    }
+
+    ajouterProduitAuPanier(produit);
+  } catch {
+    alert("Produit inconnu ou erreur serveur");
+  }
+}
+
+async function traiterCodeScan(code) {
+  const codeNormalise = String(code ?? "").trim();
+  if (!codeNormalise) return;
+
+  inputScan.value = "";
+  await ajouterParCodeBarre(codeNormalise);
+}
+
+function selectionnerCodeBarreDansScan(codeBarre) {
+  if (!codeBarre || !inputScan) return;
+
+  inputScan.value = codeBarre;
+  inputScan.focus();
+  void traiterCodeScan(codeBarre);
+}
+
+// --- Reprise depuis le Pot commun ---
 async function reprendreDepuisPotCommun(detail = {}) {
   const { produitId, venteId } = detail;
 
   if (produitId) {
     try {
       const produit = await apiCall(`/api/produits/${produitId}`);
+
       if (!produit) {
         alert("Produit introuvable");
         return;
@@ -84,154 +159,147 @@ async function reprendreDepuisPotCommun(detail = {}) {
       if (produit.codeBarre) {
         selectionnerCodeBarreDansScan(produit.codeBarre);
       } else {
-        const existant = panier.find(p => p.id === produit.id);
-        if (existant) {
-          existant.quantite++;
-        } else {
-          panier.push({ ...produit, quantite: 1 });
-        }
-        afficherPanier();
+        ajouterProduitAuPanier(produit);
       }
     } catch {
       alert("Impossible de reprendre le produit.");
     }
+
     return;
   }
 
-  if (venteId) {
-    try {
-      const vente = await apiCall(`/api/ventes/${venteId}`);
-      if (!vente) {
-        alert("Vente introuvable");
-        return;
-      }
+  if (!venteId) return;
 
-      const lignesSource = vente.lignes ?? [];
-      panier = lignesSource.map(l => ({
-        id: l.produitId,
-        nom: l.produitNom ?? `Produit #${l.produitId}`,
-        prix: Number(l.prixUnitaire ?? l.prix ?? 0),
-        quantite: Number(l.quantite ?? 1),
-        codeBarre: l.codeBarre
-      }));
+  try {
+    const vente = await apiCall(`/api/ventes/${venteId}`);
 
-      const paiementsSource = vente.paiements ?? [];
-      paiements = paiementsSource.map(p => ({
-        mode: p.moyenPaiement ?? p.mode ?? "especes",
-        montant: Number(p.montant ?? 0),
-        devise: p.devise || deviseCaisse,
-        montantOriginal: Number(p.montantOriginal ?? p.montant ?? 0)
-      }));
-
-      if (montantRenduInput) {
-        montantRenduInput.value = vente.rendu ? String(vente.rendu) : "";
-      }
-
-      afficherPanier();
-    } catch {
-      alert("Impossible de reprendre la vente.");
+    if (!vente) {
+      alert("Vente introuvable");
+      return;
     }
+
+    panier = (vente.lignes ?? []).map(ligne => ({
+      id: ligne.produitId,
+      nom: ligne.produitNom ?? `Produit #${ligne.produitId}`,
+      prix: Number(ligne.prixUnitaire ?? ligne.prix ?? 0),
+      quantite: Number(ligne.quantite ?? 1),
+      codeBarre: ligne.codeBarre
+    }));
+
+    paiements = (vente.paiements ?? []).map(paiement => ({
+      mode: paiement.moyenPaiement ?? paiement.mode ?? "especes",
+      montant: Number(paiement.montant ?? 0),
+      devise: paiement.devise || deviseCaisse,
+      montantOriginal: Number(paiement.montantOriginal ?? paiement.montant ?? 0)
+    }));
+
+    if (montantRenduInput) {
+      montantRenduInput.value = vente.rendu ? String(vente.rendu) : "";
+    }
+
+    afficherPanier();
+  } catch {
+    alert("Impossible de reprendre la vente.");
   }
 }
 
 // --- Affichage ---
+function afficherListePaiements() {
+  listePaiements.replaceChildren();
+
+  if (paiements.length === 0) {
+    const message = document.createElement("em");
+    message.textContent = "Aucun paiement";
+    listePaiements.append(message);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  paiements.forEach((paiement, index) => {
+    const ligne = document.createElement("div");
+    const libelle = document.createElement("span");
+    const bouton = document.createElement("button");
+
+    libelle.textContent = formaterLibellePaiement(paiement);
+    bouton.type = "button";
+    bouton.className = "btn-supprimer-paiement";
+    bouton.dataset.index = String(index);
+    bouton.textContent = "✕";
+
+    ligne.append(libelle, bouton);
+    fragment.append(ligne);
+  });
+
+  listePaiements.append(fragment);
+}
+
 function mettreAJourAffichagePaiement() {
   const total = calculerTotalNumerique();
   const paye = totalPaye();
   const reste = Math.max(0, total - paye);
   const aRendre = Math.max(0, paye - total);
 
-  calculerTotal();
-  document.getElementById("dejaPaye").textContent = formatMontant(paye);
-  document.getElementById("resteAPayer").textContent = formatMontant(reste);
-  document.getElementById("resteAPayer").style.color = reste === 0 ? "green" : "orange";
+  totalElement.textContent = formatMontant(total);
+  dejaPayeElement.textContent = formatMontant(paye);
+  resteAPayerElement.textContent = formatMontant(reste);
+  resteAPayerElement.style.color = reste === 0 ? "green" : "orange";
 
-  const ligne = document.getElementById("ligneARendre");
   if (aRendre > 0) {
-    document.getElementById("aRendre").textContent = formatMontant(aRendre);
-    ligne.style.display = "block";
+    aRendreElement.textContent = formatMontant(aRendre);
+    ligneARendreElement.style.display = "block";
   } else {
-    ligne.style.display = "none";
+    ligneARendreElement.style.display = "none";
   }
 
-  // Liste des paiements
-  listePaiements.innerHTML = paiements.length === 0
-    ? "<em>Aucun paiement</em>"
-    : paiements.map((p, i) => {
-        const label = p.devise && p.devise !== deviseCaisse
-          ? `${p.mode.toUpperCase()} : ${formatMontant(p.montant)} (${p.montantOriginal} ${p.devise})`
-          : `${p.mode.toUpperCase()} : ${formatMontant(p.montant)}`;
-        return `
-          <div>
-            ${label}
-            <button type="button" class="btn-supprimer-paiement" data-index="${i}">✕</button>
-          </div>`;
-      }).join("");
-
-  document.querySelectorAll(".btn-supprimer-paiement").forEach(btn => {
-    btn.addEventListener("click", () => {
-      supprimerPaiement(Number(btn.dataset.index));
-    });
-  });
-
+  afficherListePaiements();
   btnValider.disabled = !(panier.length > 0 && reste === 0);
   synchroniserVentePotCommun();
 }
 
-function afficherPanier() {
-  const tbody = document.getElementById("panier");
-  tbody.innerHTML = panier.map(produit => `
-    <tr>
-      <td>${produit.nom}</td>
-      <td>${formatMontant(produit.prix)}</td>
-      <td>
-        <span>${produit.quantite}</span>
-        <button type="button" class="btn-qty" data-id="${produit.id}" data-action="plus">+</button>
-        <button type="button" class="btn-qty" data-id="${produit.id}" data-action="moins">-</button>
-        <button type="button" class="btn-supprimer" data-id="${produit.id}" data-action="supprimer">Supprimer</button>
-      </td>
-    </tr>
-  `).join("");
+function creerBoutonPanier(id, action, libelle) {
+  const bouton = document.createElement("button");
 
+  bouton.type = "button";
+  bouton.className = action === "supprimer" ? "btn-supprimer" : "btn-qty";
+  bouton.dataset.id = String(id);
+  bouton.dataset.action = action;
+  bouton.textContent = libelle;
+
+  return bouton;
+}
+
+function afficherPanier() {
+  tbodyPanier.replaceChildren();
+  const fragment = document.createDocumentFragment();
+
+  panier.forEach(produit => {
+    const ligne = document.createElement("tr");
+    const nom = document.createElement("td");
+    const prix = document.createElement("td");
+    const actions = document.createElement("td");
+    const quantite = document.createElement("span");
+
+    nom.textContent = produit.nom;
+    prix.textContent = formatMontant(produit.prix);
+    quantite.textContent = String(produit.quantite);
+
+    actions.append(
+      quantite,
+      creerBoutonPanier(produit.id, "plus", "+"),
+      creerBoutonPanier(produit.id, "moins", "-"),
+      creerBoutonPanier(produit.id, "supprimer", "Supprimer")
+    );
+
+    ligne.append(nom, prix, actions);
+    fragment.append(ligne);
+  });
+
+  tbodyPanier.append(fragment);
   mettreAJourAffichagePaiement();
 }
 
-// --- Panier ---
-async function ajouterParCodeBarre(code) {
-  try {
-    const produit = await apiCall(`/api/produits/${code}`);
-    if (!produit) {
-      alert("Produit inconnu");
-      return;
-    }
-
-    const existant = panier.find(p => p.id === produit.id);
-    if (existant) {
-      existant.quantite++;
-    } else {
-      panier.push({ ...produit, quantite: 1 });
-    }
-    afficherPanier();
-  } catch {
-    alert("Produit inconnu ou erreur serveur");
-  }
-}
-
-function selectionnerCodeBarreDansScan(codeBarre) {
-  if (!codeBarre || !inputScan) return;
-
-  inputScan.value = codeBarre;
-  inputScan.focus();
-  inputScan.dispatchEvent(new KeyboardEvent("keydown", {
-    key: "Enter",
-    code: "Enter",
-    keyCode: 13,
-    which: 13,
-    bubbles: true
-  }));
-}
-
-// --- Paiements classiques (devise caisse) ---
+// --- Gestion des paiements ---
 function ajouterPaiement(mode) {
   let montant = Number(montantPayeInput.value);
 
@@ -253,55 +321,48 @@ function ajouterPaiement(mode) {
   montantPayeInput.focus();
 }
 
-function supprimerPaiement(index) {
-  paiements.splice(index, 1);
-  mettreAJourAffichagePaiement();
-}
+function ajouterPaiementAutreDevise() {
+  const conversion = converterModal?.getLastConversion();
 
-// --- Modal autre devise ---
-document.getElementById("payerAutreDevise").addEventListener("click", () => {
-  converterModal?.reset();
-  modalAutreDevise.showModal();
-});
-
-document.getElementById("annulerPaiementDevise").addEventListener("click", () => {
-  modalAutreDevise.close();
-  converterModal?.reset();
-});
-
-document.getElementById("validerPaiementDevise").addEventListener("click", () => {
-  const conv = converterModal?.getLastConversion();
-
-  if (!conv || !conv.montant || conv.montant <= 0) {
+  if (!conversion || !conversion.montant || conversion.montant <= 0) {
     alert("Conversion non disponible ou montant invalide");
     return;
   }
 
   paiements.push({
     mode: "especes",
-    montant: conv.montant,                 // déjà en devise caisse
-    devise: conv.devise,                   // devise d'origine
-    montantOriginal: conv.montantOriginal
+    montant: conversion.montant,
+    devise: conversion.devise,
+    montantOriginal: conversion.montantOriginal
   });
 
   mettreAJourAffichagePaiement();
   modalAutreDevise.close();
   converterModal?.reset();
-});
+}
 
-// Fermer la modal avec Échap ou clic extérieur
-modalAutreDevise.addEventListener("close", () => {
-  converterModal?.reset();
-});
+function supprimerPaiement(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= paiements.length) return;
 
-// --- Validation / Annulation ---
+  paiements.splice(index, 1);
+  mettreAJourAffichagePaiement();
+}
+
+// --- Validation et annulation ---
 async function validerVente() {
   const total = calculerTotalNumerique();
   const paye = totalPaye();
   const rendu = Number(montantRenduInput.value) || 0;
 
-  if (panier.length === 0) return alert("Panier vide");
-  if (paye < total) return alert(`Il reste ${formatMontant(total - paye)}`);
+  if (panier.length === 0) {
+    alert("Panier vide");
+    return;
+  }
+
+  if (paye < total) {
+    alert(`Il reste ${formatMontant(total - paye)}`);
+    return;
+  }
 
   try {
     await apiCall("/api/ventes", {
@@ -312,25 +373,23 @@ async function validerVente() {
     if (document.getElementById("imprimerTicketAuto")?.checked) {
       imprimerTicketCaisse({
         date: new Date(),
-        lignes: panier.map(p => ({
-          produitNom: p.nom,
-          quantite: p.quantite,
-          prixUnitaire: p.prix
+        lignes: panier.map(produit => ({
+          produitNom: produit.nom,
+          quantite: produit.quantite,
+          prixUnitaire: produit.prix
         })),
-        paiements: paiements,
-        rendu: rendu
+        paiements,
+        rendu
       });
     }
 
-    let msg = `Vente validée\nTotal : ${formatMontant(total)}\n`;
-    paiements.forEach(p => {
-      msg += p.devise && p.devise !== deviseCaisse
-        ? `• ${p.mode.toUpperCase()} : ${formatMontant(p.montant)} (${p.montantOriginal} ${p.devise})\n`
-        : `• ${p.mode.toUpperCase()} : ${formatMontant(p.montant)}\n`;
+    let message = `Vente validée\nTotal : ${formatMontant(total)}\n`;
+    paiements.forEach(paiement => {
+      message += `• ${formaterLibellePaiement(paiement)}\n`;
     });
-    if (rendu > 0) msg += `À rendre : ${formatMontant(rendu)}`;
+    if (rendu > 0) message += `À rendre : ${formatMontant(rendu)}`;
 
-    alert(msg);
+    alert(message);
     reinitialiserCaisse();
   } catch {
     alert("Erreur lors de la validation de la vente.");
@@ -345,9 +404,9 @@ function annulerVente() {
 function reinitialiserCaisse() {
   panier = [];
   paiements = [];
-  afficherPanier();
   montantPayeInput.value = "";
   montantRenduInput.value = "";
+  afficherPanier();
   window.potCommun?.clear();
   inputScan.focus();
 }
@@ -356,56 +415,66 @@ function reinitialiserCaisse() {
 async function chargerDeviseCaisse() {
   try {
     const response = await fetch("/api/caisse/devise");
-    if (!response.ok) throw new Error();
+    if (!response.ok) throw new Error("Impossible de charger la devise de caisse.");
+
     const data = await response.json();
     deviseCaisse = data.deviseCaisse || data.DeviseCaisse || "XOF";
   } catch {
     deviseCaisse = "XOF";
   }
 
-  // Synchronise aussi le convertisseur
-  if (converterModal) {
-    converterModal.defaultCurrency = deviseCaisse;
-  }
+  if (converterModal) converterModal.defaultCurrency = deviseCaisse;
 }
 
 // --- Événements ---
-document.getElementById("payerEspeces").onclick = () => ajouterPaiement("especes");
-document.getElementById("payerCarte").onclick = () => ajouterPaiement("carte");
-document.getElementById("payerAirtel").onclick = () => ajouterPaiement("airtel");
-document.getElementById("payerMoov").onclick = () => ajouterPaiement("moov");
+document.getElementById("payerEspeces").addEventListener("click", () => ajouterPaiement("especes"));
+document.getElementById("payerCarte").addEventListener("click", () => ajouterPaiement("carte"));
+document.getElementById("payerAirtel").addEventListener("click", () => ajouterPaiement("airtel"));
+document.getElementById("payerMoov").addEventListener("click", () => ajouterPaiement("moov"));
+document.getElementById("validerVente").addEventListener("click", validerVente);
+document.getElementById("annulerVente").addEventListener("click", annulerVente);
 
-document.getElementById("validerVente").onclick = validerVente;
-document.getElementById("annulerVente").onclick = annulerVente;
-
-document.getElementById("panier").addEventListener("click", e => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-
-  const id = Number(btn.dataset.id);
-  const action = btn.dataset.action;
-  const produit = panier.find(p => p.id === id);
-  if (!produit) return;
-
-  if (action === "plus") produit.quantite++;
-  else if (action === "moins") produit.quantite--;
-  else if (action === "supprimer") panier = panier.filter(p => p.id !== id);
-
-  afficherPanier();
+document.getElementById("payerAutreDevise").addEventListener("click", () => {
+  converterModal?.reset();
+  modalAutreDevise.showModal();
 });
 
-inputScan.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const code = inputScan.value.trim();
-    if (code) {
-      ajouterParCodeBarre(code);
-      inputScan.value = "";
-    }
+document.getElementById("annulerPaiementDevise").addEventListener("click", () => {
+  modalAutreDevise.close();
+  converterModal?.reset();
+});
+
+document.getElementById("validerPaiementDevise").addEventListener("click", ajouterPaiementAutreDevise);
+modalAutreDevise.addEventListener("close", () => converterModal?.reset());
+
+// Un seul écouteur pour les actions du panier, même après son réaffichage.
+tbodyPanier.addEventListener("click", event => {
+  const bouton = event.target.closest("button[data-action]");
+  if (!bouton || !tbodyPanier.contains(bouton)) return;
+
+  modifierQuantiteProduit(Number(bouton.dataset.id), bouton.dataset.action);
+});
+
+// Un seul écouteur pour supprimer les paiements.
+listePaiements.addEventListener("click", event => {
+  const bouton = event.target.closest(".btn-supprimer-paiement");
+  if (!bouton || !listePaiements.contains(bouton)) return;
+
+  supprimerPaiement(Number(bouton.dataset.index));
+});
+
+inputScan.addEventListener("keydown", event => {
+  if (event.key !== "Enter") return;
+
+  event.preventDefault();
+  void traiterCodeScan(inputScan.value);
+});
+
+montantPayeInput.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    ajouterPaiement("especes");
   }
-});
-
-montantPayeInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") ajouterPaiement("especes");
 });
 
 btnRechercherProduit?.addEventListener("click", () => {
@@ -415,11 +484,14 @@ btnRechercherProduit?.addEventListener("click", () => {
   });
 });
 
-document.addEventListener("pot-commun:reprendre", (event) => {
-  reprendreDepuisPotCommun(event.detail);
+document.addEventListener("pot-commun:reprendre", event => {
+  void reprendreDepuisPotCommun(event.detail);
 });
 
-// Init
-chargerDeviseCaisse().then(() => {
+// --- Initialisation ---
+async function initialiserCaisse() {
+  await chargerDeviseCaisse();
   afficherPanier();
-});
+}
+
+void initialiserCaisse();
